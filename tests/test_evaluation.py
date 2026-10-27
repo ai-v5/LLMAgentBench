@@ -295,3 +295,19 @@ def test_dsh_requires_committed_completion(tmp_path, monkeypatch, reason, exit_c
     monkeypatch.setattr(adapters, "execute", fake_execute)
     call = adapters.invoke({"adapter": "dsh", "provider": "test", "model": "test-model"}, {"case_id": "test", "round": 0}, tmp_path, tmp_path / "control", 5)
     assert call["status"] == expected
+
+
+@pytest.mark.parametrize("final,expected", [
+    ('```json\n{"answer":"done","files":[]}\n```', "ok"),
+    ('prefix\n```json\n{"answer":"done","files":[]}\n```', "error"),
+])
+def test_dsh_accepts_only_a_single_complete_json_fence(tmp_path, monkeypatch, final, expected):
+    monkeypatch.setenv("BENCH_DSH_LAUNCHER", json.dumps([sys.executable]))
+    def fake_execute(argv, **kwargs):
+        events = [{"type": "session", "sessionId": "synthetic-session"},
+                  {"type": "status", "phase": "turn_end", "reason": {"kind": "completed"}},
+                  {"type": "final", "text": final}]
+        return {"exit_code": 0, "timed_out": False, "stdout": "\n".join(json.dumps(e) for e in events), "stderr": ""}
+    monkeypatch.setattr(adapters, "execute", fake_execute)
+    call = adapters.invoke({"adapter": "dsh", "provider": "test", "model": "test-model"}, {"case_id": "test", "round": 0}, tmp_path, tmp_path / "control", 5)
+    assert call["status"] == expected

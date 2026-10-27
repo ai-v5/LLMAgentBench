@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import time
 from pathlib import Path
@@ -42,6 +43,14 @@ def normalize_response(value: dict) -> dict:
         raise ContractError("Duplicate output file path")
     canonical(answer)
     return {"answer": answer, "files": files}
+
+
+def parse_json_response(text: str) -> dict:
+    text = text.strip()
+    fence = re.fullmatch(r"```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```", text, re.IGNORECASE)
+    if fence:
+        text = fence.group(1)
+    return json.loads(text)
 
 
 def prompt_text(payload: dict) -> str:
@@ -140,7 +149,7 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             ends = [e for e in events if e.get("type") == "status" and e.get("phase") == "turn_end"]
             if result["exit_code"] != 0 or len(finals) != 1 or not ends or ends[-1].get("reason", {}).get("kind") != "completed":
                 raise ContractError("DSH did not finish a fresh headless run")
-            base["response"] = normalize_response(json.loads(finals[0]["text"]))
+            base["response"] = normalize_response(parse_json_response(finals[0]["text"]))
         else:
             raise ContractError("Unsupported adapter")
         base["status"] = "ok"

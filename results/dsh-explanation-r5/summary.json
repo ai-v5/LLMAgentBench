@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "dsh-explanation-r5",
+  "state": "completed",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "source_receipt_sha256": "101161ce0d56164dade48ab4fc42cfec2f6b355e890440bdfdb4943b38827c88",
+  "pack_id": "synthetic-explanation-smoke",
+  "pack_sha256": "5944ae4117142350d6e4617eb69e446bbd06089233b128568d54a824ac134860",
+  "engine_version": "0.1.0",
+  "engine_sha256": "c0359729e4def13574a85f50affc176c188b28566be114636401940423e4caa1",
+  "config_sha256": "17d902e0f77e45e4580a7d10ffd4bf4d1d8cabb8508e8a83781183dbb80d1ec9",
+  "repeats": 1,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 180,
+  "check_timeout_seconds": 15,
+  "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
+  "candidates": [
+    {
+      "candidate_id": "dsh-flash-max",
+      "adapter": "dsh",
+      "requested_model": "ds-v4.1-flash-1017",
+      "reasoning_effort": "max",
+      "candidate_sha256": "58bf984bc64ba15b808d6678ca4e6a763f38743d6f309a34aa85092535d1f8f8",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 1,
+      "outcomes": {
+        "pass": 1,
+        "fail": 0,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 1.0,
+      "strict_success_rate": 1.0,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 68.109,
+      "max_elapsed_seconds": 68.109,
+      "adapter_invocations": 2,
+      "usage_complete": true,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 1,
+          "passed": 1,
+          "first_passed": 1
+        }
+      }
+    }
+  ],
+  "export_sha256": "eea573958de7f1693558005e957085f52bf8ee952d8d3cba1f858be4c8c85680"
+}

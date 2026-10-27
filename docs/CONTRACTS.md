@@ -12,7 +12,7 @@ pack.json 使用 schema_version: 1，要求唯一 id、visibility（public/priva
 
 候选只收到 prompt、inputs、允许修改路径，以及修复时的旧输出/检查 ID 和状态。expected、rubric 和 Python 验收脚本由评估器保留，不复制进候选工作目录。这是输入分离，不是对恶意程序的保密沙盒保证。
 
-候选提交 `{answer, files}`。answer 可为文本或 JSON 对象；Codex 输出 schema 要求先编码成字符串。files 是 `{path, content}` 数组，评估器只允许清单内路径。未列出文件、受保护输入或非法路径发生修改，样本失败并停止自动修复。
+候选提交 `{answer, files}`。answer 可为文本或 JSON 对象；Codex 输出 schema 要求先编码成字符串。DSH 的完整 JSON 可以置于单个 Markdown 代码块内；代码块前后不能包含其他内容。files 是 `{path, content}` 数组，评估器只允许清单内路径。未列出文件、受保护输入或非法路径发生修改，样本失败并停止自动修复。
 
 ## 评分
 
