@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "repeats": 2,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 20,
+  "check_timeout_seconds": 10,
+  "order_seed": 42,
+  "candidates": [
+    {
+      "id": "fixture-good",
+      "adapter": "fixture",
+      "responses": {
+        "roofline": {
+          "answer": {
+            "compute_seconds": 0.01,
+            "memory_seconds": 0.04,
+            "lower_bound_seconds": 0.04,
+            "evidence": "ANALYTICAL_ESTIMATE"
+          }
+        },
+        "unknown": {
+          "answer": {
+            "target_latency_ms": null,
+            "status": "UNKNOWN"
+          }
+        },
+        "patch": {
+          "answer": "fixed",
+          "files": [
+            {
+              "path": "calc.py",
+              "content": "def per_item_us(total_us, count):\n    if count is None or count <= 0:\n        return None\n    return total_us / count\n"
+            }
+          ]
+        },
+        "explanation": {
+          "answer": {
+            "conclusion": "已知发生 OOM 且没有计时样本；性能未知，不作为有效测量；未获授权不重试。",
+            "evidence_status": "UNAVAILABLE",
+            "latency_ms": null
+          }
+        }
+      }
+    },
+    {
+      "id": "fixture-bad",
+      "adapter": "fixture",
+      "responses": {
+        "roofline": {
+          "answer": {
+            "compute_seconds": 0.01,
+            "memory_seconds": 0.04,
+            "lower_bound_seconds": 0.01,
+            "evidence": "MEASURED"
+          }
+        },
+        "unknown": {
+          "answer": {
+            "target_latency_ms": 0,
+            "status": "MEASURED"
+          }
+        },
+        "patch": {
+          "answer": "done",
+          "files": []
+        },
+        "explanation": {
+          "answer": {
+            "conclusion": "Retry it.",
+            "evidence_status": "MEASURED",
+            "latency_ms": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "fixture-repair",
+      "adapter": "fixture",
+      "responses": {
+        "roofline": [
+          {
+            "answer": {
+              "compute_seconds": 0.01,
+              "memory_seconds": 0.04,
+              "lower_bound_seconds": 0.01,
+              "evidence": "MEASURED"
+            }
+          },
+          {
+            "answer": {
+              "compute_seconds": 0.01,
+              "memory_seconds": 0.04,
+              "lower_bound_seconds": 0.04,
+              "evidence": "ANALYTICAL_ESTIMATE"
+            }
+          }
+        ],
+        "unknown": [
+          {
+            "answer": {
+              "target_latency_ms": 0,
+              "status": "MEASURED"
+            }
+          },
+          {
+            "answer": {
+              "target_latency_ms": null,
+              "status": "UNKNOWN"
+            }
+          }
+        ],
+        "patch": [
+          {
+            "answer": "done",
+            "files": []
+          },
+          {
+            "answer": "fixed",
+            "files": [
+              {
+                "path": "calc.py",
+                "content": "def per_item_us(total_us, count):\n    if count is None or count <= 0:\n        return None\n    return total_us / count\n"
+              }
+            ]
+          }
+        ],
+        "explanation": [
+          {
+            "answer": {
+              "conclusion": "Retry it.",
+              "evidence_status": "MEASURED",
+              "latency_ms": 0
+            }
+          },
+          {
+            "answer": {
+              "conclusion": "已知发生 OOM 且没有计时样本；性能未知，不作为有效测量；未获授权不重试。",
+              "evidence_status": "UNAVAILABLE",
+              "latency_ms": null
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "judge": {
+    "adapter": "fixture",
+    "responses": {
+      "explanation.rubric": {
+        "answer": {
+          "verdict": true,
+          "reason": "合成夹具符合给定 rubric。",
+          "evidence": [
+            {
+              "source": "answer",
+              "quote": "OOM"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

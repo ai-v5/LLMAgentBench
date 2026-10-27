@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "repeats": 1,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 180,
+  "check_timeout_seconds": 15,
+  "order_seed": 42,
+  "candidates": [{"id": "codex-sol-low", "adapter": "codex", "model": "gpt-6.1-sol", "reasoning_effort": "low"}],
+  "judge": {"adapter": "codex", "model": "gpt-6.1-sol", "reasoning_effort": "low"}
+}

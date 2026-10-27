@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "repeats": 1,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 180,
+  "check_timeout_seconds": 15,
+  "order_seed": 42,
+  "candidates": [{"id": "dsh-example", "adapter": "dsh", "provider": "deepseek-official", "model": "deepseek-flash", "profile": "headless", "launcher_env": "BENCH_DSH_LAUNCHER", "pass_env": ["DEEPSEEK_API_KEY"]}],
+  "judge": {"adapter": "codex", "model": "gpt-6.1-sol", "reasoning_effort": "low"}
+}

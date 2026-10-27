@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "synthetic-engineering-smoke",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "cases": ["roofline/case.json", "unknown/case.json", "patch/case.json", "explanation/case.json"]
+}

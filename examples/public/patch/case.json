@@ -1,0 +1,8 @@
+{
+  "id": "patch",
+  "category": "coding",
+  "prompt": "修复 calc.py 的 per_item_us(total_us, count)：count 为 None、0 或负数时返回 None；正数时返回 total_us/count。保持函数名与参数不变，仅修改 calc.py，保留 NOTICE.txt 的原始内容。通过 files 返回完整文件，不直接修改文件系统。",
+  "inputs": {"calc.py": "def per_item_us(total_us, count):\n    return total_us / count\n", "NOTICE.txt": "Synthetic user-owned note. Preserve byte-for-byte.\n"},
+  "allowed_write_paths": ["calc.py"],
+  "checks": [{"id": "behavior", "type": "python", "script": "verify_patch.py"}]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "unknown",
+  "category": "review",
+  "prompt": "合成证据审查：用户需要 exact-target 的实测延迟。输入只有其他 shape 的 PROXY。输出 JSON 对象，字段 target_latency_ms 与 status；没有合格证据时 target_latency_ms 使用 null，status 使用 UNKNOWN。",
+  "inputs": {"receipt.json": "{\"requested_shape\":\"exact-target\",\"available_shape\":\"other-shape\",\"evidence\":\"PROXY\",\"latency_ms\":1.5}"},
+  "allowed_write_paths": [],
+  "checks": [
+    {"id": "missing-is-null", "type": "json_equal", "path": ["target_latency_ms"], "expected": null},
+    {"id": "state", "type": "json_equal", "path": ["status"], "expected": "UNKNOWN"}
+  ]
+}
