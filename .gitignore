@@ -1,0 +1,10 @@
+/.codex/worktrees/
+/local/
+/.bench-runs/
+/.venv/
+/.pytest_cache/
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+.env.*
