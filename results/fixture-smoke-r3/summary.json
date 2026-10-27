@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "run_id": "fixture-smoke-r3",
+  "state": "completed",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "source_receipt_sha256": "bd8d7d6da6499f4e52c66e288c6fb30561a3e51994b21d902cb0fcf0d0f1c313",
+  "pack_id": "synthetic-engineering-smoke",
+  "pack_sha256": "10c0df355b113daef241f31077946cb55f36fbf3796baaa902a399af200331f2",
+  "engine_version": "0.1.0",
+  "engine_sha256": "dedf8e186caf7847995f2db3f5eba9aa467f5280f5c8404354017094b3e5dfc8",
+  "config_sha256": "2f66049afd5c57453c37351c854efacb7cb38c96807847ebb8b266b5cd7e8dea",
+  "repeats": 2,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 20,
+  "check_timeout_seconds": 10,
+  "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
+  "candidates": [
+    {
+      "candidate_id": "fixture-good",
+      "adapter": "fixture",
+      "requested_model": null,
+      "reasoning_effort": null,
+      "candidate_sha256": "2f86b76ef0b1515b515dd1c9185dc562bd3a6236c599ead957a8b179dfa6cb56",
+      "evidence_level": "FIXTURE_SMOKE",
+      "assigned": 8,
+      "outcomes": {
+        "pass": 8,
+        "fail": 0,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 1.0,
+      "strict_success_rate": 1.0,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 0.015625,
+      "max_elapsed_seconds": 0.062,
+      "adapter_invocations": 10,
+      "usage_complete": false,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 4,
+          "passed": 4,
+          "first_passed": 4
+        },
+        "coding": {
+          "assigned": 2,
+          "passed": 2,
+          "first_passed": 2
+        },
+        "review": {
+          "assigned": 2,
+          "passed": 2,
+          "first_passed": 2
+        }
+      }
+    },
+    {
+      "candidate_id": "fixture-bad",
+      "adapter": "fixture",
+      "requested_model": null,
+      "reasoning_effort": null,
+      "candidate_sha256": "4dd8b0800bb80b42bc273b314bdbbeabc5d179cf7998a2eed9e701ecf1e96f24",
+      "evidence_level": "FIXTURE_SMOKE",
+      "assigned": 8,
+      "outcomes": {
+        "pass": 0,
+        "fail": 8,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 0.0,
+      "strict_success_rate": 0.0,
+      "mean_repair_rounds": 1,
+      "mean_elapsed_seconds": 0.033125,
+      "max_elapsed_seconds": 0.11,
+      "adapter_invocations": 16,
+      "usage_complete": false,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 4,
+          "passed": 0,
+          "first_passed": 0
+        },
+        "coding": {
+          "assigned": 2,
+          "passed": 0,
+          "first_passed": 0
+        },
+        "review": {
+          "assigned": 2,
+          "passed": 0,
+          "first_passed": 0
+        }
+      }
+    },
+    {
+      "candidate_id": "fixture-repair",
+      "adapter": "fixture",
+      "requested_model": null,
+      "reasoning_effort": null,
+      "candidate_sha256": "84460594d9d2c1bd107a8745d9e5f790885d3c6d680a1c58277b7a5016eb27c9",
+      "evidence_level": "FIXTURE_SMOKE",
+      "assigned": 8,
+      "outcomes": {
+        "pass": 8,
+        "fail": 0,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 0.0,
+      "strict_success_rate": 1.0,
+      "mean_repair_rounds": 1,
+      "mean_elapsed_seconds": 0.031375,
+      "max_elapsed_seconds": 0.11,
+      "adapter_invocations": 18,
+      "usage_complete": false,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 4,
+          "passed": 4,
+          "first_passed": 0
+        },
+        "coding": {
+          "assigned": 2,
+          "passed": 2,
+          "first_passed": 0
+        },
+        "review": {
+          "assigned": 2,
+          "passed": 2,
+          "first_passed": 0
+        }
+      }
+    }
+  ],
+  "export_sha256": "5e6ce8c7cd4d964f60e0f795524b53dd1d6db9e97ea1adcfa00e3027d48f6501"
+}

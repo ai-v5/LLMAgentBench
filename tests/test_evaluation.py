@@ -11,7 +11,7 @@ from llmagentbench import adapters
 from llmagentbench.contracts import ContractError, load_config, load_pack, safe_path, write_json
 from llmagentbench.graders import grade
 from llmagentbench.process import child_env, execute
-from llmagentbench.report import export_public, summarize
+from llmagentbench.report import export_public, markdown, summarize
 from llmagentbench.runner import load_run, run
 from tests.fixtures import BAD, GOOD, JUDGE, demo_config
 
@@ -157,6 +157,13 @@ def test_public_export_has_no_raw_answers_paths_or_session_logs(completed, tmp_p
     assert "workspace" not in text
     assert "run.patch.json" not in text
     assert "FIXTURE_SMOKE" in text
+
+
+def test_report_explicitly_labels_synthetic_and_non_synthetic_runs(completed):
+    public = summarize(completed)
+    private = summarize({**completed, "visibility": "private", "synthetic": False, "purpose": "benchmark"})
+    assert "合成输入" in markdown(public)
+    assert "非合成输入" in markdown(private)
 
 
 def test_check_script_is_part_of_pack_identity(tmp_path):

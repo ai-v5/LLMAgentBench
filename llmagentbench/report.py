@@ -51,8 +51,10 @@ def summarize(record: dict) -> dict:
 
 
 def markdown(summary: dict) -> str:
+    data_scope = "合成输入" if summary["synthetic"] else "非合成输入"
     lines = ["# 评估结果", "", f"Run: `{summary['run_id']}` · state: `{summary['state']}`", "",
-             "自动验收与修复指标；人工核验时间未测量。合成 smoke 不能作为模型排名。", "",
+             f"数据：{data_scope}；用途：`{summary['purpose']}`；可见性：`{summary['visibility']}`。", "",
+             "自动验收与修复指标；人工核验时间未测量。小样本不能作为模型排名。", "",
              "| 候选 | 证据 | 样本 | 首次通过率 | 预算内通过率 | 失败/未知/错误/超时 | 平均耗时(s) |",
              "|---|---|---:|---:|---:|---|---:|"]
     for row in summary["candidates"]:
