@@ -164,6 +164,8 @@ def test_report_explicitly_labels_synthetic_and_non_synthetic_runs(completed):
     private = summarize({**completed, "visibility": "private", "synthetic": False, "purpose": "benchmark"})
     assert "合成输入" in markdown(public)
     assert "非合成输入" in markdown(private)
+    assert "网络与服务端排队等待" in markdown(public)
+    assert "样本开始前的评估器等待" in markdown(public)
 
 
 def test_check_script_is_part_of_pack_identity(tmp_path):
@@ -311,3 +313,41 @@ def test_dsh_accepts_only_a_single_complete_json_fence(tmp_path, monkeypatch, fi
     monkeypatch.setattr(adapters, "execute", fake_execute)
     call = adapters.invoke({"adapter": "dsh", "provider": "test", "model": "test-model"}, {"case_id": "test", "round": 0}, tmp_path, tmp_path / "control", 5)
     assert call["status"] == expected
+
+
+def test_effective_throughput_charges_all_attempts_and_repair_time(completed):
+    record = copy.deepcopy(completed)
+    chosen = [a for a in record["attempts"] if a["candidate_id"] == "fixture-good"][:5]
+    for attempt, state, elapsed, model_time in zip(
+        chosen, ["pass", "fail", "unscored", "error", "timeout"],
+        [10, 20, 30, 40, 50], [4, 8, 12, 16, 20], strict=True,
+    ):
+        attempt["outcome"] = state
+        attempt["first_pass"] = state == "pass"
+        attempt["elapsed_seconds"] = elapsed
+        attempt["rounds"] = [attempt["rounds"][0]]
+        attempt["rounds"][0]["call"]["elapsed_seconds"] = model_time
+        attempt["rounds"][0]["judge_calls"] = []
+    # A repair adds another model call, but is part of the same assigned attempt.
+    repair = copy.deepcopy(chosen[1]["rounds"][0])
+    repair["call"]["elapsed_seconds"] = 3
+    chosen[1]["rounds"].append(repair)
+    judge = copy.deepcopy(chosen[0]["rounds"][0]["call"])
+    judge["elapsed_seconds"] = 5
+    chosen[0]["rounds"][0]["judge_calls"] = [judge]
+    record["attempts"] = chosen
+    row = summarize(record)["candidates"][0]
+    assert row["evaluated_attempt_seconds"] == 150
+    assert row["candidate_call_seconds"] == 63
+    assert row["judge_call_seconds"] == 5
+    assert row["effective_passes_per_hour"] == 24
+    assert row["assigned"] == 5
+    assert row["outcomes"] == {"pass": 1, "fail": 1, "unscored": 1, "error": 1, "timeout": 1}
+
+
+def test_zero_attempt_time_does_not_produce_infinite_throughput(completed):
+    record = copy.deepcopy(completed)
+    record["attempts"] = record["attempts"][:1]
+    record["attempts"][0]["elapsed_seconds"] = 0
+    row = summarize(record)["candidates"][0]
+    assert row["effective_passes_per_hour"] is None

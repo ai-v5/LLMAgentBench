@@ -17,6 +17,9 @@ def summarize(record: dict) -> dict:
         calls = [call for a in attempts for r in a["rounds"] for call in [r["call"], *r["judge_calls"]]]
         evidence = "FIXTURE_SMOKE" if any(c["evidence_level"] == "FIXTURE_SMOKE" for c in calls) else "MODEL_RUN"
         counts = {state: sum(a["outcome"] == state for a in attempts) for state in ("pass", "fail", "unscored", "error", "timeout")}
+        attempt_seconds = sum(a["elapsed_seconds"] for a in attempts)
+        candidate_seconds = sum(r["call"]["elapsed_seconds"] for a in attempts for r in a["rounds"])
+        judge_seconds = sum(c["elapsed_seconds"] for a in attempts for r in a["rounds"] for c in r["judge_calls"])
         def stats(group):
             return {"assigned": len(group), "passed": sum(a["outcome"] == "pass" for a in group),
                     "first_passed": sum(a["first_pass"] for a in group)}
@@ -30,6 +33,10 @@ def summarize(record: dict) -> dict:
             "mean_repair_rounds": statistics.mean(a["repair_rounds"] for a in attempts),
             "mean_elapsed_seconds": statistics.mean(a["elapsed_seconds"] for a in attempts),
             "max_elapsed_seconds": max(a["elapsed_seconds"] for a in attempts),
+            "evaluated_attempt_seconds": attempt_seconds,
+            "candidate_call_seconds": candidate_seconds,
+            "judge_call_seconds": judge_seconds,
+            "effective_passes_per_hour": counts["pass"] * 3600 / attempt_seconds if attempt_seconds > 0 else None,
             "adapter_invocations": len(calls),
             "usage_complete": all(c.get("usage") is not None for c in calls),
             "total_cost_usd": sum(c["cost_usd"] for c in calls) if all(c.get("cost_usd") is not None for c in calls) else None,
@@ -55,13 +62,16 @@ def markdown(summary: dict) -> str:
     lines = ["# 评估结果", "", f"Run: `{summary['run_id']}` · state: `{summary['state']}`", "",
              f"数据：{data_scope}；用途：`{summary['purpose']}`；可见性：`{summary['visibility']}`。", "",
              "自动验收与修复指标；人工核验时间未测量。小样本不能作为模型排名。", "",
-             "| 候选 | 证据 | 样本 | 首次通过率 | 预算内通过率 | 失败/未知/错误/超时 | 平均耗时(s) |",
-             "|---|---|---:|---:|---:|---|---:|"]
+             "| 候选 | 证据 | 样本 | 首次通过率 | 预算内通过率 | 失败/未知/错误/超时 | 平均耗时(s) | 候选调用总耗时(s) | 有效吞吐(通过题/小时) |",
+             "|---|---|---:|---:|---:|---|---:|---:|---:|"]
     for row in summary["candidates"]:
         outcomes = row["outcomes"]
-        lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} |")
+        throughput = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
+        lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} | {row['candidate_call_seconds']:.3f} | {throughput} |")
     lines += ["", f"Pack SHA256: `{summary['pack_sha256']}`", "", f"Engine SHA256: `{summary['engine_sha256']}`", "",
-              "成本未知时为 null；费用不由模型猜测。通过率包含全部分配样本；修复轮次不是独立样本。", ""]
+              "成本未知时为 null；费用不由模型猜测。通过率包含全部分配样本；修复轮次不是独立样本。", "",
+              "有效吞吐 = 预算内通过数 / 全部尝试计时之和 × 3600。尝试计时从输入准备完成后开始，包含候选调用、CLI 内的网络与服务端排队等待、自动检查、LLM 评分器调用、修复和轮次收据写入；不含输入准备、样本开始前的评估器等待、最终样本收据写入或人工核验。此值是本次串行评估的指标，不是并发服务吞吐。", "",
+              "候选模型为请求值；服务端实际模型身份未观测时不能独立确认。", ""]
     return "\n".join(lines)
 
 
