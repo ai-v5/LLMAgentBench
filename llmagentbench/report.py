@@ -70,7 +70,8 @@ def markdown(summary: dict) -> str:
         lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} | {row['candidate_call_seconds']:.3f} | {throughput} |")
     lines += ["", f"Pack SHA256: `{summary['pack_sha256']}`", "", f"Engine SHA256: `{summary['engine_sha256']}`", "",
               "成本未知时为 null；费用不由模型猜测。通过率包含全部分配样本；修复轮次不是独立样本。", "",
-              "有效吞吐 = 预算内通过数 / 全部尝试计时之和 × 3600。尝试计时包含候选调用、自动检查、评分器和修复；从输入文件准备完成后开始，不包含准备输入、排队或人工核验。此值是本次串行评估的指标，不是并发服务吞吐。", ""]
+              "有效吞吐 = 预算内通过数 / 全部尝试计时之和 × 3600。尝试计时从输入准备完成后开始，包含候选调用、CLI 内的网络与服务端排队等待、自动检查、LLM 评分器调用、修复和轮次收据写入；不含输入准备、样本开始前的评估器等待、最终样本收据写入或人工核验。此值是本次串行评估的指标，不是并发服务吞吐。", "",
+              "候选模型为请求值；服务端实际模型身份未观测时不能独立确认。", ""]
     return "\n".join(lines)
 
 

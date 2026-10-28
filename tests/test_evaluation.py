@@ -164,6 +164,8 @@ def test_report_explicitly_labels_synthetic_and_non_synthetic_runs(completed):
     private = summarize({**completed, "visibility": "private", "synthetic": False, "purpose": "benchmark"})
     assert "合成输入" in markdown(public)
     assert "非合成输入" in markdown(private)
+    assert "网络与服务端排队等待" in markdown(public)
+    assert "样本开始前的评估器等待" in markdown(public)
 
 
 def test_check_script_is_part_of_pack_identity(tmp_path):

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "run_id": "terra-1017-public-r1",
+  "state": "completed",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "source_receipt_sha256": "d8549cb494417a348d93102a4bee7a821cd40972833766fdd8a5bbddf7a556c4",
+  "pack_id": "synthetic-engineering-smoke",
+  "pack_sha256": "10c0df355b113daef241f31077946cb55f36fbf3796baaa902a399af200331f2",
+  "engine_version": "0.1.0",
+  "engine_sha256": "ba74259451ebf8ab69ac5039df33ea67ba5c0a4ef8d10a95d530515cbe46b2f8",
+  "config_sha256": "35b5a43a5f66b4631d1cb9a8d8f48b55dac6058dba799072ce38993673c86488",
+  "repeats": 3,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 240,
+  "check_timeout_seconds": 15,
+  "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
+  "candidates": [
+    {
+      "candidate_id": "codex-terra-max",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-terra",
+      "reasoning_effort": "max",
+      "candidate_sha256": "3a5da0b4b5fd673813aa7819f66f868e551f8c80ca6f70f9429cef3a0261d2ab",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 12,
+      "outcomes": {
+        "pass": 12,
+        "fail": 0,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 1.0,
+      "strict_success_rate": 1.0,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 73.21233333333333,
+      "max_elapsed_seconds": 120.828,
+      "evaluated_attempt_seconds": 878.548,
+      "candidate_call_seconds": 677.22,
+      "judge_call_seconds": 182.735,
+      "effective_passes_per_hour": 49.17204296179605,
+      "adapter_invocations": 15,
+      "usage_complete": true,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 6,
+          "passed": 6,
+          "first_passed": 6
+        },
+        "coding": {
+          "assigned": 3,
+          "passed": 3,
+          "first_passed": 3
+        },
+        "review": {
+          "assigned": 3,
+          "passed": 3,
+          "first_passed": 3
+        }
+      }
+    },
+    {
+      "candidate_id": "dsh-flash-max",
+      "adapter": "dsh",
+      "requested_model": "ds-v4.1-flash-1017",
+      "reasoning_effort": "max",
+      "candidate_sha256": "58bf984bc64ba15b808d6678ca4e6a763f38743d6f309a34aa85092535d1f8f8",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 12,
+      "outcomes": {
+        "pass": 12,
+        "fail": 0,
+        "unscored": 0,
+        "error": 0,
+        "timeout": 0
+      },
+      "first_pass_rate": 1.0,
+      "strict_success_rate": 1.0,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 23.841166666666666,
+      "max_elapsed_seconds": 70.109,
+      "evaluated_attempt_seconds": 286.094,
+      "candidate_call_seconds": 86.719,
+      "judge_call_seconds": 180.78300000000002,
+      "effective_passes_per_hour": 150.99932190119333,
+      "adapter_invocations": 15,
+      "usage_complete": true,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 6,
+          "passed": 6,
+          "first_passed": 6
+        },
+        "coding": {
+          "assigned": 3,
+          "passed": 3,
+          "first_passed": 3
+        },
+        "review": {
+          "assigned": 3,
+          "passed": 3,
+          "first_passed": 3
+        }
+      }
+    }
+  ],
+  "export_sha256": "c9939fa21c32eaaf27cccb2492522430e803402095d79a3d2f19bf977b3c7702"
+}
