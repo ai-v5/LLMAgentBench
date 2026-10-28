@@ -1,0 +1,44 @@
+{
+  "id": "oom-terminal",
+  "category": "analysis",
+  "topic": "diagnosis",
+  "prompt": "根据日志给出 JSON：terminal_state、target_tpot_ms、next_action、previous_point_role。不得把失败容量点当作测量或未经授权继续重试。 输出字段约束：terminal_state: 枚举 TIMEOUT/OOM/MEASURED/UNKNOWN；target_tpot_ms: 数值或 null；next_action: 枚举 STOP_AND_PRESERVE/RETRY/REPORT_MEASURED；previous_point_role: 枚举 TARGET_MEASURED/OTHER_SHAPE_MEASURED/PROXY/UNKNOWN。",
+  "inputs": {
+    "log.txt": "合成日志：BS64 在目标长度完成，TPOT=36 ms；BS128 graph warmup OOM，未生成有效计时；负责人说 OOM 的 BS 不再测试。\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "terminal-state",
+      "type": "json_equal",
+      "path": [
+        "terminal_state"
+      ],
+      "expected": "OOM"
+    },
+    {
+      "id": "target-tpot-ms",
+      "type": "json_equal",
+      "path": [
+        "target_tpot_ms"
+      ],
+      "expected": null
+    },
+    {
+      "id": "next-action",
+      "type": "json_equal",
+      "path": [
+        "next_action"
+      ],
+      "expected": "STOP_AND_PRESERVE"
+    },
+    {
+      "id": "previous-point-role",
+      "type": "json_equal",
+      "path": [
+        "previous_point_role"
+      ],
+      "expected": "OTHER_SHAPE_MEASURED"
+    }
+  ]
+}

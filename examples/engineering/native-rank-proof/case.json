@@ -1,0 +1,20 @@
+{
+  "id": "native-rank-proof",
+  "category": "coding",
+  "topic": "coding",
+  "prompt": "修复 admissible(receipt, batch, output)：completed 且 world_size 为正整数、ranks 覆盖 0 到 world_size-1 不重复、各 rank 的 native_batch 均为 batch、每个 rank 至少有一个输出且所有输出长度均为 output 才返回 True；offered_concurrency 不构成 native batch 证明。 仅返回 candidate.py 的完整内容；不使用 import、文件或网络访问，保留 NOTICE.txt。 候选代码使用 if/for、表达式和推导式等基础 Python，允许 len、sum、any、all、min、max、sorted、range、int、float、bool、str、isinstance、type 等安全内置函数，不使用异常处理、动态属性或导入。",
+  "inputs": {
+    "candidate.py": "def admissible(receipt, batch, output):\n    return receipt.get(\"status\") == \"completed\" and receipt.get(\"offered_concurrency\") == batch\n",
+    "NOTICE.txt": "Preserve this unrelated synthetic note.\n"
+  },
+  "allowed_write_paths": [
+    "candidate.py"
+  ],
+  "checks": [
+    {
+      "id": "behavior",
+      "type": "python",
+      "script": "verify.py"
+    }
+  ]
+}

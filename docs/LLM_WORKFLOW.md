@@ -7,7 +7,7 @@ LLM 可以提出 case、生成配置、调用命令、分析失败，并把修�
 3. run 自动遍历 case、重复、候选、有界修复与评分，每项保存收据。
 4. report 输出全部候选的通过、未知与失败。LLM 解释差异时引用收据，不改原数字或把 smoke 升级为排名。
 5. 修改执行器、case、预算、judge 或 grader 后启动新 run。旧结果保留原身份，不并成同一条件分数。
-6. 只对明确 public + synthetic 的 run 执行 export-public；私有结果留私仓。
+6. `export-public` 只接受 public + synthetic run。仅在用户明确授权时，才可用 `export-overall --allow-private-aggregate` 输出混合题集的总体数量与耗时；私有题目、题包元数据及原始结果仍留私仓。
 
 新 case 的验证至少包含一份应通过、一份应失败的输出。LLM rubric 还需未知/无效引用反例。候选和 judge 尽量来自不同模型或代理；复用同一模型的独立调用是较弱配置，需保留身份。
 

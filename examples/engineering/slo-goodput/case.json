@@ -1,0 +1,39 @@
+{
+  "id": "slo-goodput",
+  "category": "analysis",
+  "topic": "performance",
+  "prompt": "输入是合成请求收据。TTFT 上限 1000 ms、TPOT 上限 25 ms，均包含等号；仅 status=ok 且两项 SLO 都满足的请求计入。返回 JSON：qualified_requests、qualified_output_tokens、goodput_tokens_per_s；总观测窗口为 10 秒。 输出字段约束：qualified_requests: 数值；qualified_output_tokens: 数值；goodput_tokens_per_s: 数值。",
+  "inputs": {
+    "requests.json": "[{\"status\": \"ok\", \"output\": 100, \"ttft\": 800, \"tpot\": 20}, {\"status\": \"ok\", \"output\": 200, \"ttft\": 1200, \"tpot\": 22}, {\"status\": \"ok\", \"output\": 150, \"ttft\": 600, \"tpot\": 28}, {\"status\": \"ok\", \"output\": 180, \"ttft\": 900, \"tpot\": 25}, {\"status\": \"ok\", \"output\": 70, \"ttft\": 400, \"tpot\": 16}, {\"status\": \"error\", \"output\": 0, \"ttft\": 100, \"tpot\": 1}]"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "qualified-requests",
+      "type": "number",
+      "path": [
+        "qualified_requests"
+      ],
+      "expected": 3,
+      "atol": 1e-07
+    },
+    {
+      "id": "qualified-output-tokens",
+      "type": "number",
+      "path": [
+        "qualified_output_tokens"
+      ],
+      "expected": 350,
+      "atol": 1e-07
+    },
+    {
+      "id": "goodput-tokens-per-s",
+      "type": "number",
+      "path": [
+        "goodput_tokens_per_s"
+      ],
+      "expected": 35,
+      "atol": 1e-07
+    }
+  ]
+}

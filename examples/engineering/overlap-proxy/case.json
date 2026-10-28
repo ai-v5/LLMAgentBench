@@ -1,0 +1,38 @@
+{
+  "id": "overlap-proxy",
+  "category": "analysis",
+  "topic": "performance",
+  "prompt": "合成模型：计算 30 ms、访存 50 ms 可完全重叠，通信 20 ms 的 50% 被隐藏。按 max(计算,访存)+未隐藏通信估算 step_ms；系统并发为 batch_per_rank=16 × dp=2。返回 step_ms、decode_tokens_per_s、evidence；不得称实测。 输出字段约束：step_ms: 数值；decode_tokens_per_s: 数值；evidence: 枚举 MEASURED/UNAVAILABLE/PROXY。",
+  "inputs": {
+    "assumptions.json": "{\"compute_ms\":30,\"memory_ms\":50,\"comm_ms\":20,\"hidden_fraction\":0.5,\"batch_per_rank\":16,\"dp\":2}"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "step-ms",
+      "type": "number",
+      "path": [
+        "step_ms"
+      ],
+      "expected": 60,
+      "atol": 1E-07
+    },
+    {
+      "id": "decode-tokens-per-s",
+      "type": "number",
+      "path": [
+        "decode_tokens_per_s"
+      ],
+      "expected": 533.3333333333334,
+      "atol": 0.01
+    },
+    {
+      "id": "evidence",
+      "type": "json_equal",
+      "path": [
+        "evidence"
+      ],
+      "expected": "PROXY"
+    }
+  ]
+}

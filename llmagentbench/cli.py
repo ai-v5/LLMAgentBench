@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from .contracts import ContractError, load_config, load_pack, read_json, write_json
-from .report import export_public, markdown, summarize
+from .report import export_overall, export_public, markdown, summarize
 from .runner import load_run, run
 
 
@@ -28,6 +28,11 @@ def main(argv: list[str] | None = None) -> int:
     export = commands.add_parser("export-public", help="Export an explicitly public synthetic run")
     export.add_argument("--run", type=Path, required=True)
     export.add_argument("--out", type=Path, required=True)
+    overall = commands.add_parser("export-overall", help="Explicitly export overall counts and timings only")
+    overall.add_argument("--run", type=Path, action="append", required=True)
+    overall.add_argument("--labels", type=Path, required=True, help="Explicit candidate-ID to public-label JSON mapping")
+    overall.add_argument("--allow-private-aggregate", action="store_true")
+    overall.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "validate":
@@ -45,6 +50,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "export-public":
             result = export_public(load_run(args.run), args.out)
             print(json.dumps({"export_sha256": result["export_sha256"], "candidates": len(result["candidates"])}))
+        elif args.command == "export-overall":
+            result = export_overall(args.run, args.out, read_json(args.labels), allow_private=args.allow_private_aggregate)
+            print(json.dumps({"cases": result["case_count"], "candidates": len(result["candidates"])}))
     except (ContractError, OSError, ValueError, KeyError, TypeError) as error:
         print(json.dumps({"error": type(error).__name__, "status": "blocked"}))
         return 2

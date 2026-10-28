@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "engineering-public-v1",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "benchmark",
+  "cases": [
+    "quality-rate/case.json",
+    "native-rank-proof/case.json",
+    "oom-terminal/case.json",
+    "wss-proxy-triage/case.json",
+    "review-batch-proof/case.json",
+    "review-dirty-cleanup/case.json",
+    "slo-goodput/case.json",
+    "overlap-proxy/case.json"
+  ]
+}

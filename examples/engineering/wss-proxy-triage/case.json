@@ -1,0 +1,44 @@
+{
+  "id": "wss-proxy-triage",
+  "category": "analysis",
+  "topic": "diagnosis",
+  "prompt": "根据日志返回 JSON：connect_state、websocket_state、root_cause、next_evidence。不要把代理 CONNECT 视为 WebSocket 成功。 输出字段约束：connect_state: 枚举 WEBSOCKET_ESTABLISHED/CONNECTION_FAILED/HTTP_CONNECT_ONLY；websocket_state: 枚举 ESTABLISHED/NOT_ESTABLISHED/UNKNOWN；root_cause: 枚举 PROXY_POLICY/BACKEND_FAILURE/UNKNOWN；next_evidence: 枚举 HTTP_CONNECT_ONLY/UPGRADE_AND_BIDIRECTIONAL_FRAMES/NO_FURTHER_CHECK。",
+  "inputs": {
+    "log.txt": "合成日志：HTTP CONNECT 200；TLS 握手完成；WebSocket upgrade 返回 403；没有 101 和双向帧。\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "connect-state",
+      "type": "json_equal",
+      "path": [
+        "connect_state"
+      ],
+      "expected": "HTTP_CONNECT_ONLY"
+    },
+    {
+      "id": "websocket-state",
+      "type": "json_equal",
+      "path": [
+        "websocket_state"
+      ],
+      "expected": "NOT_ESTABLISHED"
+    },
+    {
+      "id": "root-cause",
+      "type": "json_equal",
+      "path": [
+        "root_cause"
+      ],
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "next-evidence",
+      "type": "json_equal",
+      "path": [
+        "next_evidence"
+      ],
+      "expected": "UPGRADE_AND_BIDIRECTIONAL_FRAMES"
+    }
+  ]
+}

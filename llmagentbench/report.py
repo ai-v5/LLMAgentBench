@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import statistics
+import re
 from pathlib import Path
 
 from .contracts import ContractError, digest, write_json
@@ -88,3 +89,58 @@ def export_public(record: dict, output: Path) -> dict:
     write_json(output / "summary.json", summary)
     (output / "report.md").write_text(markdown(summary), encoding="utf-8")
     return summary
+
+
+def export_overall(run_paths: list[Path], output: Path, labels: dict[str, str], *, allow_private: bool = False) -> dict:
+    """Publish only explicitly labelled overall counts/timings from verified runs."""
+    from .runner import load_run
+
+    if not run_paths or output.exists():
+        raise ContractError("Overall export requires runs and a new destination")
+    records = [load_run(path) for path in run_paths]
+    if any(r["visibility"] == "private" or not r["synthetic"] for r in records) and not allow_private:
+        raise ContractError("Private overall totals require explicit authorization")
+    if len({r["receipt_sha256"] for r in records}) != len(records) or len({r["pack_sha256"] for r in records}) != len(records):
+        raise ContractError("Duplicate runs or packs cannot be counted twice")
+    if len({r["engine_sha256"] for r in records}) != 1 or len({r["config_sha256"] for r in records}) != 1:
+        raise ContractError("Engine and evaluation configuration must match")
+    candidates = records[0]["candidates"]
+    if any(r["candidates"] != candidates or r["judge"] != records[0]["judge"] for r in records):
+        raise ContractError("Frozen candidate or judge identity differs between runs")
+    if not isinstance(labels, dict) or set(labels) != {c["id"] for c in candidates} or len(set(labels.values())) != len(labels):
+        raise ContractError("Provide one distinct public label for every candidate")
+    if any(not isinstance(v, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 +._-]{0,79}", v) for v in labels.values()):
+        raise ContractError("Invalid public label")
+    rows = []
+    for candidate in candidates:
+        attempts = [a for r in records for a in r["attempts"] if a["candidate_id"] == candidate["id"]]
+        counts = {s: sum(a["outcome"] == s for a in attempts) for s in ("pass", "fail", "unscored", "error", "timeout")}
+        elapsed = sum(a["elapsed_seconds"] for a in attempts)
+        passed_elapsed = [a["elapsed_seconds"] for a in attempts if a["outcome"] == "pass"]
+        calls = [c for a in attempts for rnd in a["rounds"] for c in [rnd["call"], *rnd["judge_calls"]]]
+        rows.append({
+            "label": labels[candidate["id"]],
+            "evidence": "FIXTURE_SMOKE" if any(c["evidence_level"] == "FIXTURE_SMOKE" for c in calls) else "MODEL_RUN",
+            "assigned": len(attempts), "first_passed": sum(bool(a["first_pass"]) for a in attempts),
+            "passed": counts["pass"], "failed": counts["fail"], "unscored": counts["unscored"],
+            "errors": counts["error"], "timeouts": counts["timeout"],
+            "attempt_seconds": elapsed, "candidate_call_seconds": sum(rnd["call"]["elapsed_seconds"] for a in attempts for rnd in a["rounds"]),
+            "judge_call_seconds": sum(c["elapsed_seconds"] for a in attempts for rnd in a["rounds"] for c in rnd["judge_calls"]),
+            "mean_attempt_seconds": elapsed / len(attempts),
+            "mean_pass_seconds": statistics.mean(passed_elapsed) if passed_elapsed else None,
+            "effective_passes_per_hour": counts["pass"] * 3600 / elapsed if elapsed > 0 else None,
+        })
+    result = {"schema_version": 1, "case_count": sum(len(r["case_ids"]) for r in records),
+              "repeats": records[0]["repeats"], "candidates": rows}
+    lines = ["# 总体评估汇总", "", "仅发布总体数量与耗时；通过率和吞吐不代表人工核验时间。", "",
+             f"总题数：{result['case_count']}；每题重复：{result['repeats']}。", "",
+             "| 候选 | 首次通过 | 预算内通过 | 失败/未评分/错误/超时 | 平均尝试耗时(s) | 有效吞吐(题/小时) |",
+             "|---|---:|---:|---|---:|---:|"]
+    for row in rows:
+        speed = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
+        lines.append(f"| {row['label']} | {row['first_passed']}/{row['assigned']} | {row['passed']}/{row['assigned']} | {row['failed']}/{row['unscored']}/{row['errors']}/{row['timeouts']} | {row['mean_attempt_seconds']:.2f} | {speed} |")
+    lines += ["", "有效吞吐为预算内通过数除以全部尝试计时，包含调用、自动检查、LLM 评分与修复；不是并发服务吞吐。", ""]
+    output.mkdir(parents=True)
+    write_json(output / "summary.json", result)
+    (output / "report.md").write_text("\n".join(lines), encoding="utf-8")
+    return result
