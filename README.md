@@ -2,7 +2,9 @@
 
 面向真实工程工作的自动评估器：LLM 驱动任务，代码固定执行条件、验证结果并生成报告。首版支持 **Codex** 和 **DeepSeek Harness（DSH）headless**。
 
-当前模式是 `response_patch`：候选返回答案和文件内容，由评估器应用修改并执行独立检查。完整终端操作、多人协作和长时间部署任务尚未实现，不能用 smoke 推断这些能力。
+[项目网站与实测结果](https://ai-v5.github.io/LLMAgentBench/) · [免责声明与使用边界](DISCLAIMER.md) · [MIT 许可证](LICENSE)
+
+当前模式是 `response_patch`：候选返回答案和文件内容，由评估器应用修改并执行独立检查。完整终端操作、多人协作和长时间部署任务尚未实现，不能用 smoke 推断这些能力。评估器会执行候选代码；语法限制与目录分离不是恶意代码沙箱，运行不可信代码应先隔离整个评估环境。结果仅供参考，详细范围和责任见[免责声明](DISCLAIMER.md)。
 
 ## 运行
 
@@ -62,5 +64,11 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 - 未知费用保留 `null`，当前不能生成美元成本排名。
 
 合成题只验证链路；真实选型需要代表性的未见任务、重复运行、评分器校准和足够样本。重复与修复不会被当作 best-of-N 后只报最好成绩。
+
+## 网站
+
+GitHub Pages 从 `main` 分支的仓库根目录发布。网页由 `index.html` 和 `site/` 构成，当前直接读取 `results/engineering-overall-r3/summary.json`，不另存一份成绩；验证文件位于网站根目录。
+
+发布新一轮结果时，先按上述授权与隐私边界生成总体汇总，再同步更新 `site/app.js` 的数据路径及页面上的样本数量、运行日期和预算说明。运行 `node tests/site_contract.test.cjs` 检查分母、计时、证据类型和加载失败处理，并在公开提交前审查准确的发布内容。
 
 更多说明：[执行与评分合同](docs/CONTRACTS.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。
