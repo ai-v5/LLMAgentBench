@@ -11,7 +11,7 @@ from llmagentbench import adapters
 from llmagentbench.contracts import ContractError, load_config, load_pack, safe_path, write_json
 from llmagentbench.graders import grade
 from llmagentbench.process import child_env, execute
-from llmagentbench.report import export_public, markdown, summarize
+from llmagentbench.report import export_overall, export_public, markdown, summarize
 from llmagentbench.runner import load_run, run
 from tests.fixtures import BAD, GOOD, JUDGE, demo_config
 
@@ -351,3 +351,73 @@ def test_zero_attempt_time_does_not_produce_infinite_throughput(completed):
     record["attempts"][0]["elapsed_seconds"] = 0
     row = summarize(record)["candidates"][0]
     assert row["effective_passes_per_hour"] is None
+
+
+def test_overall_export_is_explicit_and_never_copies_private_case_data(tmp_path):
+    config = demo_config()
+    config["repeats"] = 1
+    config["candidates"] = config["candidates"][:1]
+    public = load_pack(PACK)
+    private = copy.deepcopy(public)
+    private["manifest"]["id"] = "private-sentinel-pack"
+    private["manifest"]["visibility"] = "private"
+    private["sha256"] = "b" * 64
+    private["cases"][0]["definition"]["prompt"] += " PRIVATE_CONTENT_SENTINEL"
+    public_root, private_root = tmp_path / "public-run", tmp_path / "private-run"
+    run(public, config, public_root)
+    run(private, config, private_root)
+    labels = {"fixture-good": "Candidate A"}
+    with pytest.raises(ContractError):
+        export_overall([public_root, private_root], tmp_path / "blocked", labels)
+    assert not (tmp_path / "blocked").exists()
+    result = export_overall([public_root, private_root], tmp_path / "overall", labels, allow_private=True)
+    text = (tmp_path / "overall" / "summary.json").read_text(encoding="utf-8")
+    text += (tmp_path / "overall" / "report.md").read_text(encoding="utf-8")
+    for forbidden in ("private-sentinel-pack", "PRIVATE_CONTENT_SENTINEL", "pack_id", "case_id", "sha256", "fixture-good", "by_category"):
+        assert forbidden not in text
+    assert result["case_count"] == 8
+    assert result["candidates"][0]["assigned"] == 8
+    assert result["candidates"][0]["evidence"] == "FIXTURE_SMOKE"
+    with pytest.raises(ContractError):
+        export_overall([private_root, private_root], tmp_path / "duplicate", labels, allow_private=True)
+    with pytest.raises(ContractError):
+        export_overall([private_root], tmp_path / "bad-label", {"fixture-good": "../secret"}, allow_private=True)
+
+
+@pytest.mark.parametrize('drift_target', ['candidate', 'judge'])
+def test_overall_export_rejects_adapter_or_judge_identity_drift(tmp_path, monkeypatch, drift_target):
+    import llmagentbench.runner as runner_module
+    config = demo_config()
+    config['repeats'] = 1
+    config['candidates'] = config['candidates'][:1]
+    public = load_pack(PACK)
+    private = copy.deepcopy(public)
+    private['manifest']['id'] = 'different-private-pack'
+    private['manifest']['visibility'] = 'private'
+    private['sha256'] = 'c' * 64
+    first, second = tmp_path / 'first', tmp_path / 'second'
+    run(public, config, first)
+    identity = runner_module.adapter_identity
+    def changed(adapter):
+        value = identity(adapter)
+        if (drift_target == 'candidate' and value['id'] == 'fixture-good') or (drift_target == 'judge' and value['id'] == 'judge'):
+            value['executable_sha256'] = 'changed-binary'
+        return value
+    monkeypatch.setattr(runner_module, 'adapter_identity', changed)
+    run(private, config, second)
+    with pytest.raises(ContractError):
+        export_overall([first, second], tmp_path / 'out', {'fixture-good': 'Candidate A'}, allow_private=True)
+    assert not (tmp_path / 'out').exists()
+
+
+def test_existing_patch_rejects_side_effects_before_execution(tmp_path):
+    pack = load_pack(PACK)
+    pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'patch')]
+    sentinel = tmp_path / 'outside-workspace-sentinel'
+    code = f'open({str(sentinel)!r}, "w").write("unexpected")\n' + GOOD['patch']['files'][0]['content']
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0, 'timeout_seconds': 20,
+              'check_timeout_seconds': 10, 'candidates': [{'id': 'unsafe', 'adapter': 'fixture', 'responses':
+                  {'patch': {'answer': 'fixed', 'files': [{'path': 'calc.py', 'content': code}]}}}]}
+    record = run(pack, config, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+    assert not sentinel.exists()

@@ -1,0 +1,156 @@
+{
+  "quality-rate": {
+    "good": {
+      "answer": "fixed",
+      "files": [
+        {
+          "path": "candidate.py",
+          "content": "def summarize(rows):\n    passed = 0\n    elapsed = 0.0\n    for row in rows:\n        elapsed += row[\"elapsed_s\"]\n        if row[\"status\"] == \"pass\":\n            passed += 1\n    return {\"passed\": passed, \"elapsed_s\": elapsed, \"passes_per_hour\": passed * 3600 / elapsed if elapsed > 0 else None}\n"
+        }
+      ]
+    },
+    "bad": {
+      "answer": "fixed",
+      "files": [
+        {
+          "path": "candidate.py",
+          "content": "def summarize(rows):\n    passed = sum(1 for r in rows if r[\"status\"] == \"pass\")\n    elapsed = sum(r[\"elapsed_s\"] for r in rows if r[\"status\"] == \"pass\")\n    return {\"passed\": passed, \"elapsed_s\": elapsed, \"passes_per_hour\": passed * 3600 / elapsed if elapsed else None}\n"
+        }
+      ]
+    }
+  },
+  "native-rank-proof": {
+    "good": {
+      "answer": "fixed",
+      "files": [
+        {
+          "path": "candidate.py",
+          "content": "def admissible(receipt, batch, output):\n    ranks = receipt.get(\"ranks\", [])\n    world = receipt.get(\"world_size\", 0)\n    if receipt.get(\"status\") != \"completed\" or not isinstance(world, int) or isinstance(world, bool) or world <= 0:\n        return False\n    if len(ranks) != world or sorted(r[\"rank\"] for r in ranks) != list(range(world)):\n        return False\n    return all(r[\"native_batch\"] == batch and r[\"outputs\"] and all(n == output for n in r[\"outputs\"]) for r in ranks)\n"
+        }
+      ]
+    },
+    "bad": {
+      "answer": "fixed",
+      "files": [
+        {
+          "path": "candidate.py",
+          "content": "def admissible(receipt, batch, output):\n    return receipt.get(\"status\") == \"completed\" and receipt.get(\"offered_concurrency\") == batch\n"
+        }
+      ]
+    }
+  },
+  "oom-terminal": {
+    "good": {
+      "answer": {
+        "terminal_state": "OOM",
+        "target_tpot_ms": null,
+        "next_action": "STOP_AND_PRESERVE",
+        "previous_point_role": "OTHER_SHAPE_MEASURED"
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "terminal_state": "__INCORRECT__",
+        "target_tpot_ms": null,
+        "next_action": "STOP_AND_PRESERVE",
+        "previous_point_role": "OTHER_SHAPE_MEASURED"
+      },
+      "files": []
+    }
+  },
+  "wss-proxy-triage": {
+    "good": {
+      "answer": {
+        "connect_state": "HTTP_CONNECT_ONLY",
+        "websocket_state": "NOT_ESTABLISHED",
+        "root_cause": "UNKNOWN",
+        "next_evidence": "UPGRADE_AND_BIDIRECTIONAL_FRAMES"
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "connect_state": "__INCORRECT__",
+        "websocket_state": "NOT_ESTABLISHED",
+        "root_cause": "UNKNOWN",
+        "next_evidence": "UPGRADE_AND_BIDIRECTIONAL_FRAMES"
+      },
+      "files": []
+    }
+  },
+  "review-batch-proof": {
+    "good": {
+      "answer": {
+        "native_bs_proven": false,
+        "throughput_publishable": false,
+        "need_all_rank_proof": true,
+        "need_exact_output": true
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "native_bs_proven": "__INCORRECT__",
+        "throughput_publishable": false,
+        "need_all_rank_proof": true,
+        "need_exact_output": true
+      },
+      "files": []
+    }
+  },
+  "review-dirty-cleanup": {
+    "good": {
+      "answer": {
+        "action": "BLOCK",
+        "dirty_data_at_risk": true,
+        "unique_evidence_checked": false
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "action": "__INCORRECT__",
+        "dirty_data_at_risk": true,
+        "unique_evidence_checked": false
+      },
+      "files": []
+    }
+  },
+  "slo-goodput": {
+    "good": {
+      "answer": {
+        "qualified_requests": 3,
+        "qualified_output_tokens": 350,
+        "goodput_tokens_per_s": 35
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "qualified_requests": "__INCORRECT__",
+        "qualified_output_tokens": 350,
+        "goodput_tokens_per_s": 35
+      },
+      "files": []
+    }
+  },
+  "overlap-proxy": {
+    "good": {
+      "answer": {
+        "step_ms": 60,
+        "decode_tokens_per_s": 533.3333333333334,
+        "evidence": "PROXY"
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "step_ms": "__INCORRECT__",
+        "decode_tokens_per_s": 533.3333333333334,
+        "evidence": "PROXY"
+      },
+      "files": []
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "review-batch-proof",
+  "category": "review",
+  "topic": "review",
+  "prompt": "评审下方合成代码，按 JSON 返回 native_bs_proven、throughput_publishable、need_all_rank_proof、need_exact_output。不要把客户端并发等同于运行时 native batch。 输出字段约束：native_bs_proven: JSON 布尔值 true 或 false；throughput_publishable: JSON 布尔值 true 或 false；need_all_rank_proof: JSON 布尔值 true 或 false；need_exact_output: JSON 布尔值 true 或 false。",
+  "inputs": {
+    "candidate.py": "def publish(receipt):\n    if receipt[\"offered_concurrency\"] == 256 and receipt[\"completed\"] > 0:\n        return {\"native_bs\":256, \"valid\":True}\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "native-bs-proven",
+      "type": "json_equal",
+      "path": [
+        "native_bs_proven"
+      ],
+      "expected": false
+    },
+    {
+      "id": "throughput-publishable",
+      "type": "json_equal",
+      "path": [
+        "throughput_publishable"
+      ],
+      "expected": false
+    },
+    {
+      "id": "need-all-rank-proof",
+      "type": "json_equal",
+      "path": [
+        "need_all_rank_proof"
+      ],
+      "expected": true
+    },
+    {
+      "id": "need-exact-output",
+      "type": "json_equal",
+      "path": [
+        "need_exact_output"
+      ],
+      "expected": true
+    }
+  ]
+}

@@ -7,5 +7,5 @@
 - Run `python -m pytest` after logical changes. Include negative controls for changes to scoring, isolation, export or receipt integrity.
 - Missing grades are `unscored`; failed, errored and timed-out attempts stay in the denominator. First-attempt success and success after automatic repair are separate metrics.
 - Automated repair effort is a proxy. Never infer measured human minutes, labor savings or a production ranking from synthetic smoke cases.
-- Public export is explicit, aggregate-only, and restricted to completed public synthetic packs. Never automatically export private results.
+- Public export is explicit and aggregate-only. Individual run exports are restricted to completed public synthetic packs. With explicit user authorization, combined overall counts and timings may include private runs; never export private case identity, content, per-case results, pack metadata, or raw receipts.
 - Run artifacts and machine-specific configuration stay under ignored `local/` or `.bench-runs/`. Credentials stay in existing authentication stores or process environment, never in cases, logs or result files.

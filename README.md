@@ -48,6 +48,10 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 
 `export-public` 拒绝 private 或非合成 pack。私有结果不自动上传或转成公开汇总。
 
+在用户明确授权公开总体数量和耗时时，可用 `export-overall` 合并完整运行：它只输出显式指定的公开候选名称、总体数量和耗时，不输出题目、题号、分类、私有 pack 元数据或原始收据。必须提供 `--allow-private-aggregate` 才能纳入私有运行；发布前仍需审查精确输出内容。
+
+`examples/engineering/pack.json` 是合成工程案例，覆盖代码修改、问题排查、代码评审和性能分析。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。
+
 ## 指标
 
 - 确定性评分优先：JSON 匹配、数值容差、评估器持有的 Python 行为检查、修改路径约束。

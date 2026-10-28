@@ -1,0 +1,20 @@
+{
+  "id": "native-rank-proof",
+  "category": "coding",
+  "topic": "coding",
+  "prompt": "修复 admissible(receipt, batch, output)：completed 且 world_size 为正整数（bool 不是整数）、ranks 覆盖 0 到 world_size-1 不重复、各 rank 的 native_batch 均为 batch、每个 rank 至少有一个输出且所有输出长度均为 output 才返回 True；offered_concurrency 不构成 native batch 证明。 输入 receipt 为字典；ranks 为列表，每项的 rank 和 native_batch 为整数，outputs 为整数列表，每个整数已经是对应输出的长度，例如 [16,16] 表示两个长度为 16 的输出。 仅返回 candidate.py 的完整内容；不使用 import、文件或网络访问，保留 NOTICE.txt。 候选代码仅使用 if/for、表达式和推导式等基础 Python；允许的内置函数仅有 len、sum、any、all、enumerate、range、sorted、min、max、int、float、bool、str、isinstance、list、dict、set、frozenset、tuple、bytes、bytearray、abs、round、type。固定属性方法仅允许 get、append、items、values、copy、pop、setdefault、update、add；不使用其他方法、异常处理、导入、文件或网络访问。",
+  "inputs": {
+    "candidate.py": "def admissible(receipt, batch, output):\n    return receipt.get(\"status\") == \"completed\" and receipt.get(\"offered_concurrency\") == batch\n",
+    "NOTICE.txt": "Preserve this unrelated synthetic note.\n"
+  },
+  "allowed_write_paths": [
+    "candidate.py"
+  ],
+  "checks": [
+    {
+      "id": "behavior",
+      "type": "python",
+      "script": "verify.py"
+    }
+  ]
+}
