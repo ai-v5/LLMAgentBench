@@ -79,16 +79,17 @@
         <p class="run-meta">请求推理强度 max <span>·</span> 单轮上限 240 秒 <span>·</span> response_patch <span>·</span> 2026.10.28</p>
         <p class="data-error" id="data-error" role="alert" hidden>结果暂时无法加载。请查看<a href="results/engineering-overall-r3/summary.json">原始汇总数据</a>。</p>
         <noscript><p class="data-error">请启用 JavaScript 查看自动汇总，或直接打开<a href="results/engineering-overall-r3/summary.json">原始数据</a>。</p></noscript>
-        <div class="table-wrap" aria-busy="true" data-data-region>
+        <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="true" data-data-region>
           <table class="results-table">
             <caption class="sr-only">两个候选在同一批案例上的自动验收结果</caption>
-            <thead><tr><th scope="col">模型 / 执行器 <span>请求值</span></th><th scope="col">首次通过</th><th scope="col">修复预算内通过</th><th scope="col">平均尝试耗时</th><th scope="col">有效吞吐</th></tr></thead>
+            <thead><tr><th scope="col">模型 / 执行器 <span>请求值</span></th><th scope="col">首次通过</th><th scope="col">修复预算内通过</th><th scope="col">平均尝试耗时</th><th scope="col">累计尝试耗时</th><th scope="col">有效吞吐</th><th scope="col">失败 / 未评分 / 错误 / 超时</th></tr></thead>
             <tbody>
-              <tr data-result-row="0"><th scope="row"><span class="candidate-num">01</span><span data-name="0">候选 01</span><small>MODEL_RUN</small></th><td data-label="首次通过"><strong data-first="0">—</strong><small data-first-count="0">—</small></td><td data-label="修复预算内通过"><strong data-final="0">—</strong><small data-final-count="0">—</small></td><td data-label="平均尝试耗时"><strong data-mean="0">—</strong><small>秒 / 次</small></td><td data-label="有效吞吐"><strong data-throughput="0">—</strong><small>通过次数 / 小时</small></td></tr>
-              <tr data-result-row="1"><th scope="row"><span class="candidate-num">02</span><span data-name="1">候选 02</span><small>MODEL_RUN</small></th><td data-label="首次通过"><strong data-first="1">—</strong><small data-first-count="1">—</small></td><td data-label="修复预算内通过"><strong data-final="1">—</strong><small data-final-count="1">—</small></td><td data-label="平均尝试耗时"><strong data-mean="1">—</strong><small>秒 / 次</small></td><td data-label="有效吞吐"><strong data-throughput="1">—</strong><small>通过次数 / 小时</small></td></tr>
+              <tr data-result-row="0"><th scope="row"><span class="candidate-num">01</span><span data-name="0">候选 01</span><small>MODEL_RUN</small></th><td><strong data-first="0">—</strong><small data-first-count="0">—</small></td><td><strong data-final="0">—</strong><small data-final-count="0">—</small></td><td><strong data-mean="0">—</strong><small>秒 / 次</small></td><td><strong data-total="0">—</strong><small>秒 / 全部尝试</small></td><td><strong data-throughput="0">—</strong><small>通过次数 / 小时</small></td><td><strong class="outcome-counts" data-outcomes="0">—</strong><small>按列顺序</small></td></tr>
+              <tr data-result-row="1"><th scope="row"><span class="candidate-num">02</span><span data-name="1">候选 02</span><small>MODEL_RUN</small></th><td><strong data-first="1">—</strong><small data-first-count="1">—</small></td><td><strong data-final="1">—</strong><small data-final-count="1">—</small></td><td><strong data-mean="1">—</strong><small>秒 / 次</small></td><td><strong data-total="1">—</strong><small>秒 / 全部尝试</small></td><td><strong data-throughput="1">—</strong><small>通过次数 / 小时</small></td><td><strong class="outcome-counts" data-outcomes="1">—</strong><small>按列顺序</small></td></tr>
             </tbody>
           </table>
         </div>
+        <p class="table-scroll-hint">← 左右滑动查看完整表格 →</p>
         <div class="result-notes"><p>失败、未评分、执行错误和超时均保留在分母中。每个模型分配 <span data-assigned>—</span> 次尝试；模型名称为请求值，服务端身份未独立观测。</p><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/results/engineering-overall-r3/report.md">查看本次结果说明 <span aria-hidden="true">↗</span></a></div>
         <details class="timing-details" aria-busy="true" data-data-region>
           <summary>查看累计耗时与失败状态 <span aria-hidden="true">＋</span></summary>

@@ -6,6 +6,14 @@ const { derive } = require('../site/app.js');
 
 const root = path.resolve(__dirname, '..');
 const source = JSON.parse(fs.readFileSync(path.join(root, 'results/engineering-overall-r3/summary.json'), 'utf8'));
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
+assert.ok(table, 'The results must remain a semantic table');
+assert.equal((table[1].match(/scope="col"/g) || []).length, 7);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, source.candidates.length);
+for (const field of ['data-first', 'data-final', 'data-mean', 'data-total', 'data-throughput', 'data-outcomes']) {
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, source.candidates.length, field);
+}
 const result = derive(source);
 assert.equal(result.caseCount, source.case_count);
 assert.equal(result.repeats, source.repeats);
