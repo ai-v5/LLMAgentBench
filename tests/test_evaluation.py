@@ -408,3 +408,16 @@ def test_overall_export_rejects_adapter_or_judge_identity_drift(tmp_path, monkey
     with pytest.raises(ContractError):
         export_overall([first, second], tmp_path / 'out', {'fixture-good': 'Candidate A'}, allow_private=True)
     assert not (tmp_path / 'out').exists()
+
+
+def test_existing_patch_rejects_side_effects_before_execution(tmp_path):
+    pack = load_pack(PACK)
+    pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'patch')]
+    sentinel = tmp_path / 'outside-workspace-sentinel'
+    code = f'open({str(sentinel)!r}, "w").write("unexpected")\n' + GOOD['patch']['files'][0]['content']
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0, 'timeout_seconds': 20,
+              'check_timeout_seconds': 10, 'candidates': [{'id': 'unsafe', 'adapter': 'fixture', 'responses':
+                  {'patch': {'answer': 'fixed', 'files': [{'path': 'calc.py', 'content': code}]}}}]}
+    record = run(pack, config, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+    assert not sentinel.exists()
