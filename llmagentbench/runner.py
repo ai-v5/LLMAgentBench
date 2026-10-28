@@ -40,19 +40,27 @@ def workspace_check(baseline: dict, workspace: Path, allowed: list[str]) -> dict
     return {"id": "workspace_contract", "type": "filesystem", "status": "pass" if changed <= set(allowed) else "fail", "reason": "writes_within_allowlist" if changed <= set(allowed) else "protected_or_unlisted_file_changed"}
 
 
+def validate_private_output(output: Path) -> None:
+    """Reject the public checkout and its common main checkout before writing."""
+    engine_checkout = Path(__file__).resolve().parents[1]
+    engine_roots = [engine_checkout]
+    git_marker = engine_checkout / '.git'
+    if git_marker.is_file():
+        git_directory = Path(git_marker.read_text().removeprefix('gitdir:').strip())
+        if not git_directory.is_absolute():
+            git_directory = git_marker.parent / git_directory
+        git_directory = git_directory.resolve()
+        common_file = git_directory / 'commondir'
+        if common_file.is_file():
+            engine_roots.append((git_directory / common_file.read_text().strip()).resolve().parent)
+    if any(output.resolve().is_relative_to(root) for root in engine_roots):
+        raise ContractError('Private results must stay outside the public engine checkout')
+
+
 def run(pack: dict, config: dict, output: Path) -> dict:
     output = output.resolve()
     if pack["manifest"]["visibility"] == "private":
-        engine_checkout = Path(__file__).resolve().parents[1]
-        engine_roots = [engine_checkout]
-        git_marker = engine_checkout / ".git"
-        if git_marker.is_file():
-            git_directory = Path(git_marker.read_text().removeprefix("gitdir:").strip()).resolve()
-            common_file = git_directory / "commondir"
-            if common_file.is_file():
-                engine_roots.append((git_directory / common_file.read_text().strip()).resolve().parent)
-        if any(output.is_relative_to(root) for root in engine_roots):
-            raise ContractError("Private results must stay outside the public engine checkout")
+        validate_private_output(output)
     if output.exists():
         raise ContractError("Run directory already exists; receipts are never overwritten")
     output.mkdir(parents=True)
