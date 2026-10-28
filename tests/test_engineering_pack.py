@@ -76,3 +76,41 @@ def test_coding_checker_rejects_semantic_shortcuts(tmp_path, case_id, mutant):
                   {case_id: {'answer': 'fixed', 'files': [{'path': 'candidate.py', 'content': mutant}]}}}]}
     result = run(pack, config, tmp_path / 'mutant')
     assert result['attempts'][0]['outcome'] == 'fail'
+
+
+def test_rank_checker_rejects_hardcoded_world_size(tmp_path):
+    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'native-rank-proof')]
+    controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
+    code = controls['native-rank-proof']['good']['files'][0]['content']
+    mutant = code.replace('or world <= 0:', 'or world != 2:')
+    assert mutant != code
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0, 'timeout_seconds': 20,
+              'check_timeout_seconds': 10, 'candidates': [{'id': 'mutant', 'adapter': 'fixture', 'responses':
+                  {'native-rank-proof': {'answer': 'fixed', 'files': [{'path': 'candidate.py', 'content': mutant}]}}}]}
+    result = run(pack, config, tmp_path / 'hardcoded')
+    assert result['attempts'][0]['outcome'] == 'fail'
+
+
+@pytest.mark.parametrize('operation', ['tuple', 'set_add', 'bytes', 'bytearray', 'frozenset'])
+def test_rank_checker_accepts_prompt_allowed_python_operations(tmp_path, operation):
+    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'native-rank-proof')]
+    controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
+    code = controls['native-rank-proof']['good']['files'][0]['content']
+    if operation == 'tuple':
+        code = code.replace('ranks = receipt.get("ranks", [])', 'ranks = tuple(receipt.get("ranks", []))')
+    elif operation == 'set_add':
+        code = code.replace('if len(ranks) != world or sorted(r["rank"] for r in ranks) != list(range(world)):',
+                            'seen = set()\n    for r in ranks:\n        seen.add(r["rank"])\n    if len(ranks) != world or seen != set(range(world)):')
+    elif operation in {'bytes', 'bytearray'}:
+        code = code.replace('ranks = receipt.get("ranks", [])',
+                            f'ranks = receipt.get("ranks", [])\n    if isinstance(ranks, {operation}):\n        return False')
+    else:
+        code = code.replace('sorted(r["rank"] for r in ranks) != list(range(world))',
+                            'frozenset(r["rank"] for r in ranks) != frozenset(range(world))')
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0, 'timeout_seconds': 20,
+              'check_timeout_seconds': 10, 'candidates': [{'id': 'correct', 'adapter': 'fixture', 'responses':
+                  {'native-rank-proof': {'answer': 'fixed', 'files': [{'path': 'candidate.py', 'content': code}]}}}]}
+    result = run(pack, config, tmp_path / operation)
+    assert result['attempts'][0]['outcome'] == 'pass'

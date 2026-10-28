@@ -15,7 +15,8 @@ allowed = {ast.Module, ast.FunctionDef, ast.arguments, ast.arg, ast.Return, ast.
 safe_builtins = {"len": len, "sum": sum, "any": any, "all": all, "enumerate": enumerate,
     "range": range, "sorted": sorted, "min": min, "max": max, "int": int, "float": float,
     "bool": bool, "str": str, "isinstance": isinstance, "list": list, "dict": dict,
-    "set": set, "abs": abs, "round": round, "type": lambda value: type(value)}
+    "set": set, "frozenset": frozenset, "tuple": tuple, "bytes": bytes, "bytearray": bytearray,
+    "abs": abs, "round": round, "type": lambda value: type(value)}
 functions = {n.name for n in tree.body if isinstance(n, ast.FunctionDef)}
 assert all(isinstance(n, ast.FunctionDef) or (isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)) for n in tree.body)
 for node in ast.walk(tree):
@@ -25,7 +26,7 @@ for node in ast.walk(tree):
     if isinstance(node, ast.Name):
         assert not node.id.startswith("__")
     if isinstance(node, ast.Attribute):
-        assert node.attr in {"get", "append", "items", "values", "copy", "pop", "setdefault", "update"}
+        assert node.attr in {"get", "append", "items", "values", "copy", "pop", "setdefault", "update", "add"}
     if isinstance(node, ast.Call):
         assert (isinstance(node.func, ast.Name) and node.func.id in (set(safe_builtins) | functions)) or isinstance(node.func, ast.Attribute)
 namespace = {"__builtins__": safe_builtins}

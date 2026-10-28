@@ -2,7 +2,7 @@
   "id": "quality-rate",
   "category": "coding",
   "topic": "coding",
-  "prompt": "修复 summarize(rows)：每行 status 为 pass/fail/unscored/error/timeout，elapsed_s 非负。返回 passed、elapsed_s、passes_per_hour；失败和错误的耗时也计入总时间，零总时间时速率为 None。 仅返回 candidate.py 的完整内容；不使用 import、文件或网络访问，保留 NOTICE.txt。 候选代码使用 if/for、表达式和推导式等基础 Python，允许 len、sum、any、all、min、max、sorted、range、int、float、bool、str、isinstance、type 等安全内置函数，不使用异常处理、动态属性或导入。",
+  "prompt": "修复 summarize(rows)：每行 status 为 pass/fail/unscored/error/timeout，elapsed_s 非负。返回 passed、elapsed_s、passes_per_hour；失败和错误的耗时也计入总时间，零总时间时速率为 None。 仅返回 candidate.py 的完整内容；不使用 import、文件或网络访问，保留 NOTICE.txt。 候选代码仅使用 if/for、表达式和推导式等基础 Python；允许的内置函数仅有 len、sum、any、all、enumerate、range、sorted、min、max、int、float、bool、str、isinstance、list、dict、set、frozenset、tuple、bytes、bytearray、abs、round、type。固定属性方法仅允许 get、append、items、values、copy、pop、setdefault、update、add；不使用其他方法、异常处理、导入、文件或网络访问。",
   "inputs": {
     "candidate.py": "def summarize(rows):\n    passed = sum(1 for r in rows if r[\"status\"] == \"pass\")\n    elapsed = sum(r[\"elapsed_s\"] for r in rows if r[\"status\"] == \"pass\")\n    return {\"passed\": passed, \"elapsed_s\": elapsed, \"passes_per_hour\": passed * 3600 / elapsed if elapsed else None}\n",
     "NOTICE.txt": "Preserve this unrelated synthetic note.\n"
