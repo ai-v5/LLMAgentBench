@@ -26,6 +26,13 @@ RESPONSE_SCHEMA = {
     }, "required": ["answer", "files"],
 }
 
+DSH_AUDIT_DISABLED_PLUGINS = (
+    "tool-working-directory", "tool-bash", "tool-pwsh", "tool-jobs", "tool-fs", "tool-fs-search",
+    "tool-skill", "tool-subagent-control", "tool-subagent-list-agents", "tool-subagent",
+    "tool-subagent-fork", "tool-workflow", "tool-todo", "tool-goal", "tool-web",
+    "tool-plugin-manager", "skill-filesystem",
+)
+
 
 def normalize_response(value: dict) -> dict:
     if not isinstance(value, dict) or "answer" not in value:
@@ -112,6 +119,90 @@ def audit_codex_items(stdout: str) -> dict:
             and types.index("thread.started") < types.index("turn.started") < types.index("turn.completed")):
         result["status"] = "no_tool_events_reported"
     return result
+
+
+def audit_dsh_events(stdout: str) -> dict:
+    """Inspect the headless CLI event projection, not all filesystem accesses."""
+    result = {"status": "inconclusive", "scope": "dsh_headless_json_events"}
+    events = []
+    try:
+        for line in stdout.splitlines():
+            if line.strip():
+                event = json.loads(line)
+                if not isinstance(event, dict):
+                    return result
+                events.append(event)
+    except json.JSONDecodeError:
+        return result
+    if any(isinstance(event.get("type"), str) and event["type"] in {"tool_call", "tool_result"}
+           for event in events):
+        result["status"] = "tool_event_reported"
+        return result
+    session = started = ended = final = active_step = False
+    steps = 0
+    turn_id = active_step_id = previous_step_id = None
+    for event in events:
+        if event.get("truncated") is True or final:
+            return result
+        kind = event.get("type")
+        if not isinstance(kind, str):
+            return result
+        if kind == "session":
+            if session or started or not isinstance(event.get("sessionId"), str) or not event["sessionId"]:
+                return result
+            session = True
+        elif kind == "status":
+            phase = event.get("phase")
+            turn = event.get("turn")
+            if type(turn) is not int or turn < 0 or (turn_id is not None and turn != turn_id):
+                return result
+            if phase == "turn_start":
+                if not session or started or ended:
+                    return result
+                started = True
+                turn_id = turn
+            elif phase == "step_start":
+                step = event.get("step")
+                if (not started or ended or active_step or type(step) is not int or step < 0
+                        or (previous_step_id is not None and step <= previous_step_id)):
+                    return result
+                active_step = True
+                active_step_id = step
+            elif phase == "step_end":
+                if (not started or ended or not active_step or type(event.get("step")) is not int
+                        or event["step"] != active_step_id):
+                    return result
+                active_step = False
+                previous_step_id = active_step_id
+                active_step_id = None
+                steps += 1
+            elif phase == "turn_end":
+                reason = event.get("reason")
+                if (not started or ended or active_step or not steps or not isinstance(reason, dict)
+                        or reason.get("kind") != "completed"):
+                    return result
+                ended = True
+            else:
+                return result
+        elif kind in {"thinking", "text"}:
+            if not active_step or ended:
+                return result
+        elif kind == "final":
+            if not ended or not isinstance(event.get("text"), str):
+                return result
+            final = True
+        else:
+            return result
+    if session and started and ended and final and not active_step:
+        result["status"] = "no_tool_events_reported"
+    return result
+
+
+def file_sha256(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def prompt_text(payload: dict) -> str:
@@ -216,6 +307,9 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                 raise ContractError("Codex tool event audit did not complete cleanly")
             base["response"] = normalize_response(read_json(answer))
         elif kind == "dsh":
+            audit_mode = adapter.get("local_lookup_audit")
+            if audit_mode not in (None, "dsh_json_v1"):
+                raise ContractError("Unsupported local lookup audit")
             launcher = dsh_launcher(adapter)
             control.mkdir(parents=True, exist_ok=True)
             selection = {"provider": adapter["provider"], "model": adapter["model"]}
@@ -223,23 +317,32 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                 selection["reasoningEffort"] = adapter["reasoning_effort"]
             patch = control / "run.patch.json"
             # JSON is a YAML subset. This overlay is invocation-local; no profile is edited.
-            write_json(patch, [
+            overlay = [
                 {"id": "agent-default-model", "config": selection},
                 {"id": "sandbox-policy", "config": {"mode": "read-only", "workspaceRoot": str(workspace)}},
                 {"id": "agent-instructions", "disabled": True},
                 {"id": "hmr", "disabled": True},
-            ])
+            ]
+            if audit_mode == "dsh_json_v1":
+                overlay += [{"id": name, "disabled": True} for name in DSH_AUDIT_DISABLED_PLUGINS]
+            write_json(patch, overlay)
             argv = launcher + ["--profile", adapter.get("profile", "headless"), "--patch", str(patch), "--json", "-"]
             environment = {"ELECTRON_RUN_AS_NODE": "1"} if adapter.get("electron_run_as_node") else {}
             result = execute(argv, cwd=workspace, stdin=prompt_text(payload), timeout=timeout,
                              pass_env=adapter.get("pass_env", []), extra_env=environment)
+            if audit_mode == "dsh_json_v1":
+                base["local_lookup_audit"] = audit_dsh_events(result["stdout"])
             events = []
             for line in result["stdout"].splitlines():
                 try:
-                    events.append(json.loads(line))
+                    event = json.loads(line)
+                    if isinstance(event, dict):
+                        events.append(event)
                 except json.JSONDecodeError:
                     continue
-            base["event_types"] = sorted({e.get("type", "unknown") for e in events})
+            known = {"session", "status", "thinking", "text", "tool_call", "tool_result", "final", "error"}
+            base["event_types"] = sorted({e.get("type") if isinstance(e.get("type"), str)
+                                          and e.get("type") in known else "other" for e in events})
             sessions = [e.get("sessionId") for e in events if e.get("type") == "session"]
             base["session_id"] = sessions[0] if sessions else None
             steps = [e for e in events if e.get("type") == "status" and e.get("phase") == "step_end"]
@@ -251,8 +354,12 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                 return base
             finals = [e for e in events if e.get("type") == "final"]
             ends = [e for e in events if e.get("type") == "status" and e.get("phase") == "turn_end"]
-            if result["exit_code"] != 0 or len(finals) != 1 or not ends or ends[-1].get("reason", {}).get("kind") != "completed":
+            reason = ends[-1].get("reason") if ends else None
+            if (result["exit_code"] != 0 or len(finals) != 1 or not isinstance(reason, dict)
+                    or reason.get("kind") != "completed"):
                 raise ContractError("DSH did not finish a fresh headless run")
+            if audit_mode == "dsh_json_v1" and base["local_lookup_audit"]["status"] != "no_tool_events_reported":
+                raise ContractError("DSH tool event audit did not complete cleanly")
             base["response"] = normalize_response(parse_json_response(finals[0]["text"]))
         else:
             raise ContractError("Unsupported adapter")
@@ -288,6 +395,15 @@ def adapter_identity(adapter: dict) -> dict:
         identity["sandbox"] = "read-only"
         launcher = dsh_launcher(adapter)
         identity["launcher_sha256"] = hashlib.sha256(canonical(launcher).encode()).hexdigest()
+        if adapter.get("local_lookup_audit") == "dsh_json_v1":
+            identity["local_lookup_audit"] = "dsh_headless_json_events"
+            identity["global_instructions"] = "configured_disabled"
+            identity["filesystem_read_isolation"] = "not_verified"
+            identity["command_tools"] = "configured_disabled"
+            identity["executable_sha256"] = file_sha256(Path(launcher[0]))
+            bundles = [parent for arg in launcher[1:] for parent in (Path(arg), *Path(arg).parents)
+                       if parent.suffix.lower() == ".asar" and parent.is_file()]
+            identity["bundle_sha256"] = file_sha256(bundles[0]) if bundles else None
         home = Path(os.environ.get("DSH_HOME", str(Path.home() / ".dsh")))
         profile = home / "profiles" / adapter.get("profile", "headless")
         identity["profile_sha256"] = hashlib.sha256(b"".join(p.read_bytes() for p in [profile / "package.json", profile / "cordis.patch.yml", home / "cordis.patch.yml"] if p.is_file())).hexdigest()
