@@ -67,8 +67,14 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 
 ## 网站
 
-GitHub Pages 从 `main` 分支的仓库根目录发布。网页由 `index.html` 和 `site/` 构成，当前直接读取 `results/engineering-overall-r3/summary.json`，不另存一份成绩；验证文件位于网站根目录。
+GitHub Pages 从 `main` 分支的仓库根目录发布。网页由 `index.html` 和 `site/` 构成，展示同一轮公开合成题得分和经用户授权的全部题目总体得分；验证文件位于网站根目录。
 
-发布新一轮结果时，先按上述授权与隐私边界生成总体汇总，再同步更新 `site/app.js` 的数据路径及页面上的样本数量、运行日期和预算说明。运行 `node tests/site_contract.test.cjs` 检查分母、计时、证据类型和加载失败处理，并在公开提交前审查准确的发布内容。
+输出 token 汇总由校验过的原始收据生成，只含各候选调用次数、输出 token 总数和累计候选调用耗时，不包含裁判调用或逐题记录：
+
+```powershell
+python -m scripts.export_public_token_usage --run .bench-runs/public-run --summary results/public-run/summary.json --out results/public-run/token-usage.json
+```
+
+多个公开合成运行可重复传入 `--run`，必须具有一致的引擎、配置、候选和裁判，并先用 `export-overall` 生成对应汇总。仅已完成的公开合成运行可以导出 token 数据；缺失任一候选调用的 token 数据时不计算部分速率。网页核对公开汇总与 token 汇总的候选和调用耗时后，显示输出 token 数除以累计调用耗时；此客户端速率包含启动和等待，不是服务端纯解码速度。发布新一轮时更新 `site/app.js` 的三个数据路径，运行 `node tests/site_contract.test.cjs` 检查数据口径和加载失败处理，并审查准确的发布内容。
 
 更多说明：[执行与评分合同](docs/CONTRACTS.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。
