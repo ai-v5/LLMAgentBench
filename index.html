@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#f5f6f1">
   <title>LLMAgentBench | 工程任务评估</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
-  <link rel="stylesheet" href="site/styles.css">
-  <script src="site/app.js" defer></script>
+  <link rel="stylesheet" href="site/styles.css?v=sort-1">
+  <script src="site/app.js?v=sort-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#results">跳到评估结果</a>
@@ -44,10 +44,10 @@
         <table class="results-table">
           <caption class="sr-only">公开题目与全部题目的模型和执行器总体结果</caption>
           <thead><tr>
-            <th scope="col">模型 / 执行器 <small>模型为请求值</small></th>
-            <th scope="col">公开题目得分 <small>首轮 / 含自动修复</small></th>
-            <th scope="col">全部题目得分 <small>首轮 / 含自动修复</small></th>
-            <th scope="col">输出速度 <small>公开题 · toks/s</small></th>
+            <th scope="col"><button class="sort-button" type="button" data-sort-key="label">模型 / 执行器 <span class="sort-icon" aria-hidden="true"></span><small>模型为请求值</small></button></th>
+            <th scope="col"><button class="sort-button" type="button" data-sort-key="publicFirst">公开题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
+            <th scope="col"><button class="sort-button" type="button" data-sort-key="overallFirst">全部题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
+            <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
           </tr></thead>
           <tbody>
             <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small>请求模型 · max · 2026.10.28</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>

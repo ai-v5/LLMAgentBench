@@ -13,6 +13,8 @@
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
   const number = (value) => typeof value === "number" && Number.isFinite(value);
   const count = (value) => Number.isInteger(value) && value >= 0;
+  const sortData = new Map();
+  let currentSort = null;
 
   function validate(summary) {
     if (!summary || summary.schema_version !== 1 || !Number.isInteger(summary.case_count) || summary.case_count < 1 ||
@@ -92,6 +94,25 @@
     }
   }
 
+  function sortRows() {
+    if (!currentSort) return;
+    const body = document.querySelector(".results-table tbody");
+    const rows = Array.from(body.querySelectorAll("tr[data-result-row]"));
+    const value = (row) => {
+      const data = sortData.get(Number(row.getAttribute("data-result-row")));
+      if (!data) return null;
+      return currentSort.key === "tokens" ? (data.tokens ? data.tokens.rate : null) : data[currentSort.key];
+    };
+    rows.sort((a, b) => {
+      const left = value(a), right = value(b);
+      const original = Number(a.getAttribute("data-result-row")) - Number(b.getAttribute("data-result-row"));
+      if (left == null || right == null) return left == null && right == null ? original : left == null ? 1 : -1;
+      const comparison = typeof left === "string" ? left.localeCompare(right, "en", { numeric: true, sensitivity: "base" }) : left - right;
+      return (currentSort.direction === "ascending" ? comparison : -comparison) || original;
+    });
+    rows.forEach((row) => body.appendChild(row));
+  }
+
   function show(result, offset) {
     const finalText = (rate, issues) => "含修复 " + rate.toFixed(1) + "%" +
       (issues.some((value) => value > 0) ? " · 未评分/错误/超时 " + issues.join("/") : "");
@@ -105,12 +126,25 @@
       put(attr("data-all-final"), finalText(row.overallFinal, row.overallIssues));
       put(attr("data-token-rate"), row.tokens ? row.tokens.rate.toFixed(2) : "未记录");
       put(attr("data-token-detail"), row.tokens ? row.tokens.count + " tokens / " + row.tokens.seconds.toFixed(2) + " s" : "数据不完整");
+      sortData.set(index, row);
       document.querySelector(attr("data-result-row")).hidden = false;
     });
+    sortRows();
   }
 
   if (typeof module !== "undefined" && module.exports) module.exports = { derive };
   if (typeof document !== "undefined") {
+    const sortButtons = document.querySelectorAll("[data-sort-key]");
+    sortButtons.forEach((button) => button.addEventListener("click", () => {
+      const key = button.dataset.sortKey;
+      const direction = currentSort && currentSort.key === key
+        ? (currentSort.direction === "ascending" ? "descending" : "ascending")
+        : (key === "label" ? "ascending" : "descending");
+      currentSort = { key, direction };
+      sortButtons.forEach((control) => control.closest("th").removeAttribute("aria-sort"));
+      button.closest("th").setAttribute("aria-sort", direction);
+      sortRows();
+    }));
     async function loadBatch(batch) {
       try {
         if (batch.comparison) {

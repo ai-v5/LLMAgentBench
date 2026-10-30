@@ -30,7 +30,13 @@ h2 { font-size: 27px; letter-spacing: -.04em; margin-top: 8px; }
 table { width: 100%; min-width: 710px; border-collapse: collapse; text-align: left; }
 thead { background: #edf3eb; color: #697d70; }
 th, td { padding: 20px 17px; vertical-align: middle; }
-thead th { font-size: 12px; font-weight: 700; white-space: nowrap; }
+thead th { padding: 0; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.sort-button { display: block; width: 100%; padding: 20px 17px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; white-space: inherit; cursor: pointer; }
+.sort-button:hover, th[aria-sort] .sort-button { color: var(--green); }
+.sort-button:focus-visible { outline: 3px solid #62a778; outline-offset: -3px; }
+.sort-icon::before { content: "↕"; color: #8b9a90; }
+th[aria-sort="ascending"] .sort-icon::before { content: "↑"; color: var(--green); }
+th[aria-sort="descending"] .sort-icon::before { content: "↓"; color: var(--green); }
 thead small, tbody small { display: block; margin-top: 6px; font-size: 11px; font-weight: 450; color: #8b9a90; white-space: nowrap; }
 tbody tr + tr { border-top: 1px solid #e9eee7; }
 tbody th { min-width: 205px; }
@@ -68,6 +74,8 @@ tbody td:nth-child(2) strong, tbody td:nth-child(3) strong { color: #2d8057; }
   h2 { font-size: 24px; }
   .source-link { padding-top: 20px; font-size: 12px; }
   th, td { padding: 17px 15px; }
+  thead th { padding: 0; }
+  .sort-button { padding: 17px 15px; }
   .notes { grid-template-columns: 1fr; gap: 12px; }
   .disclaimer { grid-template-columns: 1fr; gap: 15px; margin-top: 45px; padding: 22px; }
   .footer { margin-top: 52px; }
