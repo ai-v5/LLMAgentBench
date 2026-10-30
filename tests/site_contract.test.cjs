@@ -19,6 +19,9 @@ assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
 assert.equal((table[1].match(/data-result-row=/g) || []).length, 4);
+for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
+  assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
+}
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
   assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 4, field);
 }
@@ -73,19 +76,40 @@ for (const source of [secondPublic, secondOverall, secondUsage]) {
 secondUsage.candidates[0].requested_model = 'gpt-6.1-sol';
 secondUsage.candidates[1].requested_model = 'gpt-6-luna';
 
-async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses) {
+async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad) {
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 4 }, () => ({ hidden: true }));
+  const rows = Array.from({ length: 4 }, (_, index) => ({
+    hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
+  }));
+  const order = rows.slice();
+  const body = {
+    querySelectorAll: () => order.slice(),
+    appendChild(row) { order.splice(order.indexOf(row), 1); order.push(row); },
+  };
+  const buttons = Object.fromEntries(['label', 'publicFirst', 'overallFirst', 'tokens'].map((key) => {
+    const header = {
+      attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; },
+      removeAttribute(name) { delete this.attributes[name]; },
+    };
+    return [key, {
+      dataset: { sortKey: key }, header,
+      closest: () => header,
+      addEventListener(name, handler) { if (name === 'click') this.click = handler; },
+    }];
+  }));
   const document = {
     getElementById: (id) => alerts[id],
     querySelector: (selector) => {
+      if (selector === '.results-table tbody') return body;
       const match = selector.match(/^\[data-result-row="(\d+)"\]$/);
       return match ? rows[Number(match[1])] : null;
     },
     querySelectorAll: (selector) => {
       if (selector === '[data-data-region]') return [region];
+      if (selector === '[data-sort-key]') return Object.values(buttons);
       if (!nodes.has(selector)) nodes.set(selector, { textContent: '' });
       return [nodes.get(selector)];
     },
@@ -99,9 +123,10 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
     return url.includes('token-usage') ? tokenResponse : url.includes('engineering-public') ? publicResponse : overallResponse;
   };
   vm.runInNewContext(code, { document, fetch });
+  if (beforeLoad) beforeLoad(buttons);
   await new Promise(resolve => setImmediate(resolve));
   assert.equal(region.busy, false);
-  return { alerts, nodes, rows };
+  return { alerts, nodes, rows, order, buttons };
 }
 
 const ok = (value) => ({ ok: true, json: async () => value });
@@ -160,5 +185,39 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
     ...second, public: ok(withError), overall: ok(overallWithError) });
   assert.match(page.nodes.get('[data-all-final="3"]').textContent, /未评分\/错误\/超时 0\/1\/0/);
-  console.log('Site aggregate contract and failure handling: passed');
+
+  const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
+  const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.tokens.click());
+  assert.deepEqual(indices(page), [1, 3, 0, 2], 'A sort selected before loading must include both batches');
+  assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'descending');
+  page.buttons.tokens.click();
+  assert.deepEqual(indices(page), [2, 0, 3, 1], 'Token rates sort numerically in ascending order');
+  assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'ascending');
+  page.buttons.publicFirst.click();
+  assert.deepEqual(indices(page), [0, 2, 3, 1], 'Public scores default to descending with stable ties');
+  assert.equal(page.buttons.tokens.header.attributes['aria-sort'], undefined);
+  assert.equal(page.buttons.publicFirst.header.attributes['aria-sort'], 'descending');
+  page.buttons.publicFirst.click();
+  assert.deepEqual(indices(page), [1, 0, 2, 3]);
+  page.buttons.overallFirst.click();
+  assert.deepEqual(indices(page), [3, 0, 2, 1], 'Overall scores use the unrounded first-pass values');
+  page.buttons.overallFirst.click();
+  assert.deepEqual(indices(page), [1, 2, 0, 3]);
+  page.buttons.label.click();
+  assert.deepEqual(indices(page), [3, 2, 0, 1], 'Names default to ascending');
+  page.buttons.label.click();
+  assert.deepEqual(indices(page), [1, 0, 2, 3]);
+  assert.equal(page.nodes.get('[data-public-first="2"]').textContent, '100.0%');
+
+  page = await checkLoading(ok(publicData), ok(overallData), { ok: false }, realSecond);
+  page.buttons.tokens.click();
+  assert.deepEqual(indices(page), [3, 2, 0, 1], 'Missing token rates stay last when descending');
+  page.buttons.tokens.click();
+  assert.deepEqual(indices(page), [2, 3, 0, 1], 'Missing token rates stay last when ascending');
+  page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, realSecond);
+  page.buttons.publicFirst.click();
+  assert.deepEqual(indices(page), [2, 3, 0, 1], 'Hidden rows stay after loaded results');
+  assert.equal(page.rows[0].hidden, true);
+  console.log('Site aggregate, sorting, and failure handling: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
