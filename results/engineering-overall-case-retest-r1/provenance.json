@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "historical_receipts_verified": true,
+  "retest_receipts_verified": true,
+  "case_revision_verified": true,
+  "same_engine": true,
+  "same_budget": true,
+  "mixed_batches": true,
+  "client_identity_changed": true,
+  "requested_models": [
+    "ds-v4.1-flash-1017",
+    "gpt-6-luna",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra"
+  ]
+}
