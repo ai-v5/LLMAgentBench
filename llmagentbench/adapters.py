@@ -59,7 +59,8 @@ def prompt_text(payload: dict) -> str:
         "Return one JSON object with answer and files. answer is a string containing your answer "
         "(JSON-encode requested structured fields inside it). files is an array of {path, content} "
         "for requested edits. Do not modify files directly. Do not seek evaluator files, reference "
-        "answers, other candidates or credentials. Use only the supplied task inputs.\n\n"
+        "answers, other candidates, credentials, local memories or unrelated user files. "
+        "Use only the supplied task inputs.\n\n"
         + canonical(payload)
     )
 
@@ -87,6 +88,8 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             schema, answer = control / "response.schema.json", control / "last-message.json"
             write_json(schema, RESPONSE_SCHEMA)
             argv = [executable, "exec", "--ignore-user-config", "--ephemeral", "--skip-git-repo-check",
+                    "--disable", "memories", "--config", "memories.use_memories=false",
+                    "--config", "memories.generate_memories=false",
                     "--sandbox", "read-only", "--model", adapter["model"], "--json", "--color", "never",
                     "--config", "project_doc_max_bytes=0", "--output-schema", str(schema),
                     "--output-last-message", str(answer), "--cd", str(workspace)]
@@ -101,13 +104,31 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             events = []
             for line in result["stdout"].splitlines():
                 try:
-                    events.append(json.loads(line))
+                    event = json.loads(line)
+                    if isinstance(event, dict):
+                        events.append(event)
                 except json.JSONDecodeError:
                     continue
-            base["event_types"] = sorted({e.get("type", "unknown") for e in events})
+            known_event_types = {"thread.started", "turn.started", "turn.completed", "turn.failed",
+                                 "item.started", "item.updated", "item.completed", "error"}
+            base["event_types"] = sorted({e.get("type") if isinstance(e.get("type"), str)
+                                          and e.get("type") in known_event_types else "other" for e in events})
+            known_item_types = {"agent_message", "reasoning", "command_execution", "file_change",
+                                "mcp_tool_call", "web_search", "todo_list", "error", "collab_tool_call"}
+            reported = set()
+            for event in events:
+                item = event.get("item")
+                if isinstance(item, dict):
+                    item_type = item.get("type")
+                    reported.add(item_type if isinstance(item_type, str) and item_type in known_item_types else "other")
+            base["reported_item_types"] = sorted(reported)
             usages = [e["usage"] for e in events if e.get("type") == "turn.completed" and e.get("usage")]
-            if usages:
-                base["usage"] = usages[-1]
+            if usages and isinstance(usages[-1], dict):
+                usage_keys = {"input_tokens", "cached_input_tokens", "cache_write_input_tokens",
+                              "output_tokens", "reasoning_output_tokens", "total_tokens"}
+                usage = {key: value for key, value in usages[-1].items()
+                         if key in usage_keys and type(value) is int and value >= 0}
+                base["usage"] = usage or None
             if result["exit_code"] != 0 or not answer.is_file():
                 raise ContractError("Codex failed or produced no final response")
             base["response"] = normalize_response(read_json(answer))
@@ -170,6 +191,9 @@ def adapter_identity(adapter: dict) -> dict:
         identity["executable_sha256"] = hashlib.sha256(Path(executable).read_bytes()).hexdigest() if executable else None
         identity["sandbox"] = "read-only"
         identity["user_config"] = "ignored"
+        identity["memory_injection"] = "configured_disabled"
+        identity["global_instructions"] = "not_isolated"
+        identity["filesystem_read_isolation"] = "not_verified"
     if adapter["adapter"] == "dsh":
         identity["provider"] = adapter["provider"]
         identity["profile"] = adapter.get("profile", "headless")
