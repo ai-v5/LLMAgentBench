@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "case_count": 12,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "1261d142514c409094d0406d8a2d28682b3e49c6c03fc81b8d49f547f2c49fa2",
+    "75346cc74a5b6e2b3257c18b4707965cd2c6b601ba1669272504523dfed4f2ca"
+  ],
+  "engine_sha256": "e74fedd96992f8d2cdbf781ec17be2a445e089b4174950387409cc4873532694",
+  "config_sha256": "e88edcb655771ce01efff040f9f0d0250142279d76c3d4a5dfc8102904d4c79e",
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Sol",
+      "candidate_id": "codex-sol-max",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-sol",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 24,
+      "candidate_calls": 24,
+      "usage_calls": 24,
+      "output_tokens": 13366,
+      "candidate_call_seconds": 1562.61
+    },
+    {
+      "label": "Codex GPT-6 Luna",
+      "candidate_id": "codex-luna-max",
+      "adapter": "codex",
+      "requested_model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 24,
+      "candidate_calls": 24,
+      "usage_calls": 24,
+      "output_tokens": 22183,
+      "candidate_call_seconds": 1368.453
+    }
+  ]
+}

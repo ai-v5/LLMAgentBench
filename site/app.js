@@ -1,9 +1,15 @@
 /* The overall source contains only authorized totals; token data is public synthetic only. */
 (function () {
   "use strict";
-  const PUBLIC = "results/engineering-public-r3/summary.json";
-  const OVERALL = "results/engineering-overall-r3/summary.json";
-  const TOKENS = "results/engineering-public-r3/token-usage.json";
+  const BATCHES = [
+    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-r3/summary.json",
+      tokens: "results/engineering-public-r3/token-usage.json", offset: 0,
+      models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra", "DSH V4.1 Flash 1017": "ds-v4.1-flash-1017" } },
+    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-luna-sol-r1/summary.json",
+      tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
+      comparison: "results/engineering-public-luna-sol-r1/comparison.json", offset: 2,
+      models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol", "Codex GPT-6 Luna": "gpt-6-luna" } },
+  ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
   const number = (value) => typeof value === "number" && Number.isFinite(value);
   const count = (value) => Number.isInteger(value) && value >= 0;
@@ -66,7 +72,9 @@
       }
       return { label: item.label, publicFirst: item.first_passed / item.assigned * 100,
         publicFinal: item.passed / item.assigned * 100, overallFirst: total.first_passed / total.assigned * 100,
-        overallFinal: total.passed / total.assigned * 100, tokens };
+        overallFinal: total.passed / total.assigned * 100,
+        publicIssues: [item.unscored, item.errors, item.timeouts],
+        overallIssues: [total.unscored, total.errors, total.timeouts], tokens };
     });
     return { rows };
   }
@@ -75,39 +83,73 @@
     document.querySelectorAll(selector).forEach((node) => { node.textContent = String(value); });
   }
 
-  function show(result) {
-    result.rows.forEach((row, index) => {
+  function validateComparison(value) {
+    const flags = ["same_pack_order", "same_assignment_order", "same_engine", "same_driver", "same_budget", "same_judge_configuration"];
+    if (!value || value.schema_version !== 1 || flags.some((key) => value[key] !== true) ||
+        typeof value.same_judge_executable !== "boolean" || !Array.isArray(value.requested_models) ||
+        value.requested_models.slice().sort().join(",") !== ["gpt-6-luna", "gpt-6.1-sol"].sort().join(",")) {
+      throw new Error("Suite comparison unavailable");
+    }
+  }
+
+  function show(result, offset) {
+    const finalText = (rate, issues) => "含修复 " + rate.toFixed(1) + "%" +
+      (issues.some((value) => value > 0) ? " · 未评分/错误/超时 " + issues.join("/") : "");
+    result.rows.forEach((row, position) => {
+      const index = position + offset;
       const attr = (name) => "[" + name + '="' + index + '"]';
       put(attr("data-name"), row.label);
       put(attr("data-public-first"), row.publicFirst.toFixed(1) + "%");
-      put(attr("data-public-final"), "含修复 " + row.publicFinal.toFixed(1) + "%");
+      put(attr("data-public-final"), finalText(row.publicFinal, row.publicIssues));
       put(attr("data-all-first"), row.overallFirst.toFixed(1) + "%");
-      put(attr("data-all-final"), "含修复 " + row.overallFinal.toFixed(1) + "%");
+      put(attr("data-all-final"), finalText(row.overallFinal, row.overallIssues));
       put(attr("data-token-rate"), row.tokens ? row.tokens.rate.toFixed(2) : "未记录");
       put(attr("data-token-detail"), row.tokens ? row.tokens.count + " tokens / " + row.tokens.seconds.toFixed(2) + " s" : "数据不完整");
+      document.querySelector(attr("data-result-row")).hidden = false;
     });
   }
 
   if (typeof module !== "undefined" && module.exports) module.exports = { derive };
   if (typeof document !== "undefined") {
-    (async () => {
+    async function loadBatch(batch) {
       try {
-        const responses = await Promise.all([fetch(PUBLIC, { cache: "no-cache" }), fetch(OVERALL, { cache: "no-cache" })]);
+        if (batch.comparison) {
+          const provenance = await fetch(batch.comparison, { cache: "no-cache" });
+          if (!provenance.ok) throw new Error("Suite comparison unavailable");
+          validateComparison(await provenance.json());
+        }
+        const responses = await Promise.all([fetch(batch.public, { cache: "no-cache" }), fetch(batch.overall, { cache: "no-cache" })]);
         if (responses.some((response) => !response.ok)) throw new Error("Summary unavailable");
         const [publicData, overallData] = await Promise.all(responses.map((response) => response.json()));
+        if (!Array.isArray(publicData.candidates) || publicData.candidates.length !== Object.keys(batch.models).length ||
+            publicData.candidates.some((row) => !Object.hasOwn(batch.models, row.label))) {
+          throw new Error("Unexpected candidate labels");
+        }
+        let usage;
         try {
-          const response = await fetch(TOKENS, { cache: "no-cache" });
+          const response = await fetch(batch.tokens, { cache: "no-cache" });
           if (!response.ok) throw new Error("Token aggregate unavailable");
-          show(derive(publicData, overallData, await response.json()));
+          usage = await response.json();
         } catch (_) {
           document.getElementById("token-error").hidden = false;
-          show(derive(publicData, overallData, null));
+          show(derive(publicData, overallData, null), batch.offset);
+          return;
+        }
+        if (!Array.isArray(usage.candidates) || usage.candidates.some((row) => batch.models[row.label] !== row.requested_model)) {
+          throw new Error("Token aggregate model identity mismatch");
+        }
+        try {
+          show(derive(publicData, overallData, usage), batch.offset);
+        } catch (_) {
+          document.getElementById("token-error").hidden = false;
+          show(derive(publicData, overallData, null), batch.offset);
         }
       } catch (_) {
         document.getElementById("data-error").hidden = false;
-      } finally {
-        document.querySelectorAll("[data-data-region]").forEach((node) => node.setAttribute("aria-busy", "false"));
       }
-    })();
+    }
+    Promise.all(BATCHES.map(loadBatch)).finally(() => {
+      document.querySelectorAll("[data-data-region]").forEach((node) => node.setAttribute("aria-busy", "false"));
+    });
   }
 })();

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "case_count": 23,
+  "repeats": 2,
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Sol",
+      "evidence": "MODEL_RUN",
+      "assigned": 46,
+      "first_passed": 44,
+      "passed": 46,
+      "failed": 0,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 3274.496,
+      "candidate_call_seconds": 3027.734,
+      "judge_call_seconds": 121.5,
+      "mean_attempt_seconds": 71.18469565217391,
+      "mean_pass_seconds": 71.18469565217391,
+      "effective_passes_per_hour": 50.572668282386054
+    },
+    {
+      "label": "Codex GPT-6 Luna",
+      "evidence": "MODEL_RUN",
+      "assigned": 46,
+      "first_passed": 46,
+      "passed": 46,
+      "failed": 0,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 2850.457,
+      "candidate_call_seconds": 2605.297,
+      "judge_call_seconds": 119.95400000000001,
+      "mean_attempt_seconds": 61.966456521739126,
+      "mean_pass_seconds": 61.96645652173913,
+      "effective_passes_per_hour": 58.0959474217643
+    }
+  ]
+}

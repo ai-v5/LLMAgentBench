@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "same_pack_order": true,
+  "same_assignment_order": true,
+  "same_engine": true,
+  "same_driver": true,
+  "same_budget": true,
+  "same_judge_configuration": true,
+  "same_judge_executable": false,
+  "baseline_judge_executable_sha256": "1103e9e09c71fa2cd0afd6d8f3b9a2d63174fe8efd7cb5bd09f1cb14ef58a098",
+  "new_judge_executable_sha256": "3097c909fb6d5cd63510d44aceb1d42df9f6e85722a3e447e477def1ecf60e16",
+  "engine_sha256": "e74fedd96992f8d2cdbf781ec17be2a445e089b4174950387409cc4873532694",
+  "driver_sha256": "e2e5fc5c8384aabc1a1790f494be0d7c85ec49c6ab4bb4dd3718df872b193eb9",
+  "same_python_and_platform": true,
+  "requested_models": [
+    "gpt-6-luna",
+    "gpt-6.1-sol"
+  ]
+}
