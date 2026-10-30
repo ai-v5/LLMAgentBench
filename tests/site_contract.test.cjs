@@ -7,12 +7,13 @@ const { derive } = require('../site/app.js');
 const root = path.resolve(__dirname, '..');
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 const publicData = read('results/engineering-public-r3/summary.json');
-const overallData = read('results/engineering-overall-r3/summary.json');
+const overallData = read('results/engineering-overall-case-retest-r1/terra-dsh-summary.json');
 const usage = read('results/engineering-public-r3/token-usage.json');
 const newPublicData = read('results/engineering-public-luna-sol-r1/summary.json');
-const newOverallData = read('results/engineering-overall-luna-sol-r1/summary.json');
+const newOverallData = read('results/engineering-overall-case-retest-r1/sol-luna-summary.json');
 const newUsage = read('results/engineering-public-luna-sol-r1/token-usage.json');
 const newComparison = read('results/engineering-public-luna-sol-r1/comparison.json');
+const revision = read('results/engineering-overall-case-retest-r1/provenance.json');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
@@ -76,7 +77,7 @@ for (const source of [secondPublic, secondOverall, secondUsage]) {
 secondUsage.candidates[0].requested_model = 'gpt-6.1-sol';
 secondUsage.candidates[1].requested_model = 'gpt-6-luna';
 
-async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad) {
+async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad, revisionResponse) {
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
@@ -116,6 +117,8 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   };
   const code = fs.readFileSync(path.join(root, 'site/app.js'), 'utf8');
   const fetch = async (url) => {
+    if (url.includes('engineering-overall-case-retest-r1/provenance.json')) return revisionResponse || ok(revision);
+    if (url.includes('sol-luna-summary.json')) return secondResponses.overall;
     if (url.includes('luna-sol-r1')) {
       if (url.includes('comparison.json')) return secondResponses.comparison;
       return url.includes('token-usage') ? secondResponses.tokens : url.includes('engineering-public') ? secondResponses.public : secondResponses.overall;
@@ -135,7 +138,11 @@ const ok = (value) => ({ ok: true, json: async () => value });
     same_budget: true, same_judge_configuration: true, same_judge_executable: false,
     requested_models: ['gpt-6-luna', 'gpt-6.1-sol'] };
   const second = { public: ok(secondPublic), overall: ok(secondOverall), tokens: ok(secondUsage), comparison: ok(comparison) };
-  let page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, second);
+  let page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, undefined,
+    ok({ ...revision, case_revision_verified: false }));
+  assert.equal(page.alerts['data-error'].hidden, false);
+  assert.equal(page.rows.every(row => row.hidden), true);
+  page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, second);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[0].hidden, true);
   assert.equal(page.rows[2].hidden, false);
@@ -151,7 +158,7 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
   assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, (12448 / 1357.219).toFixed(2));
-  assert.equal(page.nodes.get('[data-all-first="0"]').textContent, (45 / 46 * 100).toFixed(1) + '%');
+  assert.equal(page.nodes.get('[data-all-first="0"]').textContent, '100.0%');
   assert.equal(page.nodes.get('[data-name="2"]').textContent, 'Codex GPT-6.1 Sol');
   assert.equal(page.rows.every(row => !row.hidden), true);
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, public: { ok: false } });
@@ -201,9 +208,9 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page.buttons.publicFirst.click();
   assert.deepEqual(indices(page), [1, 0, 2, 3]);
   page.buttons.overallFirst.click();
-  assert.deepEqual(indices(page), [3, 0, 2, 1], 'Overall scores use the unrounded first-pass values');
+  assert.deepEqual(indices(page), [0, 2, 3, 1], 'Overall scores use the unrounded first-pass values');
   page.buttons.overallFirst.click();
-  assert.deepEqual(indices(page), [1, 2, 0, 3]);
+  assert.deepEqual(indices(page), [1, 0, 2, 3]);
   page.buttons.label.click();
   assert.deepEqual(indices(page), [3, 2, 0, 1], 'Names default to ascending');
   page.buttons.label.click();

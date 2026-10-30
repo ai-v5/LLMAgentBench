@@ -2,12 +2,13 @@
 (function () {
   "use strict";
   const BATCHES = [
-    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-r3/summary.json",
-      tokens: "results/engineering-public-r3/token-usage.json", offset: 0,
+    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-case-retest-r1/terra-dsh-summary.json",
+      tokens: "results/engineering-public-r3/token-usage.json", revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
       models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra", "DSH V4.1 Flash 1017": "ds-v4.1-flash-1017" } },
-    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-luna-sol-r1/summary.json",
+    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-case-retest-r1/sol-luna-summary.json",
       tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
-      comparison: "results/engineering-public-luna-sol-r1/comparison.json", offset: 2,
+      comparison: "results/engineering-public-luna-sol-r1/comparison.json",
+      revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 2,
       models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol", "Codex GPT-6 Luna": "gpt-6-luna" } },
   ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
@@ -94,6 +95,17 @@
     }
   }
 
+  function validateRevision(value) {
+    const flags = ['historical_receipts_verified', 'retest_receipts_verified', 'case_revision_verified',
+      'same_engine', 'same_budget', 'mixed_batches'];
+    if (!value || value.schema_version !== 1 || flags.some((key) => value[key] !== true) ||
+        typeof value.client_identity_changed !== 'boolean' || !Array.isArray(value.requested_models) ||
+        value.requested_models.slice().sort().join(',') !==
+          ['gpt-6.1-terra', 'ds-v4.1-flash-1017', 'gpt-6.1-sol', 'gpt-6-luna'].sort().join(',')) {
+      throw new Error('Case revision provenance unavailable');
+    }
+  }
+
   function sortRows() {
     if (!currentSort) return;
     const body = document.querySelector(".results-table tbody");
@@ -147,6 +159,9 @@
     }));
     async function loadBatch(batch) {
       try {
+        const revision = await fetch(batch.revision, { cache: "no-cache" });
+        if (!revision.ok) throw new Error("Case revision provenance unavailable");
+        validateRevision(await revision.json());
         if (batch.comparison) {
           const provenance = await fetch(batch.comparison, { cache: "no-cache" });
           if (!provenance.ok) throw new Error("Suite comparison unavailable");

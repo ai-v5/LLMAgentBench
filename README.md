@@ -77,7 +77,7 @@ GitHub Pages 从 `main` 分支的仓库根目录发布。网页由 `index.html` 
 python -m scripts.export_public_token_usage --run .bench-runs/public-run --summary results/public-run/summary.json --out results/public-run/token-usage.json
 ```
 
-多个公开合成运行可重复传入 `--run`，必须具有一致的引擎、配置、候选和裁判，并先用 `export-overall` 生成对应汇总。仅已完成的公开合成运行可以导出 token 数据；缺失任一候选调用的 token 数据时不计算部分速率。网页核对公开汇总与 token 汇总的候选和调用耗时后，显示输出 token 数除以累计调用耗时；此客户端速率包含启动和等待，不是服务端纯解码速度。发布新一轮时更新 `site/app.js` 的批次数据路径及比较结果，运行 `node tests/site_contract.test.cjs` 检查数据口径和加载失败处理，并审查准确的发布内容。
+多个公开合成运行可重复传入 `--run`，必须具有一致的引擎、配置、候选和裁判，并先用 `export-overall` 生成对应汇总。仅已完成的公开合成运行可以导出 token 数据；缺失任一候选调用的 token 数据时不计算部分速率。网页核对公开汇总、token 汇总和条件核验信息后，显示输出 token 数除以累计调用耗时；此客户端速率包含启动和等待，不是服务端纯解码速度。发布新结果时更新 `site/app.js` 的数据路径及条件核验信息，运行 `node tests/site_contract.test.cjs` 检查数据口径和加载失败处理，并审查准确的发布内容。
 
 `scripts/verify_suite_comparison.py` 可检查两份已完成的私有套件收据是否使用相同题包、引擎、驱动、预算和裁判配置；输出仅包含比较状态与请求的模型名称，不导出题目明细。客户端执行文件变化会单独标注，不能当作完全相同的执行环境。
 
