@@ -44,6 +44,8 @@ python -m llmagentbench run --pack examples/public/pack.json --config local/dsh.
 
 Windows Desktop 安装可用其原生 Electron 可执行文件和随附 CLI JS 入口，并设 `electron_run_as_node: true`；不使用 `.cmd`/`.bat` 或 shell 拼接。profile 必须预先准备，评估器不修改它。新会话会由 DSH 持久保存。
 
+DSH 候选也可显式配置 `"local_lookup_audit": "dsh_json_v1"`，用单次 overlay 关闭内置指令与常用工具，并检查 headless JSON 事件。工具事件存在或控制事件不完整时不评分；思考或文本事件的内容被 CLI 截断不影响独立工具事件检查。收据记录可执行文件与程序包指纹及抽查状态，不保存工具参数或输出。该检查依赖客户端报告，不证明文件系统隔离，也不能排除其他未报告的访问。
+
 ## 两仓边界
 
 | 公开仓 | 独立私仓 |

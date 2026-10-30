@@ -29,6 +29,22 @@ def test_dsh_clean_stream_is_only_bounded_observation():
     assert 'synthetic' not in json.dumps(result)
 
 
+@pytest.mark.parametrize('index', [3,4])
+def test_dsh_truncated_message_content_does_not_hide_tool_events(index):
+    events = clean_events()
+    events[index]['truncated'] = True
+    assert adapters.audit_dsh_events(stream(events))['status'] == 'no_tool_events_reported'
+    events.insert(3,{'type':'tool_call','truncated':True})
+    assert adapters.audit_dsh_events(stream(events))['status'] == 'tool_event_reported'
+
+
+@pytest.mark.parametrize('index', [0,1,2,5,6,7])
+def test_dsh_truncated_control_event_is_inconclusive(index):
+    events = clean_events()
+    events[index]['truncated'] = True
+    assert adapters.audit_dsh_events(stream(events))['status'] == 'inconclusive'
+
+
 @pytest.mark.parametrize('events', [
     clean_events()[:-1],
     clean_events()[:2]+clean_events()[3:],

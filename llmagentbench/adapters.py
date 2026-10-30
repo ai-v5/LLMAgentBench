@@ -142,10 +142,14 @@ def audit_dsh_events(stdout: str) -> dict:
     steps = 0
     turn_id = active_step_id = previous_step_id = None
     for event in events:
-        if event.get("truncated") is True or final:
+        if final:
             return result
         kind = event.get("type")
         if not isinstance(kind, str):
+            return result
+        # The DSH CLI limits message text, while emitting tool and control
+        # events independently. A truncated control event remains inconclusive.
+        if event.get("truncated") is True and kind not in {"thinking", "text"}:
             return result
         if kind == "session":
             if session or started or not isinstance(event.get("sessionId"), str) or not event["sessionId"]:
