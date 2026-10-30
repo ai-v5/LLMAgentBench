@@ -47,6 +47,14 @@ def test_audit_clean_stream_is_only_a_reported_event_observation():
     assert adapters.audit_codex_items(stream(*clean_events()) + 'not-json\n')['status'] == 'inconclusive'
 
 
+@pytest.mark.parametrize('events', [
+    [clean_events()[0], clean_events()[1], clean_events()[3], clean_events()[2]],
+    clean_events() + [{'type':'item.completed','item':{'type':'reasoning'}}],
+])
+def test_audit_rejects_items_after_turn_completion(events):
+    assert adapters.audit_codex_items(stream(*events))['status'] == 'inconclusive'
+
+
 def test_startup_warning_is_not_a_model_tool_event_but_in_turn_error_is_inconclusive():
     warning = {'type': 'item.completed', 'item': {'type': 'error', 'message': 'synthetic-private-marker'}}
     events = clean_events()

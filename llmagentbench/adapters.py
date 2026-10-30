@@ -76,12 +76,15 @@ def audit_codex_items(stdout: str) -> dict:
     clean_items = {"agent_message", "reasoning", "todo_list"}
     seen_message = False
     turn_begun = False
+    turn_ended = False
     for event in events:
         kind = event.get("type")
         if not isinstance(kind, str):
             return result
         if kind == "turn.started":
             turn_begun = True
+        if kind == "turn.completed":
+            turn_ended = True
         if kind in item_events:
             item = event.get("item")
             if not isinstance(item, dict):
@@ -91,6 +94,8 @@ def audit_codex_items(stdout: str) -> dict:
                 return result
             if item_type in tool_items:
                 result["status"] = "tool_event_reported"
+                return result
+            if turn_ended:
                 return result
             if item_type == "error" and not turn_begun:
                 continue
