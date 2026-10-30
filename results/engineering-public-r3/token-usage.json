@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "case_count": 12,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "0017d0425eddb962a7fe3968cc645937927b0ee2e5ff053300690f339db33e64",
+    "11a5e00098e591e0a0413c242dbab2ec2456e12ec3e18ce1c543b17b28f2d1b9"
+  ],
+  "engine_sha256": "e74fedd96992f8d2cdbf781ec17be2a445e089b4174950387409cc4873532694",
+  "config_sha256": "84dec1a692b6fb9d1799a1ef03e9b57707d293b8988830b4633975049277f832",
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Terra",
+      "candidate_id": "codex-terra-max",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-terra",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 24,
+      "candidate_calls": 24,
+      "usage_calls": 24,
+      "output_tokens": 12448,
+      "candidate_call_seconds": 1357.219
+    },
+    {
+      "label": "DSH V4.1 Flash 1017",
+      "candidate_id": "dsh-flash-max",
+      "adapter": "dsh",
+      "requested_model": "ds-v4.1-flash-1017",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 24,
+      "candidate_calls": 29,
+      "usage_calls": 29,
+      "output_tokens": 77685,
+      "candidate_call_seconds": 485.346
+    }
+  ]
+}
