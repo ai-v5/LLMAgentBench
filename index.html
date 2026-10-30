@@ -61,7 +61,7 @@
       <div class="notes">
         <p><strong>怎么看：</strong>得分就是通过率，首轮与含自动修复分别计算；失败、未评分、错误和超时都计入分母。公开题使用合成任务；全部题目包含公开与未公开任务，页面只展示总体得分。</p>
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；输出 token 可能包含推理 token，各执行器口径和分词器可能不同，这不是服务端纯解码速度。</p>
-        <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
+        <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
       </div>
       <div class="links"><a href="results/engineering-overall-case-retest-r1/report.md">总体结果 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-overall-case-retest-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
