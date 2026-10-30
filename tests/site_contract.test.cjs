@@ -9,6 +9,10 @@ const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')
 const publicData = read('results/engineering-public-r3/summary.json');
 const overallData = read('results/engineering-overall-r3/summary.json');
 const usage = read('results/engineering-public-r3/token-usage.json');
+const newPublicData = read('results/engineering-public-luna-sol-r1/summary.json');
+const newOverallData = read('results/engineering-overall-luna-sol-r1/summary.json');
+const newUsage = read('results/engineering-public-luna-sol-r1/token-usage.json');
+const newComparison = read('results/engineering-public-luna-sol-r1/comparison.json');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
@@ -19,6 +23,10 @@ for (const field of ['data-public-first', 'data-public-final', 'data-all-first',
   assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 4, field);
 }
 const result = derive(publicData, overallData, usage);
+const newResult = derive(newPublicData, newOverallData, newUsage);
+assert.deepEqual(newResult.rows.map(row => row.label), ['Codex GPT-6.1 Sol', 'Codex GPT-6 Luna']);
+assert.equal(newComparison.same_assignment_order, true);
+assert.equal(newComparison.same_judge_executable, false);
 for (let i = 0; i < result.rows.length; i++) {
   const publicRow = publicData.candidates[i];
   const total = overallData.candidates.find(row => row.label === publicRow.label);
@@ -129,6 +137,13 @@ const ok = (value) => ({ ok: true, json: async () => value });
     ...second, comparison: ok({ ...comparison, same_pack_order: false }) });
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[2].hidden, true);
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
+    public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) });
+  assert.equal(page.alerts['data-error'].hidden, true);
+  assert.equal(page.alerts['token-error'].hidden, true);
+  assert.equal(page.rows.every(row => !row.hidden), true);
+  assert.equal(page.nodes.get('[data-public-first="2"]').textContent, newResult.rows[0].publicFirst.toFixed(1) + '%');
+  assert.equal(page.nodes.get('[data-token-rate="3"]').textContent, newResult.rows[1].tokens.rate.toFixed(2));
   const swapped = structuredClone(secondUsage);
   swapped.candidates[0].requested_model = 'gpt-6-luna';
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, tokens: ok(swapped) });
