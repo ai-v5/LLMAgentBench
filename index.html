@@ -35,8 +35,8 @@
         <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
         <a class="source-link" href="results/engineering-public-r3/summary.json">查看公开题汇总 <span aria-hidden="true">↗</span></a>
       </div>
-      <p class="run-context">同一轮评估 <span>·</span> max 推理 <span>·</span> 每轮上限 240 秒 <span>·</span> 最多自动修复 1 次</p>
-      <p class="alert" id="data-error" role="alert" hidden>结果暂时无法加载，请查看<a href="results/engineering-public-r3/summary.json">公开题汇总</a>。</p>
+      <p class="run-context">相同题包与预算 <span>·</span> max 推理 <span>·</span> 每轮上限 240 秒 <span>·</span> 最多自动修复 1 次</p>
+      <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/engineering-public-r3/summary.json">公开题汇总</a>。</p>
       <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
       <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/engineering-public-r3/summary.json">公开题汇总</a>。</p></noscript>
 
@@ -50,8 +50,10 @@
             <th scope="col">输出速度 <small>公开题 · toks/s</small></th>
           </tr></thead>
           <tbody>
-            <tr data-result-row="0"><th scope="row"><strong data-name="0">—</strong><small>请求模型 · max 推理</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
-            <tr data-result-row="1"><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max 推理</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
+            <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small>请求模型 · max · 2026.10.28</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
+            <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max · 2026.10.28</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
+            <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small>请求模型 · max · 2026.10.30</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
+            <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · max · 2026.10.30</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
           </tbody>
         </table>
       </div>
@@ -59,7 +61,7 @@
       <div class="notes">
         <p><strong>怎么看：</strong>得分就是通过率，首轮与含自动修复分别计算；失败、未评分、错误和超时都计入分母。公开题使用合成任务；全部题目包含公开与未公开任务，页面只展示总体得分。</p>
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；token 口径和分词器可能不同，这不是服务端纯解码速度。</p>
-        <p><strong>结果边界：</strong>样本有限，当前是结构化响应与补丁测试，不代表完整终端 Agent 排名。两个组合使用不同执行器；模型是请求值，服务端身份未独立观测。</p>
+        <p><strong>结果边界：</strong>各组合分批运行，Codex 客户端版本有变化，Codex 与 DSH 的输出约束也不同；当前是有限样本的结构化响应与补丁测试。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
       </div>
       <div class="links"><a href="results/engineering-overall-r3/report.md">总体结果说明 ↗</a><a href="results/engineering-public-r3/token-usage.json">公开题 Token 汇总 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
