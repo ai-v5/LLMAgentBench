@@ -62,6 +62,14 @@ def test_dsh_uses_its_output_token_field():
     assert summarize_token_usage(data)["candidates"][0]["output_tokens"] == 45
 
 
+def test_kimi_uses_its_wire_output_token_field():
+    data = record()
+    data["candidates"][0]["adapter"] = "kimi"
+    data["attempts"][0]["rounds"][0]["call"]["usage"] = {"output": 40}
+    data["attempts"][0]["rounds"][1]["call"]["usage"] = {"output": 5}
+    assert summarize_token_usage(data)["candidates"][0]["output_tokens"] == 45
+
+
 def test_invalid_duration_does_not_produce_a_rate():
     data = record()
     data["attempts"][0]["rounds"][0]["call"]["elapsed_seconds"] = float("nan")

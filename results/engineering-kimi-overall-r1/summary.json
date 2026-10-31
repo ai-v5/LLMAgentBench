@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "case_count": 211,
+  "denominator": "assigned_attempts",
+  "candidates": [
+    {
+      "label": "Kimi K3.1 Pro",
+      "evidence": "MODEL_RUN",
+      "assigned": 211,
+      "first_passed": 122,
+      "passed": 122,
+      "failed": 9,
+      "unscored": 1,
+      "errors": 76,
+      "timeouts": 3,
+      "attempt_seconds": 23249.971,
+      "candidate_call_seconds": 23249.971,
+      "judge_call_seconds": 0,
+      "mean_attempt_seconds": 110.18943601895735,
+      "mean_pass_seconds": 94.67144262295082,
+      "effective_passes_per_hour": 18.890346142797338
+    }
+  ]
+}

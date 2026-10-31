@@ -24,7 +24,7 @@ def summarize_token_usage(record: dict) -> dict:
         evidence = "FIXTURE_SMOKE" if candidate["adapter"] == "fixture" or any(
             call["evidence_level"] == "FIXTURE_SMOKE" for call in calls
         ) else "MODEL_RUN"
-        token_key = {"codex": "output_tokens", "dsh": "outputTokens"}.get(candidate["adapter"])
+        token_key = {"codex": "output_tokens", "dsh": "outputTokens", "kimi": "output"}.get(candidate["adapter"])
         seconds = []
         tokens = []
         for call in calls:

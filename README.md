@@ -1,6 +1,6 @@
 # LLMAgentBench
 
-面向真实工程工作的自动评估器：LLM 驱动任务，代码固定执行条件、验证结果并生成报告。首版支持 **Codex** 和 **DeepSeek Harness（DSH）headless**。
+面向真实工程工作的自动评估器：LLM 驱动任务，代码固定执行条件、验证结果并生成报告。当前支持 **Codex**、**DeepSeek Harness（DSH）headless** 和本机 **Kimi Daimon prompt**。
 
 [项目网站与实测结果](https://ai-v5.github.io/LLMAgentBench/) · [免责声明与使用边界](DISCLAIMER.md) · [MIT 许可证](LICENSE)
 
@@ -45,6 +45,16 @@ python -m llmagentbench run --pack examples/public/pack.json --config local/dsh.
 Windows Desktop 安装可用其原生 Electron 可执行文件和随附 CLI JS 入口，并设 `electron_run_as_node: true`；不使用 `.cmd`/`.bat` 或 shell 拼接。profile 必须预先准备，评估器不修改它。新会话会由 DSH 持久保存。
 
 DSH 候选也可显式配置 `"local_lookup_audit": "dsh_json_v1"`，用单次 overlay 关闭内置指令与常用工具，并检查 headless JSON 事件。工具事件存在或控制事件不完整时不评分；思考或文本事件的内容被 CLI 截断不影响独立工具事件检查。收据记录可执行文件与程序包指纹及抽查状态，不保存工具参数或输出。该检查依赖客户端报告，不证明文件系统隔离，也不能排除其他未报告的访问。
+
+Kimi 使用本机 Daimon 的非交互 prompt 入口。复制 `configs/kimi.example.json` 到忽略的 `local/kimi.json`，在本机环境变量中提供 launcher 的 JSON argv 和现有 Daimon 配置路径；认证仍由 Kimi 原有配置管理，不能复制到仓库、case、日志或结果文件。
+
+```powershell
+$env:BENCH_KIMI_LAUNCHER = '["powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-File","C:/Tools/kimi-daimon.ps1","--node","C:/Tools/Kimi.exe"]'
+$env:BENCH_KIMI_CONFIG = 'C:/Users/you/.kimi/daimon/config.json'
+python -m llmagentbench run --pack examples/public/pack.json --config local/kimi.json --out .bench-runs/kimi
+```
+
+Kimi 候选必须固定 `model`、`reasoning_effort` 和 `local_lookup_audit: "kimi_wire_v1"`。Daimon 会异步改写配置文件的长批次可在候选中提供运行前计算的 `config_identity_sha256`，把启动配置身份冻结在收据中。适配器把 `answer/files` 解析为统一响应，读取单次 wire 收据的 model、thinking、usage 和工具事件摘要；报告到工具调用、wire 缺失或配置不匹配时，该轮为 error。wire 审计是客户端事件观察，不等于操作系统文件隔离；默认工作目录由 Kimi 配置决定，严格隔离需要在独立运行环境中验证。
 
 ## 两仓边界
 
