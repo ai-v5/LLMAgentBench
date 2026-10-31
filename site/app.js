@@ -15,7 +15,7 @@
   const number = (value) => typeof value === "number" && Number.isFinite(value);
   const count = (value) => Number.isInteger(value) && value >= 0;
   const sortData = new Map();
-  let currentSort = null;
+  let currentSort = { key: "overallFirst", direction: "descending" };
 
   function validate(summary) {
     if (!summary || ![1, 2].includes(summary.schema_version) || !Number.isInteger(summary.case_count) || summary.case_count < 1 ||
@@ -161,16 +161,21 @@
   if (typeof module !== "undefined" && module.exports) module.exports = { derive };
   if (typeof document !== "undefined") {
     const sortButtons = document.querySelectorAll("[data-sort-key]");
-    sortButtons.forEach((button) => button.addEventListener("click", () => {
-      const key = button.dataset.sortKey;
-      const direction = currentSort && currentSort.key === key
-        ? (currentSort.direction === "ascending" ? "descending" : "ascending")
-        : (key === "label" ? "ascending" : "descending");
-      currentSort = { key, direction };
-      sortButtons.forEach((control) => control.closest("th").removeAttribute("aria-sort"));
-      button.closest("th").setAttribute("aria-sort", direction);
-      sortRows();
-    }));
+    sortButtons.forEach((button) => {
+      if (button.dataset.sortKey === currentSort.key) {
+        button.closest("th").setAttribute("aria-sort", currentSort.direction);
+      }
+      button.addEventListener("click", () => {
+        const key = button.dataset.sortKey;
+        const direction = currentSort.key === key
+          ? (currentSort.direction === "ascending" ? "descending" : "ascending")
+          : (key === "label" ? "ascending" : "descending");
+        currentSort = { key, direction };
+        sortButtons.forEach((control) => control.closest("th").removeAttribute("aria-sort"));
+        button.closest("th").setAttribute("aria-sort", direction);
+        sortRows();
+      });
+    });
     async function loadBatch(batch) {
       try {
         const revision = await fetch(batch.revision, { cache: "no-cache" });

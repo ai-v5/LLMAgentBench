@@ -225,6 +225,17 @@ const ok = (value) => ({ ok: true, json: async () => value });
 
   const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
+  const allRows = [...result.rows, ...newResult.rows];
+  const expectedOverall = (direction) => allRows.map((row, index) => ({ value: row.overallFirst, index }))
+    .sort((a, b) => direction * (a.value - b.value) || a.index - b.index).map(item => item.index);
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond);
+  assert.deepEqual(indices(page), expectedOverall(-1), 'Overall first-pass score defaults to descending');
+  assert.equal(page.buttons.overallFirst.header.attributes['aria-sort'], 'descending');
+  page.buttons.overallFirst.click();
+  assert.deepEqual(indices(page), expectedOverall(1), 'The first click reverses the default order');
+  assert.equal(page.buttons.overallFirst.header.attributes['aria-sort'], 'ascending');
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.overallFirst.click());
+  assert.deepEqual(indices(page), expectedOverall(1), 'An early click overrides the default while data loads');
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.tokens.click());
   assert.deepEqual(indices(page), [1, 3, 0, 2], 'A sort selected before loading must include both batches');
   assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'descending');
@@ -238,9 +249,6 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page.buttons.publicFirst.click();
   assert.deepEqual(indices(page), [1, 0, 2, 3]);
   page.buttons.overallFirst.click();
-  const allRows = [...result.rows, ...newResult.rows];
-  const expectedOverall = (direction) => allRows.map((row, index) => ({ value: row.overallFirst, index }))
-    .sort((a, b) => direction * (a.value - b.value) || a.index - b.index).map(item => item.index);
   assert.deepEqual(indices(page), expectedOverall(-1), 'Overall scores use the unrounded first-pass values');
   page.buttons.overallFirst.click();
   assert.deepEqual(indices(page), expectedOverall(1));
