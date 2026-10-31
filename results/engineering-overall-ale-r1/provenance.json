@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "authorized_private_overall": true,
+  "private_details_exported": false,
+  "assigned_attempts_verified": true,
+  "denominator": "assigned_attempts",
+  "requested_models": [
+    "ds-v4.1-flash-1017",
+    "gpt-6-luna",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra"
+  ]
+}
