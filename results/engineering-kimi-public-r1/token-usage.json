@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "case_count": 8,
+  "repeats": 1,
+  "source_receipt_sha256": [
+    "b93714189088b3cf5019b778d56bc650826509fbdb6d862e6bbfe7a53401e796"
+  ],
+  "engine_sha256": "efcf4b3d8c073beb4e31682d2d780c9afa0b677e00e49d08091a840b64913600",
+  "config_sha256": "72a335cd0df4be1ca4b09f8c956eb27a794c7f0f82932849f1dccd8319f764f9",
+  "candidates": [
+    {
+      "label": "Kimi K3.1 Pro",
+      "candidate_id": "kimi-k31-pro-max",
+      "adapter": "kimi",
+      "requested_model": "k3d1-agent",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 8,
+      "candidate_calls": 8,
+      "usage_calls": 8,
+      "output_tokens": 4572,
+      "candidate_call_seconds": 158.313
+    }
+  ]
+}

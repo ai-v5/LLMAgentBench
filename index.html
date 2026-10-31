@@ -8,7 +8,7 @@
   <title>LLMAgentBench | 工程任务评估</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=sort-1">
-  <script src="site/app.js?v=case-retest-r1" defer></script>
+  <script src="site/app.js?v=kimi-r1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#results">跳到评估结果</a>
@@ -35,7 +35,7 @@
         <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
         <a class="source-link" href="results/engineering-overall-ale-r1/report.md">查看结果说明 <span aria-hidden="true">↗</span></a>
       </div>
-      <p class="run-context">公开题每题重复 2 次 <span>·</span> max 推理 <span>·</span> 公开题每轮上限 240 秒 <span>·</span> 最多自动修复 1 次</p>
+      <p class="run-context">公开合成题与授权总体聚合 <span>·</span> max 推理 <span>·</span> Kimi K3.1 Pro 单独列示 <span>·</span> 私有逐题数据不公开</p>
       <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p>
       <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
       <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p></noscript>
@@ -54,6 +54,7 @@
             <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
             <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small>请求模型 · max</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
             <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · max</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
+            <tr data-result-row="4" hidden><th scope="row"><strong data-name="4">—</strong><small>请求模型 · max</small></th><td><strong data-public-first="4">—</strong><small data-public-final="4">含修复 —</small></td><td><strong data-all-first="4">—</strong><small data-all-final="4">含修复 —</small></td><td><strong data-token-rate="4">—</strong><small data-token-detail="4">—</small></td></tr>
           </tbody>
         </table>
       </div>
@@ -63,7 +64,7 @@
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；输出 token 可能包含推理 token，各执行器口径和分词器可能不同，这不是服务端纯解码速度。</p>
         <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。部分题目曾用于模型试跑与调整，并非独立留出集。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
       </div>
-      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
+      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
 
     <section class="disclaimer" id="disclaimer" aria-labelledby="disclaimer-title">

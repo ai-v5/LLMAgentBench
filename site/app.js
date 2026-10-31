@@ -4,12 +4,22 @@
   const BATCHES = [
     { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-ale-r1/terra-dsh-summary.json",
       tokens: "results/engineering-public-r3/token-usage.json", revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
+      revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
+      overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra", "DSH V4.1 Flash 1017": "ds-v4.1-flash-1017" } },
     { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-ale-r1/sol-luna-summary.json",
       tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
       comparison: "results/engineering-public-luna-sol-r1/comparison.json",
       revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 2,
+      revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
+      overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol", "Codex GPT-6 Luna": "gpt-6-luna" } },
+    { public: "results/engineering-kimi-public-r1/summary.json", overall: "results/engineering-kimi-overall-r1/summary.json",
+      tokens: "results/engineering-kimi-public-r1/token-usage.json",
+      revision: "results/engineering-kimi-overall-r1/provenance.json",
+      overall_provenance: "results/engineering-kimi-overall-r1/provenance.json", offset: 4,
+      revision_models: ["k3d1-agent"], overall_models: ["k3d1-agent"],
+      models: { "Kimi K3.1 Pro": "k3d1-agent" } },
   ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
   const number = (value) => typeof value === "number" && Number.isFinite(value);
@@ -21,7 +31,7 @@
     if (!summary || ![1, 2].includes(summary.schema_version) || !Number.isInteger(summary.case_count) || summary.case_count < 1 ||
         (summary.schema_version === 1 && (!Number.isInteger(summary.repeats) || summary.repeats < 1)) ||
         (summary.schema_version === 2 && summary.denominator !== "assigned_attempts") ||
-        !Array.isArray(summary.candidates) || summary.candidates.length !== 2) throw new Error("Invalid summary");
+        !Array.isArray(summary.candidates) || summary.candidates.length < 1) throw new Error("Invalid summary");
     for (const row of summary.candidates) {
       if (!row || typeof row.label !== "string" || !row.label.trim() || row.evidence !== "MODEL_RUN" ||
           !Number.isInteger(row.assigned) ||
@@ -65,7 +75,7 @@
       let tokens = null;
       if (usage) {
         const row = usage.candidates.find((entry) => entry.label === item.label);
-        if (!row || row.evidence_level !== "MODEL_RUN" || !["codex", "dsh"].includes(row.adapter) ||
+        if (!row || row.evidence_level !== "MODEL_RUN" || !["codex", "dsh", "kimi"].includes(row.adapter) ||
             row.assigned !== item.assigned || !count(row.candidate_calls) || !count(row.usage_calls) ||
             row.usage_calls > row.candidate_calls || !number(row.candidate_call_seconds) ||
             Math.abs(row.candidate_call_seconds - item.candidate_call_seconds) > .001 ||
@@ -99,23 +109,21 @@
     }
   }
 
-  function validateRevision(value) {
+  function validateRevision(value, expectedModels) {
     const flags = ['historical_receipts_verified', 'retest_receipts_verified', 'case_revision_verified',
       'same_engine', 'same_budget', 'mixed_batches'];
     if (!value || value.schema_version !== 1 || flags.some((key) => value[key] !== true) ||
         typeof value.client_identity_changed !== 'boolean' || !Array.isArray(value.requested_models) ||
-        value.requested_models.slice().sort().join(',') !==
-          ['gpt-6.1-terra', 'ds-v4.1-flash-1017', 'gpt-6.1-sol', 'gpt-6-luna'].sort().join(',')) {
+        value.requested_models.slice().sort().join(',') !== expectedModels.slice().sort().join(',')) {
       throw new Error('Case revision provenance unavailable');
     }
   }
 
-  function validateOverallProvenance(value) {
+  function validateOverallProvenance(value, expectedModels) {
     if (!value || value.schema_version !== 1 || value.authorized_private_overall !== true ||
         value.private_details_exported !== false || value.assigned_attempts_verified !== true ||
         value.denominator !== "assigned_attempts" || !Array.isArray(value.requested_models) ||
-        value.requested_models.slice().sort().join(",") !==
-          ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"].sort().join(",")) {
+        value.requested_models.slice().sort().join(",") !== expectedModels.slice().sort().join(",")) {
       throw new Error("Overall provenance unavailable");
     }
   }
@@ -180,10 +188,10 @@
       try {
         const revision = await fetch(batch.revision, { cache: "no-cache" });
         if (!revision.ok) throw new Error("Case revision provenance unavailable");
-        validateRevision(await revision.json());
-        const overallProvenance = await fetch("results/engineering-overall-ale-r1/provenance.json", { cache: "no-cache" });
+        validateRevision(await revision.json(), batch.revision_models || ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"]);
+        const overallProvenance = await fetch(batch.overall_provenance || "results/engineering-overall-ale-r1/provenance.json", { cache: "no-cache" });
         if (!overallProvenance.ok) throw new Error("Overall provenance unavailable");
-        validateOverallProvenance(await overallProvenance.json());
+        validateOverallProvenance(await overallProvenance.json(), batch.overall_models || ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"]);
         if (batch.comparison) {
           const provenance = await fetch(batch.comparison, { cache: "no-cache" });
           if (!provenance.ok) throw new Error("Suite comparison unavailable");

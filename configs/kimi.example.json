@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "repeats": 1,
+  "max_repair_rounds": 1,
+  "timeout_seconds": 240,
+  "check_timeout_seconds": 15,
+  "order_seed": 42,
+  "candidates": [
+    {
+      "id": "kimi-k31-pro-max",
+      "adapter": "kimi",
+      "model": "k3d1-agent",
+      "reasoning_effort": "max",
+      "local_lookup_audit": "kimi_wire_v1",
+      "launcher_env": "BENCH_KIMI_LAUNCHER",
+      "config_env": "BENCH_KIMI_CONFIG",
+      "config_identity_sha256": "<startup-config-sha256>",
+      "pass_env": ["KIMI_SHARE_DIR"]
+    }
+  ],
+  "judge": {"adapter": "codex", "model": "gpt-6.1-sol", "reasoning_effort": "low"}
+}

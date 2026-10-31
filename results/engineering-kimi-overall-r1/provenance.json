@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "authorized_private_overall": true,
+  "private_details_exported": false,
+  "assigned_attempts_verified": true,
+  "denominator": "assigned_attempts",
+  "requested_models": [
+    "k3d1-agent"
+  ],
+  "historical_receipts_verified": true,
+  "retest_receipts_verified": true,
+  "case_revision_verified": true,
+  "same_engine": true,
+  "same_budget": true,
+  "mixed_batches": true,
+  "client_identity_changed": false
+}
