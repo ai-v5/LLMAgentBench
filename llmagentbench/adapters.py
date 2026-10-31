@@ -33,6 +33,19 @@ DSH_AUDIT_DISABLED_PLUGINS = (
     "tool-plugin-manager", "skill-filesystem",
 )
 
+KIMI_WIRE_IGNORED_TOOL_EVENTS = {
+    "llm.tools_snapshot", "tools.register_user_tool", "tools.set_active_tools",
+}
+KIMI_WIRE_SAFE_EVENT_TYPES = {
+    "agent.message.appended", "agent.turn.ended", "context.append_loop_event",
+    "context.append_message", "config.update", "environment.set_binding",
+    "llm.request", "llm.tools_snapshot", "metadata", "permission.set_mode",
+    "profile.bind", "prompt.completed", "token_counting.measured",
+    "token_counting.turn_recorded", "tools.register_user_tool", "tools.set_active_tools",
+    "turn.ended", "turn.prompt", "turn.started", "usage.record",
+}
+KIMI_WIRE_USAGE_KEYS = {"inputOther", "output", "inputCacheRead", "inputCacheCreation"}
+
 
 def normalize_response(value: dict) -> dict:
     if not isinstance(value, dict) or "answer" not in value:
@@ -58,6 +71,27 @@ def parse_json_response(text: str) -> dict:
     if fence:
         text = fence.group(1)
     return json.loads(text)
+
+
+def parse_kimi_stdout(stdout: str) -> dict:
+    """Extract the single evaluator response from Daimon logs plus final stdout."""
+    try:
+        return parse_json_response(stdout)
+    except json.JSONDecodeError:
+        candidates = []
+        for line in stdout.splitlines():
+            text = line.strip()
+            if not text:
+                continue
+            try:
+                value = json.loads(text)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(value, dict) and "answer" in value and "files" in value:
+                candidates.append(value)
+        if len(candidates) != 1:
+            raise ContractError("Kimi did not produce one parseable response")
+        return candidates[0]
 
 
 def audit_codex_items(stdout: str) -> dict:
@@ -198,6 +232,122 @@ def audit_dsh_events(stdout: str) -> dict:
         else:
             return result
     if session and started and ended and final and not active_step:
+        result["status"] = "no_tool_events_reported"
+    return result
+
+
+def _nested_kimi_tool_marker(value) -> bool:
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            if key in {"tool_call", "tool_result", "toolCall", "toolResult", "tool_call_id", "tool_result_id"}:
+                return True
+            if key == "type" and isinstance(nested, str) and any(marker in nested for marker in (
+                    "tool.call", "tool_call", "tool.result", "tool_result")):
+                return True
+            if _nested_kimi_tool_marker(nested):
+                return True
+    elif isinstance(value, list):
+        return any(_nested_kimi_tool_marker(item) for item in value)
+    return False
+
+
+def _kimi_tool_event(kind: str, event: dict) -> bool:
+    if kind in KIMI_WIRE_IGNORED_TOOL_EVENTS or kind.startswith("tools."):
+        return False
+    return any(marker in kind for marker in (
+        "tool.call", "tool_call", "tool.result", "tool_result", "tool.started", "tool.completed",
+    )) or kind.startswith(("agent.tool", "context.append_tool")) or _nested_kimi_tool_marker(event)
+
+
+def _wire_files(root: Path) -> dict[Path, tuple[int, int]]:
+    result = {}
+    try:
+        paths = root.rglob("wire.jsonl") if root.is_dir() else ()
+        for path in paths:
+            try:
+                if path.is_symlink() or not path.is_file():
+                    continue
+                stat = path.stat()
+                result[path] = (stat.st_mtime_ns, stat.st_size)
+            except OSError:
+                continue
+    except OSError:
+        pass
+    return result
+
+
+def _changed_wire_paths(before: dict[Path, tuple[int, int]], root: Path) -> list[Path]:
+    after = _wire_files(root)
+    return sorted(path for path, fingerprint in after.items() if before.get(path) != fingerprint)
+
+
+def audit_kimi_wire(before: dict[Path, tuple[int, int]], root: Path,
+                    requested_model: str, requested_effort: str) -> dict:
+    """Audit Kimi wire records without retaining prompts, tool arguments, or outputs."""
+    result = {
+        "status": "inconclusive", "scope": "kimi_wire_events", "event_types": [],
+        "tool_event_count": 0, "effective_model": None, "effective_reasoning_effort": None,
+        "tool_select": None, "tool_count": None, "usage": None,
+    }
+    paths = _changed_wire_paths(before, root)
+    if not paths:
+        return result
+    events = []
+    try:
+        for path in paths:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                if line.strip():
+                    event = json.loads(line)
+                    if not isinstance(event, dict):
+                        return result
+                    events.append(event)
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return result
+    if not events:
+        return result
+
+    types = [event.get("type") for event in events]
+    if any(not isinstance(kind, str) for kind in types):
+        return result
+    result["event_types"] = sorted({kind if kind in KIMI_WIRE_SAFE_EVENT_TYPES else "other" for kind in types})
+    tool_events = [event for event in events if _kimi_tool_event(event["type"], event)]
+    result["tool_event_count"] = len(tool_events)
+
+    requests = [event for event in events if event["type"] == "llm.request"]
+    models = {event.get("model") for event in requests if isinstance(event.get("model"), str)}
+    efforts = {event.get("thinkingEffort") for event in requests if isinstance(event.get("thinkingEffort"), str)}
+    if len(models) == 1:
+        result["effective_model"] = next(iter(models))
+    if len(efforts) == 1:
+        result["effective_reasoning_effort"] = next(iter(efforts))
+    if requests:
+        selections = [event.get("toolSelect") for event in requests if type(event.get("toolSelect")) is bool]
+        if selections:
+            result["tool_select"] = any(selections)
+    snapshots = [event for event in events if event["type"] == "llm.tools_snapshot"]
+    if snapshots:
+        tools = snapshots[-1].get("tools")
+        if isinstance(tools, list):
+            result["tool_count"] = len(tools)
+
+    usage = {}
+    for event in events:
+        if event["type"] != "usage.record" or not isinstance(event.get("usage"), dict):
+            continue
+        for key, value in event["usage"].items():
+            if key in KIMI_WIRE_USAGE_KEYS and type(value) is int and value >= 0:
+                usage[key] = usage.get(key, 0) + value
+    if usage:
+        result["usage"] = usage
+
+    completed = any(kind in {"prompt.completed", "agent.turn.ended", "turn.ended"} for kind in types)
+    if not requests or not usage or not completed:
+        return result
+    if result["effective_model"] != requested_model or result["effective_reasoning_effort"] != requested_effort:
+        result["status"] = "effective_config_mismatch"
+    elif tool_events:
+        result["status"] = "tool_event_reported"
+    else:
         result["status"] = "no_tool_events_reported"
     return result
 
@@ -365,6 +515,42 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             if audit_mode == "dsh_json_v1" and base["local_lookup_audit"]["status"] != "no_tool_events_reported":
                 raise ContractError("DSH tool event audit did not complete cleanly")
             base["response"] = normalize_response(parse_json_response(finals[0]["text"]))
+        elif kind == "kimi":
+            if adapter.get("local_lookup_audit") != "kimi_wire_v1":
+                raise ContractError("Kimi wire audit is required")
+            launcher = kimi_launcher(adapter)
+            config_path = kimi_config_path(adapter)
+            wire_root = kimi_wire_root(adapter)
+            before = _wire_files(wire_root)
+            control.mkdir(parents=True, exist_ok=True)
+            prompt_file = control / "prompt.txt"
+            prompt_file.write_text(prompt_text(payload), encoding="utf-8")
+            argv = launcher + [
+                "--config", str(config_path), "--prompt-file", str(prompt_file),
+                "--model", adapter["model"], "--thinking", adapter["reasoning_effort"],
+            ]
+            environment = {
+                "ELECTRON_RUN_AS_NODE": "1",
+                "DAIMON_CONFIG_PATH": str(config_path),
+            }
+            result = execute(argv, cwd=workspace, stdin="", timeout=timeout,
+                             pass_env=adapter.get("pass_env", []), extra_env=environment)
+            audit = audit_kimi_wire(before, wire_root, adapter["model"], adapter["reasoning_effort"])
+            base["local_lookup_audit"] = audit
+            base["event_types"] = audit.get("event_types", [])
+            base["effective_model"] = audit.get("effective_model")
+            base["effective_reasoning_effort"] = audit.get("effective_reasoning_effort")
+            base["tool_select"] = audit.get("tool_select")
+            base["tool_count"] = audit.get("tool_count")
+            base["usage"] = audit.get("usage")
+            if result["timed_out"]:
+                base["status"] = "timeout"
+                return base
+            if result["exit_code"] != 0 or not result["stdout"].strip():
+                raise ContractError("Kimi failed or produced no final response")
+            if audit["status"] != "no_tool_events_reported":
+                raise ContractError("Kimi wire audit did not complete cleanly")
+            base["response"] = normalize_response(parse_kimi_stdout(result["stdout"]))
         else:
             raise ContractError("Unsupported adapter")
         base["status"] = "ok"
@@ -411,6 +597,19 @@ def adapter_identity(adapter: dict) -> dict:
         home = Path(os.environ.get("DSH_HOME", str(Path.home() / ".dsh")))
         profile = home / "profiles" / adapter.get("profile", "headless")
         identity["profile_sha256"] = hashlib.sha256(b"".join(p.read_bytes() for p in [profile / "package.json", profile / "cordis.patch.yml", home / "cordis.patch.yml"] if p.is_file())).hexdigest()
+    if adapter["adapter"] == "kimi":
+        launcher = kimi_launcher(adapter)
+        config_path = kimi_config_path(adapter)
+        identity["launcher_sha256"] = hashlib.sha256(canonical(launcher).encode()).hexdigest()
+        # Daimon may update its runtime config asynchronously. A long
+        # benchmark can freeze the startup digest explicitly so that this
+        # benign runtime write does not invalidate the run.
+        identity["config_file_sha256"] = adapter.get("config_identity_sha256") or file_sha256(config_path)
+        identity["sandbox"] = "not_verified"
+        identity["filesystem_read_isolation"] = "not_verified"
+        identity["command_tools"] = "reported_only"
+        identity["local_lookup_audit"] = "kimi_wire_events"
+        identity["transport"] = "kimi_daimon_prompt"
     return identity
 
 
@@ -422,3 +621,32 @@ def dsh_launcher(adapter: dict) -> list[str]:
     if launcher[0].lower().endswith((".cmd", ".bat")):
         raise ContractError("Use the native executable + JS entrypoint, not a shell launcher")
     return launcher
+
+
+def kimi_launcher(adapter: dict) -> list[str]:
+    value = os.environ.get(adapter.get("launcher_env", "BENCH_KIMI_LAUNCHER"))
+    launcher = json.loads(value) if value else adapter.get("launcher")
+    if not isinstance(launcher, list) or not launcher or any(not isinstance(a, str) or not a for a in launcher):
+        raise ContractError("Kimi launcher environment must contain a JSON argv array")
+    if launcher[0].lower().endswith((".cmd", ".bat")):
+        raise ContractError("Use PowerShell or a native launcher, not a shell launcher")
+    return launcher
+
+
+def kimi_config_path(adapter: dict) -> Path:
+    value = os.environ.get(adapter.get("config_env", "BENCH_KIMI_CONFIG")) or adapter.get("config_path")
+    if not isinstance(value, str) or not value:
+        raise ContractError("Kimi config path is required")
+    path = Path(value).expanduser().resolve()
+    if not path.is_file():
+        raise ContractError("Kimi config file is unavailable")
+    return path
+
+
+def kimi_wire_root(adapter: dict) -> Path:
+    wire_value = os.environ.get(adapter.get("wire_root_env", "BENCH_KIMI_WIRE_ROOT"))
+    if wire_value:
+        return Path(wire_value).expanduser().resolve()
+    share_value = os.environ.get(adapter.get("share_dir_env", "KIMI_SHARE_DIR"))
+    share = Path(share_value).expanduser() if share_value else Path.home() / ".kimi"
+    return (share / "daimon" / "runtime" / "kimi-code" / "home" / "sessions").resolve()

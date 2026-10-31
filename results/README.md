@@ -11,5 +11,7 @@
 - `engineering-public-luna-sol-r1` 和 `engineering-overall-luna-sol-r1`：Sol 与 Luna 的公开合成题汇总及经授权的全部题目总体汇总。题包、派题顺序、评测引擎、套件驱动、预算和裁判配置与 `engineering-overall-r3` 一致；Codex 客户端执行文件不同，模型服务端实际身份未观测。公开题 token 统计只包含候选调用。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。
 - `engineering-overall-case-retest-r1`：经核验的四个组合总体汇总及条件核验信息，不包含私有题身份或逐题、分类数据。
 - `engineering-overall-ale-r1`：经授权的最新总体汇总；按实际分配尝试计算得分，不包含私有题身份、内容或逐题结果。
+- `engineering-kimi-public-r1`：Kimi K3.1 Pro 在公开 synthetic engineering pack 上的公开聚合与候选 output token 汇总；不包含逐题结果。
+- `engineering-kimi-overall-r1`：经用户授权的 Kimi 私有题库总体计数与耗时聚合；不包含私有题身份、内容、题包元数据、逐题结果或原始收据。
 
 公开合成题的单包 summary 包含 pack 和引擎 SHA256；混合题库只展示总体数量和耗时，不包含私有题包标识或逐题、分类数据。模型字段是请求值，服务端实际模型版本若未被观测则保持未知。私有 case 的输入和明细不在本目录。

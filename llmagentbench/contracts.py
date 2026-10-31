@@ -165,17 +165,32 @@ def load_config(path: Path) -> dict:
 
 def validate_adapter(adapter: dict) -> None:
     kind = adapter.get("adapter")
-    if kind not in {"fixture", "codex", "dsh"}:
+    if kind not in {"fixture", "codex", "dsh", "kimi"}:
         raise ContractError("Unsupported adapter")
-    if kind in {"codex", "dsh"} and not adapter.get("model"):
+    if kind in {"codex", "dsh", "kimi"} and not adapter.get("model"):
         raise ContractError("Real adapters require an explicit model")
-    if "local_lookup_audit" in adapter and (kind not in {"codex", "dsh"} or adapter["local_lookup_audit"] != {
-        "codex": "cli_items_v1", "dsh": "dsh_json_v1"
-    }.get(kind)):
+    audit_names = {"codex": "cli_items_v1", "dsh": "dsh_json_v1", "kimi": "kimi_wire_v1"}
+    if "local_lookup_audit" in adapter and (kind not in audit_names or adapter["local_lookup_audit"] != audit_names[kind]):
         raise ContractError("Unsupported local lookup audit")
     if "codex_transport" in adapter and (kind != "codex" or adapter["codex_transport"] != "https"):
         raise ContractError("Unsupported Codex transport")
     if kind == "dsh" and not adapter.get("provider"):
         raise ContractError("DSH requires an explicit provider route")
+    if kind == "kimi":
+        if adapter.get("local_lookup_audit") != "kimi_wire_v1":
+            raise ContractError("Kimi requires the wire event audit")
+        if adapter.get("reasoning_effort") not in {"low", "high", "max"}:
+            raise ContractError("Kimi requires an explicit supported reasoning effort")
+        if "config_identity_sha256" in adapter and (
+                not isinstance(adapter["config_identity_sha256"], str)
+                or not re.fullmatch(r"[0-9a-fA-F]{64}", adapter["config_identity_sha256"])):
+            raise ContractError("Invalid Kimi config identity SHA256")
+        for key in ("launcher_env", "config_env", "wire_root_env", "share_dir_env"):
+            if key in adapter and (not isinstance(adapter[key], str) or not adapter[key]):
+                raise ContractError(f"Invalid Kimi {key}")
+        if "launcher" in adapter and (not isinstance(adapter["launcher"], list)
+                                       or not adapter["launcher"]
+                                       or any(not isinstance(item, str) or not item for item in adapter["launcher"])):
+            raise ContractError("Invalid Kimi launcher")
     if kind == "fixture" and not isinstance(adapter.get("responses"), dict):
         raise ContractError("Fixture responses must be explicit")

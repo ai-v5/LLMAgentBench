@@ -32,5 +32,16 @@ def execute(argv: list[str], *, cwd: Path, stdin: str, timeout: float, pass_env:
             subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
         else:
             os.killpg(process.pid, signal.SIGKILL)
-        stdout, stderr = process.communicate(timeout=10)
+        try:
+            stdout, stderr = process.communicate(timeout=10)
+        except subprocess.TimeoutExpired:
+            # A detached child can keep the inherited pipes open after the
+            # launcher is killed. The timed-out call is already terminal; do
+            # not block the evaluator on those pipes or serialize their raw
+            # contents.
+            try:
+                process.kill()
+            except OSError:
+                pass
+            stdout, stderr = "", ""
     return {"exit_code": process.returncode, "stdout": stdout, "stderr": stderr, "timed_out": timed_out}

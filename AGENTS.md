@@ -2,7 +2,7 @@
 
 - This is a public repository. Use synthetic inputs only. Private cases and private results belong in a separate private repository.
 - Develop in an independent worktree. Preserve existing changes. Explicitly stage only task files.
-- Scope: Codex and DSH headless adapters. Fixture adapters test this evaluator and must remain labelled `FIXTURE_SMOKE`.
+- Scope: Codex, DSH headless, and Kimi Daimon prompt adapters. Fixture adapters test this evaluator and must remain labelled `FIXTURE_SMOKE`.
 - The evaluator owns case inputs, grading scripts, budgets, order, receipts and result aggregation. Candidate output must never define its own pass/fail status.
 - Run `python -m pytest` after logical changes. Include negative controls for changes to scoring, isolation, export or receipt integrity.
 - Missing grades are `unscored`; failed, errored and timed-out attempts stay in the denominator. First-attempt success and success after automatic repair are separate metrics.
