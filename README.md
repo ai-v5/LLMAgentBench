@@ -6,6 +6,12 @@
 
 当前模式是 `response_patch`：候选返回答案和文件内容，由评估器应用修改并执行独立检查。完整终端操作、多人协作和长时间部署任务尚未实现，不能用 smoke 推断这些能力。评估器会执行候选代码；语法限制与目录分离不是恶意代码沙箱，运行不可信代码应先隔离整个评估环境。结果仅供参考，详细范围和责任见[免责声明](DISCLAIMER.md)。
 
+Codex 调用显式配置为不注入或生成本机记忆；但沿用原 Codex 目录时，全局 `AGENTS.md` 仍可能注入，`read-only` 只读模式也不等于工作区外文件不可读。收据分别标记这些配置与未核实的文件读取隔离。需要严格隔离时，请先在独立环境验证上下文和可读范围，再运行模型。历史结果未记录这一隔离核验，不能据此断言模型当时无法访问本机文件。
+
+可运行 `python scripts/probe_codex_context.py --out .bench-runs/context-probe-001` 检查合成的全局与项目指令是否进入调试上下文；Windows 还可运行 `python scripts/probe_codex_readonly.py --out .bench-runs/read-probe-001`，对内置只读、unelevated 沙箱做合成文件读访问诊断。两者都不调用模型、不读取本机记忆；诊断结果只针对各自探针，不能认证其他沙箱或历史模型调用。
+
+Codex 候选可显式配置 `"local_lookup_audit": "cli_items_v1"`，配置关闭记忆及命令工具，并以 CLI 报告的事件抽查工具使用；发现工具事件或事件不完整、异常时该轮不评分。收据只记录脱敏的状态，不保存命令或工具输出。`python scripts/probe_codex_tool_events.py --out .bench-runs/tool-event-probe-001` 使用本机模拟服务与合成文件检查一条命令读取路径的可见性；加 `--commands-disabled` 可检查命令工具关闭时的同一路径。这些探针不调用模型。CLI 事件不一定覆盖所有嵌套调用，因此未报告工具事件不能证明本地文件绝对不可读或未被访问。需要 HTTPS 时可另设 `"codex_transport": "https"`，仅对该次调用配置使用官方认证的 HTTPS provider，收据记录此条件。
+
 ## 运行
 
 Python 3.11+，运行时只有标准库。在仓库根目录执行，无需安装依赖。
@@ -37,6 +43,8 @@ python -m llmagentbench run --pack examples/public/pack.json --config local/dsh.
 ```
 
 Windows Desktop 安装可用其原生 Electron 可执行文件和随附 CLI JS 入口，并设 `electron_run_as_node: true`；不使用 `.cmd`/`.bat` 或 shell 拼接。profile 必须预先准备，评估器不修改它。新会话会由 DSH 持久保存。
+
+DSH 候选也可显式配置 `"local_lookup_audit": "dsh_json_v1"`，用单次 overlay 关闭内置指令与常用工具，并检查 headless JSON 事件。工具事件存在或控制事件不完整时不评分；思考或文本事件的内容被 CLI 截断不影响独立工具事件检查。收据记录可执行文件与程序包指纹及抽查状态，不保存工具参数或输出。该检查依赖客户端报告，不证明文件系统隔离，也不能排除其他未报告的访问。
 
 ## 两仓边界
 

@@ -270,6 +270,9 @@ def test_codex_is_noninteractive_read_only_and_schema_bound(tmp_path, monkeypatc
     def fake_execute(argv, **kwargs):
         assert "--ignore-user-config" in argv and "--ephemeral" in argv
         assert argv[argv.index("--sandbox") + 1] == "read-only"
+        assert any(argv[i:i+2] == ['--disable','memories'] for i in range(len(argv)-1))
+        assert 'memories.use_memories=false' in argv and 'memories.generate_memories=false' in argv
+        assert 'local memories' in kwargs['stdin']
         assert "expected" not in kwargs["stdin"]
         Path(argv[argv.index("--output-last-message") + 1]).write_text(json.dumps({"answer": "{\"ok\":true}", "files": []}))
         return {"exit_code": 0, "timed_out": False, "stdout": '{"type":"turn.completed","usage":{"input_tokens":2,"output_tokens":3}}\n', "stderr": ""}
@@ -279,6 +282,30 @@ def test_codex_is_noninteractive_read_only_and_schema_bound(tmp_path, monkeypatc
     assert call["response"]["answer"] == {"ok": True}
     assert call["usage"]["output_tokens"] == 3
     assert call["observed_model"] is None
+    identity = adapters.adapter_identity({"adapter":"codex", "model":"test-model"})
+    assert identity['memory_injection'] == 'configured_disabled'
+    assert identity['global_instructions'] == 'not_isolated'
+    assert identity['filesystem_read_isolation'] == 'not_verified'
+
+
+def test_codex_tool_telemetry_omits_command_and_unknown_item_content(tmp_path, monkeypatch):
+    monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
+    def fake_execute(argv, **kwargs):
+        Path(argv[argv.index('--output-last-message') + 1]).write_text(json.dumps({'answer':'ok','files':[]}))
+        events = [
+            {'type':'item.started','item':{'type':'command_execution','command':'synthetic-private-marker'}},
+            {'type':'item.completed','item':{'type':'unknown-synthetic-private-marker','text':'synthetic-private-marker'}},
+            {'type':'unknown-synthetic-private-marker'},
+            {'type':'turn.completed','usage':{'input_tokens':'synthetic-private-marker','output_tokens':1,
+                                              'unknown':'synthetic-private-marker'}},
+        ]
+        return {'exit_code':0,'timed_out':False,'stdout':'\n'.join(json.dumps(e) for e in events) + '\n[]\nnull\n','stderr':''}
+    monkeypatch.setattr(adapters,'execute',fake_execute)
+    call = adapters.invoke({'adapter':'codex','model':'test-model'}, {'case_id':'test','round':0}, tmp_path, tmp_path/'control', 5)
+    assert call['reported_item_types'] == ['command_execution','other']
+    assert 'other' in call['event_types']
+    assert call['usage'] == {'output_tokens':1}
+    assert 'synthetic-private-marker' not in json.dumps(call)
 
 
 @pytest.mark.parametrize("reason,exit_code,expected", [("completed", 0, "ok"), ("error", 0, "error"), ("completed", 1, "error")])

@@ -2,10 +2,10 @@
 (function () {
   "use strict";
   const BATCHES = [
-    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-case-retest-r1/terra-dsh-summary.json",
+    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-ale-r1/terra-dsh-summary.json",
       tokens: "results/engineering-public-r3/token-usage.json", revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
       models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra", "DSH V4.1 Flash 1017": "ds-v4.1-flash-1017" } },
-    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-case-retest-r1/sol-luna-summary.json",
+    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-ale-r1/sol-luna-summary.json",
       tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
       comparison: "results/engineering-public-luna-sol-r1/comparison.json",
       revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 2,
@@ -18,12 +18,15 @@
   let currentSort = null;
 
   function validate(summary) {
-    if (!summary || summary.schema_version !== 1 || !Number.isInteger(summary.case_count) || summary.case_count < 1 ||
-        !Number.isInteger(summary.repeats) || summary.repeats < 1 ||
+    if (!summary || ![1, 2].includes(summary.schema_version) || !Number.isInteger(summary.case_count) || summary.case_count < 1 ||
+        (summary.schema_version === 1 && (!Number.isInteger(summary.repeats) || summary.repeats < 1)) ||
+        (summary.schema_version === 2 && summary.denominator !== "assigned_attempts") ||
         !Array.isArray(summary.candidates) || summary.candidates.length !== 2) throw new Error("Invalid summary");
     for (const row of summary.candidates) {
       if (!row || typeof row.label !== "string" || !row.label.trim() || row.evidence !== "MODEL_RUN" ||
-          !Number.isInteger(row.assigned) || row.assigned !== summary.case_count * summary.repeats ||
+          !Number.isInteger(row.assigned) ||
+          (summary.schema_version === 1 && row.assigned !== summary.case_count * summary.repeats) ||
+          (summary.schema_version === 2 && row.assigned < summary.case_count) ||
           !count(row.first_passed) || states.some((key) => !count(row[key])) ||
           states.reduce((sum, key) => sum + row[key], 0) !== row.assigned || row.first_passed > row.passed ||
           !number(row.attempt_seconds) || row.attempt_seconds <= 0 ||
@@ -37,12 +40,13 @@
       }
     }
     if (new Set(summary.candidates.map((row) => row.label)).size !== summary.candidates.length) throw new Error("Duplicate candidate");
+    if (summary.schema_version === 2 && new Set(summary.candidates.map((row) => row.assigned)).size !== 1) throw new Error("Inconsistent assignments");
   }
 
   function derive(publicData, overallData, usage) {
     validate(publicData);
     validate(overallData);
-    if (publicData.repeats !== overallData.repeats || publicData.case_count > overallData.case_count) {
+    if ((overallData.schema_version === 1 && publicData.repeats !== overallData.repeats) || publicData.case_count > overallData.case_count) {
       throw new Error("Incompatible score summaries");
     }
     if (usage && (usage.schema_version !== 2 || usage.case_count !== publicData.case_count ||
@@ -106,6 +110,16 @@
     }
   }
 
+  function validateOverallProvenance(value) {
+    if (!value || value.schema_version !== 1 || value.authorized_private_overall !== true ||
+        value.private_details_exported !== false || value.assigned_attempts_verified !== true ||
+        value.denominator !== "assigned_attempts" || !Array.isArray(value.requested_models) ||
+        value.requested_models.slice().sort().join(",") !==
+          ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"].sort().join(",")) {
+      throw new Error("Overall provenance unavailable");
+    }
+  }
+
   function sortRows() {
     if (!currentSort) return;
     const body = document.querySelector(".results-table tbody");
@@ -162,6 +176,9 @@
         const revision = await fetch(batch.revision, { cache: "no-cache" });
         if (!revision.ok) throw new Error("Case revision provenance unavailable");
         validateRevision(await revision.json());
+        const overallProvenance = await fetch("results/engineering-overall-ale-r1/provenance.json", { cache: "no-cache" });
+        if (!overallProvenance.ok) throw new Error("Overall provenance unavailable");
+        validateOverallProvenance(await overallProvenance.json());
         if (batch.comparison) {
           const provenance = await fetch(batch.comparison, { cache: "no-cache" });
           if (!provenance.ok) throw new Error("Suite comparison unavailable");

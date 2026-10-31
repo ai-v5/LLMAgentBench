@@ -169,6 +169,12 @@ def validate_adapter(adapter: dict) -> None:
         raise ContractError("Unsupported adapter")
     if kind in {"codex", "dsh"} and not adapter.get("model"):
         raise ContractError("Real adapters require an explicit model")
+    if "local_lookup_audit" in adapter and (kind not in {"codex", "dsh"} or adapter["local_lookup_audit"] != {
+        "codex": "cli_items_v1", "dsh": "dsh_json_v1"
+    }.get(kind)):
+        raise ContractError("Unsupported local lookup audit")
+    if "codex_transport" in adapter and (kind != "codex" or adapter["codex_transport"] != "https"):
+        raise ContractError("Unsupported Codex transport")
     if kind == "dsh" and not adapter.get("provider"):
         raise ContractError("DSH requires an explicit provider route")
     if kind == "fixture" and not isinstance(adapter.get("responses"), dict):
