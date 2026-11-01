@@ -107,6 +107,25 @@ def test_candidate_cannot_modify_protected_note(tmp_path):
     assert all(a["outcome"] == "fail" and len(a["rounds"]) == 1 for a in attempted)
 
 
+def test_format_error_is_a_case_failure(monkeypatch, tmp_path):
+    import llmagentbench.runner as runner_module
+
+    config = demo_config()
+    config["repeats"] = 1
+    config["max_repair_rounds"] = 0
+    config["candidates"] = [config["candidates"][0]]
+
+    def fake_invoke(*args, **kwargs):
+        return {"status": "format_error", "response": None, "usage": None,
+                "cost_usd": None, "requested_model": "fixture", "observed_model": None,
+                "evidence_level": "FIXTURE_SMOKE", "adapter": "fixture", "error": "KimiFormatError"}
+
+    monkeypatch.setattr(runner_module, "invoke", fake_invoke)
+    record = run(load_pack(PACK), config, tmp_path / "format-error")
+    assert all(attempt["outcome"] == "fail" for attempt in record["attempts"])
+    assert all(attempt["rounds"][0]["checks"][0]["id"] == "response_contract" for attempt in record["attempts"])
+
+
 def test_large_numeric_answer_is_a_failure_and_does_not_abort_matrix(tmp_path):
     config = demo_config()
     config["repeats"] = 1

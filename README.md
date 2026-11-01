@@ -54,7 +54,7 @@ $env:BENCH_KIMI_CONFIG = 'C:/Users/you/.kimi/daimon/config.json'
 python -m llmagentbench run --pack examples/public/pack.json --config local/kimi.json --out .bench-runs/kimi
 ```
 
-Kimi 候选必须固定 `model`、`reasoning_effort` 和 `local_lookup_audit: "kimi_wire_v1"`。Daimon 会异步改写配置文件的长批次可在候选中提供运行前计算的 `config_identity_sha256`，把启动配置身份冻结在收据中。适配器把 `answer/files` 解析为统一响应，读取单次 wire 收据的 model、thinking、usage 和工具事件摘要；报告到工具调用、wire 缺失或配置不匹配时，该轮为 error。wire 审计是客户端事件观察，不等于操作系统文件隔离；默认工作目录由 Kimi 配置决定，严格隔离需要在独立运行环境中验证。
+Kimi 候选必须固定 `model`、`reasoning_effort` 和 `local_lookup_audit: "kimi_wire_v1"`。提示要求只输出一个严格的 `{answer, files}` JSON 对象；适配器只移除明确的 Daimon 运行日志并允许合法多行 JSON，代码围栏、前后夹杂文本、多个 JSON 或字段不合格会作为 case 失败。Daimon 会异步改写配置文件的长批次可在候选中提供运行前计算的 `config_identity_sha256`，把启动配置身份冻结在收据中。适配器把 `answer/files` 解析为统一响应，读取单次 wire 收据的 model、thinking、usage 和工具事件摘要；报告到工具调用、wire 缺失或配置不匹配时，该轮为 error。wire 审计是客户端事件观察，不等于操作系统文件隔离；默认工作目录由 Kimi 配置决定，严格隔离需要在独立运行环境中验证。长批次应使用独立的 `KIMI_SHARE_DIR`，避免与桌面 Kimi 的 daemon 状态和锁相互污染。
 
 ## 两仓边界
 

@@ -49,9 +49,25 @@ def test_kimi_wire_audit_rejects_reported_tool_activity_without_payload(tmp_path
 
 def test_kimi_stdout_parser_ignores_daimon_logs():
     text = "2026-10-31T00:00:00Z INFO standalone-runtime startup complete\n" \
-           + "{\"answer\":\"ok\",\"files\":[]}\n" \
+           + "{\n  \"answer\": \"ok\",\n  \"files\": []\n}\n" \
            + "2026-10-31T00:00:01Z INFO standalone-runtime shutdown complete\n"
     assert adapters.parse_kimi_stdout(text) == {"answer": "ok", "files": []}
+
+
+@pytest.mark.parametrize("text", [
+    "```json\n{\"answer\":\"ok\",\"files\":[]}\n```",
+    "prefix\n{\"answer\":\"ok\",\"files\":[]}",
+    "{\"answer\":\"ok\",\"files\":[]}\n{\"answer\":\"again\",\"files\":[]}",
+])
+def test_kimi_stdout_parser_rejects_non_strict_format(text):
+    with pytest.raises(ContractError):
+        adapters.parse_kimi_stdout(text)
+
+
+def test_kimi_prompt_requires_strict_json_object():
+    text = adapters.prompt_text_for({"case_id": "x", "round": 0}, adapter="kimi")
+    assert "exactly the keys answer and files" in text
+    assert "Do not output Markdown fences" in text
 
 
 def test_kimi_invoke_binds_model_effort_and_wire_audit(tmp_path, monkeypatch):
@@ -131,6 +147,31 @@ def test_kimi_invoke_fails_closed_when_wire_is_missing(tmp_path, monkeypatch):
     call = adapters.invoke(candidate, {"case_id": "x", "round": 0}, tmp_path, tmp_path / "control", 5)
     assert call["status"] == "error"
     assert call["local_lookup_audit"]["status"] == "inconclusive"
+
+
+def test_kimi_invoke_marks_invalid_response_as_format_error(tmp_path, monkeypatch):
+    config = tmp_path / "kimi-config.json"
+    config.write_text("{}", encoding="utf-8")
+    wire_root = tmp_path / "wire"
+    monkeypatch.setenv("TEST_KIMI_LAUNCHER", json.dumps(["powershell.exe", "-File", "synthetic.ps1"]))
+    monkeypatch.setenv("TEST_KIMI_CONFIG", str(config))
+    monkeypatch.setenv("TEST_KIMI_WIRE_ROOT", str(wire_root))
+
+    def fake_execute(argv, **kwargs):
+        write_wire(wire_root)
+        return {"exit_code": 0, "timed_out": False,
+                "stdout": "{\"answer\":\"ok\",\"files\":[]}\nextra", "stderr": ""}
+
+    monkeypatch.setattr(adapters, "execute", fake_execute)
+    candidate = {
+        "adapter": "kimi", "model": "k3d1-agent", "reasoning_effort": "max",
+        "local_lookup_audit": "kimi_wire_v1", "launcher_env": "TEST_KIMI_LAUNCHER",
+        "config_env": "TEST_KIMI_CONFIG", "wire_root_env": "TEST_KIMI_WIRE_ROOT",
+    }
+    call = adapters.invoke(candidate, {"case_id": "x", "round": 0}, tmp_path, tmp_path / "control", 5)
+    assert call["status"] == "format_error"
+    assert call["response"] is None
+    assert call["error"] == "KimiFormatError"
 
 
 def test_kimi_identity_freezes_launcher_and_config_hash(tmp_path, monkeypatch):
