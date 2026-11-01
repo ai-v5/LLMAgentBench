@@ -3,10 +3,10 @@
   "case_count": 8,
   "repeats": 1,
   "source_receipt_sha256": [
-    "b93714189088b3cf5019b778d56bc650826509fbdb6d862e6bbfe7a53401e796"
+    "57bde7dae467e5711740bbe4d1e2c31c0102fa462a280d944ae807ebd57d3d14"
   ],
-  "engine_sha256": "efcf4b3d8c073beb4e31682d2d780c9afa0b677e00e49d08091a840b64913600",
-  "config_sha256": "72a335cd0df4be1ca4b09f8c956eb27a794c7f0f82932849f1dccd8319f764f9",
+  "engine_sha256": "ec17e7ddbd2b305a063eccd16be4eda6a9fb1fcf68fdfe363b76a5e5c907b26e",
+  "config_sha256": "0446f74a6fa569684715fe73c62b774d4f0fbc2b92ce03649e3f0487adfd8fa0",
   "candidates": [
     {
       "label": "Kimi K3.1 Pro",
@@ -18,8 +18,8 @@
       "assigned": 8,
       "candidate_calls": 8,
       "usage_calls": 8,
-      "output_tokens": 4572,
-      "candidate_call_seconds": 158.313
+      "output_tokens": 3441,
+      "candidate_call_seconds": 141.437
     }
   ]
 }

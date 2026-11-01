@@ -7,18 +7,18 @@
       "label": "Kimi K3.1 Pro",
       "evidence": "MODEL_RUN",
       "assigned": 8,
-      "first_passed": 5,
-      "passed": 5,
+      "first_passed": 6,
+      "passed": 6,
       "failed": 2,
       "unscored": 0,
-      "errors": 1,
+      "errors": 0,
       "timeouts": 0,
-      "attempt_seconds": 158.423,
-      "candidate_call_seconds": 158.313,
+      "attempt_seconds": 141.579,
+      "candidate_call_seconds": 141.43699999999998,
       "judge_call_seconds": 0,
-      "mean_attempt_seconds": 19.802875,
-      "mean_pass_seconds": 13.1282,
-      "effective_passes_per_hour": 113.61986580231405
+      "mean_attempt_seconds": 17.697375,
+      "mean_pass_seconds": 19.552333333333333,
+      "effective_passes_per_hour": 152.56499904646876
     }
   ]
 }
