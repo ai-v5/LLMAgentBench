@@ -131,7 +131,11 @@ def run(pack: dict, config: dict, output: Path) -> dict:
             verify_frozen_identity()
             checks, judge_calls = [], []
             state = call["status"]
-            if state == "ok":
+            if state == "format_error":
+                checks = [{"id": "response_contract", "type": "response", "status": "fail",
+                           "reason": "invalid_response_format"}]
+                state = outcome(checks)
+            elif state == "ok":
                 try:
                     for change in call["response"]["files"]:
                         if change["path"] not in case.get("allowed_write_paths", []):

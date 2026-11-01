@@ -14,7 +14,8 @@ def child_env(pass_env: list[str] = ()) -> dict[str, str]:
     return {key: value for key, value in os.environ.items() if key.upper() in names}
 
 
-def execute(argv: list[str], *, cwd: Path, stdin: str, timeout: float, pass_env: list[str] = (), extra_env: dict | None = None) -> dict:
+def execute(argv: list[str], *, cwd: Path, stdin: str, timeout: float, pass_env: list[str] = (),
+            extra_env: dict | None = None, timeout_grace_seconds: float = 0) -> dict:
     environment = child_env(pass_env)
     environment.update(extra_env or {})
     process = subprocess.Popen(
@@ -28,20 +29,30 @@ def execute(argv: list[str], *, cwd: Path, stdin: str, timeout: float, pass_env:
         stdout, stderr = process.communicate(stdin, timeout=timeout)
     except subprocess.TimeoutExpired:
         timed_out = True
+        cleaned = False
         if os.name == "nt":
-            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
+            if timeout_grace_seconds > 0:
+                try:
+                    process.send_signal(signal.CTRL_BREAK_EVENT)
+                    stdout, stderr = process.communicate(timeout=timeout_grace_seconds)
+                    cleaned = True
+                except (OSError, ValueError, subprocess.TimeoutExpired):
+                    pass
+            if not cleaned:
+                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
         else:
             os.killpg(process.pid, signal.SIGKILL)
-        try:
-            stdout, stderr = process.communicate(timeout=10)
-        except subprocess.TimeoutExpired:
-            # A detached child can keep the inherited pipes open after the
-            # launcher is killed. The timed-out call is already terminal; do
-            # not block the evaluator on those pipes or serialize their raw
-            # contents.
+        if not cleaned:
             try:
-                process.kill()
-            except OSError:
-                pass
-            stdout, stderr = "", ""
+                stdout, stderr = process.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                # A detached child can keep the inherited pipes open after the
+                # launcher is killed. The timed-out call is already terminal;
+                # do not block the evaluator on those pipes or serialize raw
+                # contents.
+                try:
+                    process.kill()
+                except OSError:
+                    pass
+                stdout, stderr = "", ""
     return {"exit_code": process.returncode, "stdout": stdout, "stderr": stderr, "timed_out": timed_out}
