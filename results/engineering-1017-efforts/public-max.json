@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_count": 12,
+  "repeats": 2,
+  "pack_version": "20261108",
+  "candidates": [
+    {
+      "label": "DSH V4.1 Flash 1017 · max",
+      "evidence": "MODEL_RUN",
+      "assigned": 24,
+      "first_passed": 19,
+      "passed": 22,
+      "failed": 2,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 1170.173,
+      "candidate_call_seconds": 1003.846,
+      "judge_call_seconds": 121.031,
+      "mean_attempt_seconds": 48.757208,
+      "mean_pass_seconds": 41.498636,
+      "effective_passes_per_hour": 67.6823
+    }
+  ]
+}

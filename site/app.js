@@ -6,20 +6,45 @@
       tokens: "results/engineering-public-r3/token-usage.json", revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
       revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra", "DSH V4.1 Flash 1017": "ds-v4.1-flash-1017" } },
+      exclude: ["DSH V4.1 Flash 1017"],
+      models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra" } },
     { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-ale-r1/sol-luna-summary.json",
       tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
       comparison: "results/engineering-public-luna-sol-r1/comparison.json",
-      revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 2,
+      revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 1,
       revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol", "Codex GPT-6 Luna": "gpt-6-luna" } },
     { public: "results/engineering-kimi-public-r1/summary.json", overall: "results/engineering-kimi-overall-r1/summary.json",
       tokens: "results/engineering-kimi-public-r1/token-usage.json",
       revision: "results/engineering-kimi-overall-r1/provenance.json",
-      overall_provenance: "results/engineering-kimi-overall-r1/provenance.json", offset: 4,
+      overall_provenance: "results/engineering-kimi-overall-r1/provenance.json", offset: 3,
       revision_models: ["k3d1-agent"], overall_models: ["k3d1-agent"],
       models: { "Kimi K3.1 Pro": "k3d1-agent" } },
+    { public: "results/engineering-1017-efforts/public-low.json", overall: "results/engineering-1017-efforts/overall-low.json",
+      tokens: "results/engineering-1017-efforts/tokens-low.json",
+      revision: "results/engineering-1017-efforts/revision.json",
+      overall_provenance: "results/engineering-1017-efforts/provenance.json", offset: 4,
+      revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
+      models: { "DSH V4.1 Flash 1017 · low": "ds-v4.1-flash-1017" } },
+    { public: "results/engineering-1017-efforts/public-high.json", overall: "results/engineering-1017-efforts/overall-high.json",
+      tokens: "results/engineering-1017-efforts/tokens-high.json",
+      revision: "results/engineering-1017-efforts/revision.json",
+      overall_provenance: "results/engineering-1017-efforts/provenance.json", offset: 5,
+      revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
+      models: { "DSH V4.1 Flash 1017 · high": "ds-v4.1-flash-1017" } },
+    { public: "results/engineering-1017-efforts/public-xhigh.json", overall: "results/engineering-1017-efforts/overall-xhigh.json",
+      tokens: "results/engineering-1017-efforts/tokens-xhigh.json",
+      revision: "results/engineering-1017-efforts/revision.json",
+      overall_provenance: "results/engineering-1017-efforts/provenance.json", offset: 6,
+      revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
+      models: { "DSH V4.1 Flash 1017 · xhigh": "ds-v4.1-flash-1017" } },
+    { public: "results/engineering-1017-efforts/public-max.json", overall: "results/engineering-1017-efforts/overall-max.json",
+      tokens: "results/engineering-1017-efforts/tokens-max.json",
+      revision: "results/engineering-1017-efforts/revision.json",
+      overall_provenance: "results/engineering-1017-efforts/provenance.json", offset: 7,
+      revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
+      models: { "DSH V4.1 Flash 1017 · max": "ds-v4.1-flash-1017" } },
   ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
   const number = (value) => typeof value === "number" && Number.isFinite(value);
@@ -87,7 +112,8 @@
           tokens = { count: row.output_tokens, seconds: row.candidate_call_seconds, rate: row.output_tokens / row.candidate_call_seconds };
         }
       }
-      return { label: item.label, publicFirst: item.first_passed / item.assigned * 100,
+      return { label: item.label, packVersion: publicData.pack_version || overallData.pack_version || null,
+        publicFirst: item.first_passed / item.assigned * 100,
         publicFinal: item.passed / item.assigned * 100, overallFirst: total.first_passed / total.assigned * 100,
         overallFinal: total.passed / total.assigned * 100,
         publicIssues: [item.unscored, item.errors, item.timeouts],
@@ -154,6 +180,7 @@
       const index = position + offset;
       const attr = (name) => "[" + name + '="' + index + '"]';
       put(attr("data-name"), row.label);
+      put(attr("data-pack"), "题库 " + (row.packVersion || "未标注"));
       put(attr("data-public-first"), row.publicFirst.toFixed(1) + "%");
       put(attr("data-public-final"), finalText(row.publicFinal, row.publicIssues));
       put(attr("data-all-first"), row.overallFirst.toFixed(1) + "%");
@@ -199,7 +226,13 @@
         }
         const responses = await Promise.all([fetch(batch.public, { cache: "no-cache" }), fetch(batch.overall, { cache: "no-cache" })]);
         if (responses.some((response) => !response.ok)) throw new Error("Summary unavailable");
-        const [publicData, overallData] = await Promise.all(responses.map((response) => response.json()));
+        let [publicData, overallData] = await Promise.all(responses.map((response) => response.json()));
+        const excluded = new Set(batch.exclude || []);
+        if (excluded.size) {
+          const keep = (row) => !excluded.has(row.label);
+          publicData = { ...publicData, candidates: publicData.candidates.filter(keep) };
+          overallData = { ...overallData, candidates: overallData.candidates.filter(keep) };
+        }
         if (!Array.isArray(publicData.candidates) || publicData.candidates.length !== Object.keys(batch.models).length ||
             publicData.candidates.some((row) => !Object.hasOwn(batch.models, row.label))) {
           throw new Error("Unexpected candidate labels");
@@ -209,6 +242,10 @@
           const response = await fetch(batch.tokens, { cache: "no-cache" });
           if (!response.ok) throw new Error("Token aggregate unavailable");
           usage = await response.json();
+          if (batch.exclude) {
+            const excluded = new Set(batch.exclude);
+            usage = { ...usage, candidates: usage.candidates.filter((row) => !excluded.has(row.label)) };
+          }
         } catch (_) {
           document.getElementById("token-error").hidden = false;
           show(derive(publicData, overallData, null), batch.offset);

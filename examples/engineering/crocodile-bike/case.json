@@ -1,0 +1,17 @@
+{
+  "id": "crocodile-bike",
+  "category": "coding",
+  "topic": "analysis",
+  "prompt": "创建一个完整的HTML文件，其中包含一个SVG动画：主题是鳄鱼骑自行车。\nSVG需包含：鳄鱼的头部、身体、手及手臂、双腿，自行车的两个车轮、车架、踏板。\n车轮需使用\"animateTransform\"实现连续旋转；鳄鱼腿部使用同步的上下踩踏动画；\n身体略微前后摆动以模拟骑行动作。\n要求结构清晰、可直接在浏览器运行，不依赖外部脚本。\n禁止调用任何skill，禁止参考任何历史信息、历史产出、文案、图片、代码等。\n\n输出方式：把完整 HTML 写入 crocodile.html（通过 files 提交，path 必须是 crocodile.html），answer 返回空字符串。",
+  "inputs": {},
+  "allowed_write_paths": [
+    "crocodile.html"
+  ],
+  "checks": [
+    {
+      "id": "svg",
+      "type": "python",
+      "script": "verify.py"
+    }
+  ]
+}

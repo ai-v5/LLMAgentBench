@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "public-benchmark-v1",
+  "version": "20261110",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "benchmark",
+  "cases": [
+    "examples/engineering/quality-rate/case.json",
+    "examples/engineering/native-rank-proof/case.json",
+    "examples/engineering/oom-terminal/case.json",
+    "examples/engineering/wss-proxy-triage/case.json",
+    "examples/engineering/review-batch-proof/case.json",
+    "examples/engineering/review-dirty-cleanup/case.json",
+    "examples/engineering/slo-goodput/case.json",
+    "examples/engineering/overlap-proxy/case.json",
+    "examples/engineering/crocodile-bike/case.json",
+    "examples/public/roofline/case.json",
+    "examples/public/unknown/case.json",
+    "examples/public/patch/case.json",
+    "examples/public/explanation/case.json"
+  ]
+}

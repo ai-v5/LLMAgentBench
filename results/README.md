@@ -13,5 +13,6 @@
 - `engineering-overall-ale-r1`：经授权的最新总体汇总；按实际分配尝试计算得分，不包含私有题身份、内容或逐题结果。
 - `engineering-kimi-public-r1`：Kimi K3.1 Pro 在公开 synthetic engineering pack 上的公开聚合与候选 output token 汇总；不包含逐题结果。
 - `engineering-kimi-overall-r1`：经用户授权的 Kimi 私有题库总体计数与耗时聚合；不包含私有题身份、内容、题包元数据、逐题结果或原始收据。
+- `public-benchmark-v1`（pack）后续修订：`quality-rate` 明确 elapsed 计入所有 status，`wss-proxy-triage` 明确 `UNKNOWN` 的判定规则；新增 `crocodile-bike`（HTML/SVG 绘图）。16 道高难度题位于独立私仓，题名与内容不在本仓公开，只发布其总体计数。上列所有基于旧口径或旧 pack 的结果不可与修订后的 pack 逐位比较。
 
-公开合成题的单包 summary 包含 pack 和引擎 SHA256；混合题库只展示总体数量和耗时，不包含私有题包标识或逐题、分类数据。模型字段是请求值，服务端实际模型版本若未被观测则保持未知。私有 case 的输入和明细不在本目录。
+公开合成题的单包 summary 包含 pack 版本、pack 和引擎 SHA256；版本规则见 docs/RUNBOOK.md（YYYYMMDD，同日多次修改加 -vN）；混合题库只展示总体数量和耗时，不包含私有题包标识或逐题、分类数据。模型字段是请求值，服务端实际模型版本若未被观测则保持未知。私有 case 的输入和明细不在本目录。

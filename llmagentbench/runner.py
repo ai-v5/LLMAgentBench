@@ -71,7 +71,8 @@ def run(pack: dict, config: dict, output: Path) -> dict:
     record = {
         "schema_version": 1, "run_id": output.name, "created_at": datetime.now(timezone.utc).isoformat(),
         "engine_version": __version__, "engine_sha256": engine_digest(), "python_version": platform.python_version(),
-        "platform": platform.system(), "pack_id": manifest["id"], "pack_sha256": pack["sha256"],
+        "platform": platform.system(), "pack_id": manifest["id"], "pack_version": pack.get("version"),
+        "pack_sha256": pack["sha256"],
         "visibility": manifest["visibility"], "synthetic": manifest["synthetic"],
         "purpose": manifest.get("purpose", "benchmark"),
         "case_ids": [e["definition"]["id"] for e in pack["cases"]],

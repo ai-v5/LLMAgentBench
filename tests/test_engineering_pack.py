@@ -9,11 +9,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_every_engineering_case_has_positive_and_negative_controls(tmp_path):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
-    assert len(pack['cases']) == 8
-    assert {c['definition']['topic'] for c in pack['cases']} == {'coding', 'diagnosis', 'review', 'performance'}
-    assert all(sum(c['definition']['topic'] == t for c in pack['cases']) == 2 for t in ('coding', 'diagnosis', 'review', 'performance'))
+    assert len(pack['cases']) == 13
+    pack['cases'] = [entry for entry in pack['cases'] if entry['definition']['id'] in controls]
+    assert len(pack['cases']) == 9
+    topics = [c['definition']['topic'] for c in pack['cases']]
+    assert set(topics) == {'coding', 'diagnosis', 'review', 'performance', 'analysis'}
+    assert all(topics.count(t) >= 1 for t in ('coding', 'diagnosis', 'review', 'performance', 'analysis'))
     assert set(controls) == {c['definition']['id'] for c in pack['cases']}
     for entry in pack['cases']:
         case = entry['definition']
@@ -30,7 +33,7 @@ def test_every_engineering_case_has_positive_and_negative_controls(tmp_path):
 
 
 def test_code_case_rejects_filesystem_side_effects_before_execution(tmp_path):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     case = next(c for c in pack['cases'] if c['definition']['id'] == 'quality-rate')
     pack['cases'] = [case]
     sentinel = tmp_path / 'must-not-exist'
@@ -44,7 +47,7 @@ def test_code_case_rejects_filesystem_side_effects_before_execution(tmp_path):
 
 
 def test_performance_case_accepts_two_decimal_rounding(tmp_path):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     case = next(c for c in pack['cases'] if c['definition']['id'] == 'overlap-proxy')
     pack['cases'] = [case]
     response = {'answer': {'step_ms': 60, 'decode_tokens_per_s': 533.33, 'evidence': 'PROXY'}}
@@ -64,7 +67,7 @@ def test_performance_case_accepts_two_decimal_rounding(tmp_path):
     ('native-rank-proof', None),
 ])
 def test_coding_checker_rejects_semantic_shortcuts(tmp_path, case_id, mutant):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     case = next(c for c in pack['cases'] if c['definition']['id'] == case_id)
     pack['cases'] = [case]
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
@@ -79,7 +82,7 @@ def test_coding_checker_rejects_semantic_shortcuts(tmp_path, case_id, mutant):
 
 
 def test_rank_checker_rejects_hardcoded_world_size(tmp_path):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'native-rank-proof')]
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
     code = controls['native-rank-proof']['good']['files'][0]['content']
@@ -94,7 +97,7 @@ def test_rank_checker_rejects_hardcoded_world_size(tmp_path):
 
 @pytest.mark.parametrize('operation', ['tuple', 'set_add', 'bytes', 'bytearray', 'frozenset'])
 def test_rank_checker_accepts_prompt_allowed_python_operations(tmp_path, operation):
-    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    pack = load_pack(ROOT / 'pack.json')
     pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'native-rank-proof')]
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
     code = controls['native-rank-proof']['good']['files'][0]['content']
@@ -114,3 +117,24 @@ def test_rank_checker_accepts_prompt_allowed_python_operations(tmp_path, operati
                   {'native-rank-proof': {'answer': 'fixed', 'files': [{'path': 'candidate.py', 'content': code}]}}}]}
     result = run(pack, config, tmp_path / operation)
     assert result['attempts'][0]['outcome'] == 'pass'
+
+
+def test_pack_version_is_recorded_and_validated(tmp_path):
+    import re
+    import shutil
+
+    from llmagentbench.contracts import ContractError, load_pack
+
+    pack = load_pack(ROOT / 'pack.json')
+    assert isinstance(pack.get('version'), str)
+    assert re.fullmatch(r'\d{8}(-v[1-9]\d*)?', pack['version'])
+    case_dir = tmp_path / 'case'
+    case_dir.mkdir()
+    shutil.copy(ROOT / 'examples/engineering/quality-rate/case.json', case_dir / 'case.json')
+    shutil.copy(ROOT / 'examples/engineering/quality-rate/verify.py', case_dir / 'verify.py')
+    manifest = {'schema_version': 1, 'id': 'version-test', 'version': 'not-a-version',
+                'visibility': 'private', 'synthetic': True, 'purpose': 'smoke', 'cases': ['case/case.json']}
+    bad = tmp_path / 'bad.json'
+    bad.write_text(__import__('json').dumps(manifest), encoding='utf-8')
+    with __import__('pytest').raises(ContractError):
+        load_pack(bad)

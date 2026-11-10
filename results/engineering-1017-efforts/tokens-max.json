@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "case_count": 12,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "24794ab6edfede8c315c812fa065c60a35fbc3f60f383922350eac231521a3c6",
+    "9e610fcfdbf53f3646ef6bf12bbd9e3f1bb58e7d23a24d8eecb9a79e6d67a895"
+  ],
+  "engine_sha256": "12158278ea0972a0368f1b0153e2c760c8eaa61862ffb9b7638b0d4667622d7d",
+  "config_sha256": "d7102aee760a3e22f670126ba6167ecbe79ea1a791afd5f9b164dafad675ffb2",
+  "candidates": [
+    {
+      "label": "DSH V4.1 Flash 1017 · max",
+      "candidate_id": "probe-max",
+      "adapter": "dsh",
+      "requested_model": "ds-v4.1-flash-1017",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 24,
+      "candidate_calls": 29,
+      "usage_calls": 29,
+      "output_tokens": 121927,
+      "candidate_call_seconds": 1003.846
+    }
+  ]
+}

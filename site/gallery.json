@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task": "crocodile-bike",
+  "prompt_note": "同一个 SVG 动画 prompt；模型独立输出完整 HTML，网页只内联其中的 SVG（不执行脚本）。",
+  "entries": [
+    {
+      "id": "dsh-v4.1-flash-1017-low",
+      "label": "DSH V4.1 Flash 1017",
+      "effort": "low",
+      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-low.svg",
+      "created": "2026-11-10",
+      "outcome": "fail",
+      "note": "low · 单次生成 · 结构检查 fail"
+    },
+    {
+      "id": "dsh-v4.1-flash-1017-high",
+      "label": "DSH V4.1 Flash 1017",
+      "effort": "high",
+      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-high.svg",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "high · 单次生成 · 结构检查 pass"
+    },
+    {
+      "id": "dsh-v4.1-flash-1017-xhigh",
+      "label": "DSH V4.1 Flash 1017",
+      "effort": "xhigh",
+      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-xhigh.svg",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "xhigh · 单次生成 · 结构检查 pass"
+    },
+    {
+      "id": "dsh-v4.1-flash-1017-max",
+      "label": "DSH V4.1 Flash 1017",
+      "effort": "max",
+      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-max.svg",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "max · 单次生成 · 结构检查 pass"
+    }
+  ]
+}

@@ -152,5 +152,25 @@
       },
       "files": []
     }
+  },
+  "crocodile-bike": {
+    "good": {
+      "answer": "",
+      "files": [
+        {
+          "path": "crocodile.html",
+          "content": "<!doctype html>\n<html><head><meta charset=\"utf-8\"><title>Crocodile Bike</title></head>\n<body>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"360\" height=\"220\" viewBox=\"0 0 360 220\">\n  <g id=\"crocodile\">\n    <path d=\"M120 80 Q170 55 220 80 L250 90 L220 100 Q170 120 120 100 Z\" fill=\"#4a8f3c\"/>\n    <circle id=\"wheel-back\" cx=\"110\" cy=\"160\" r=\"34\" fill=\"none\" stroke=\"#222\" stroke-width=\"5\">\n      <animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 110 160\" to=\"360 110 160\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n    </circle>\n    <circle id=\"wheel-front\" cx=\"250\" cy=\"160\" r=\"34\" fill=\"none\" stroke=\"#222\" stroke-width=\"5\">\n      <animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 250 160\" to=\"360 250 160\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n    </circle>\n    <path d=\"M110 160 L180 160 L250 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <path d=\"M110 160 L150 110 L250 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <path d=\"M150 110 L180 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <g id=\"legs\">\n      <animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n      <path d=\"M170 100 L160 140\" stroke=\"#2f6b26\" stroke-width=\"6\"/>\n      <path d=\"M195 100 L205 140\" stroke=\"#2f6b26\" stroke-width=\"6\"/>\n    </g>\n    <g id=\"body\">\n      <animateTransform attributeName=\"transform\" type=\"rotate\" values=\"-2 180 80;2 180 80;-2 180 80\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n      <path d=\"M120 80 Q170 55 220 80\" stroke=\"#4a8f3c\" stroke-width=\"12\" fill=\"none\"/>\n    </g>\n  </g>\n</svg>\n</body></html>\n"
+        }
+      ]
+    },
+    "bad": {
+      "answer": "",
+      "files": [
+        {
+          "path": "crocodile.html",
+          "content": "<!doctype html>\n<html><head><meta charset=\"utf-8\"><title>Crocodile Bike</title></head>\n<body>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"360\" height=\"220\" viewBox=\"0 0 360 220\">\n  <g id=\"crocodile\">\n    <path d=\"M120 80 Q170 55 220 80 L250 90 L220 100 Q170 120 120 100 Z\" fill=\"#4a8f3c\"/>\n    <circle id=\"wheel-back\" cx=\"110\" cy=\"160\" r=\"34\" fill=\"none\" stroke=\"#222\" stroke-width=\"5\">\n      <animateTransform attributeName=\"transform\"/>\n    </circle>\n    <circle id=\"wheel-front\" cx=\"250\" cy=\"160\" r=\"34\" fill=\"none\" stroke=\"#222\" stroke-width=\"5\">\n      <animateTransform attributeName=\"transform\"/>\n    </circle>\n    <path d=\"M110 160 L180 160 L250 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <path d=\"M110 160 L150 110 L250 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <path d=\"M150 110 L180 160\" stroke=\"#222\" stroke-width=\"5\" fill=\"none\"/>\n    <g id=\"legs\">\n      <animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n      <path d=\"M170 100 L160 140\" stroke=\"#2f6b26\" stroke-width=\"6\"/>\n      <path d=\"M195 100 L205 140\" stroke=\"#2f6b26\" stroke-width=\"6\"/>\n    </g>\n    <g id=\"body\">\n      <animateTransform attributeName=\"transform\" type=\"rotate\" values=\"-2 180 80;2 180 80;-2 180 80\" dur=\"1.6s\" repeatCount=\"indefinite\"/>\n      <path d=\"M120 80 Q170 55 220 80\" stroke=\"#4a8f3c\" stroke-width=\"12\" fill=\"none\"/>\n    </g>\n  </g>\n</svg>\n</body></html>\n"
+        }
+      ]
+    }
   }
 }

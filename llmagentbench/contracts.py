@@ -114,6 +114,9 @@ def load_pack(path: Path) -> dict:
     if manifest.get("schema_version") != 1 or manifest.get("visibility") not in {"public", "private"}:
         raise ContractError("Unsupported pack contract")
     identifier(manifest["id"])
+    version = manifest.get("version")
+    if version is not None and (not isinstance(version, str) or not re.fullmatch(r"\d{8}(-v[1-9]\d*)?", version)):
+        raise ContractError("Pack version must be YYYYMMDD or YYYYMMDD-vN")
     if type(manifest.get("synthetic")) is not bool:
         raise ContractError("Pack must explicitly classify synthetic content")
     if not isinstance(manifest.get("cases"), list) or not manifest["cases"]:
@@ -135,7 +138,8 @@ def load_pack(path: Path) -> dict:
                 files[relative + ":" + check["script"]] = content.decode("utf-8")
                 script_hashes[check["script"]] = hashlib.sha256(content).hexdigest()
         cases.append({"definition": case, "root": case_path.parent, "script_hashes": script_hashes})
-    return {"path": path, "manifest": manifest, "cases": cases, "sha256": digest({"manifest": manifest, "files": files})}
+    return {"path": path, "manifest": manifest, "version": version, "cases": cases,
+            "sha256": digest({"manifest": manifest, "files": files})}
 
 
 def load_config(path: Path) -> dict:

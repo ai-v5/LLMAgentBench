@@ -17,8 +17,8 @@ Codex 候选可显式配置 `"local_lookup_audit": "cli_items_v1"`，配置关�
 Python 3.11+，运行时只有标准库。在仓库根目录执行，无需安装依赖。
 
 ```powershell
-python -m llmagentbench validate --pack examples/public/pack.json
-python -m llmagentbench run --pack examples/public/pack.json --config configs/fixture-smoke.json --out .bench-runs/demo
+python -m llmagentbench validate --pack pack.json
+python -m llmagentbench run --pack pack.json --config configs/fixture-smoke.json --out .bench-runs/demo
 python -m llmagentbench report --run .bench-runs/demo
 python -m llmagentbench export-public --run .bench-runs/demo --out results/demo
 python -m pytest
@@ -29,7 +29,7 @@ python -m pytest
 真实 Codex 使用已有 CLI 登录状态：
 
 ```powershell
-python -m llmagentbench run --pack examples/public/pack.json --config configs/codex.example.json --out .bench-runs/codex
+python -m llmagentbench run --pack pack.json --config configs/codex.example.json --out .bench-runs/codex
 ```
 
 `configs/codex-sol-luna-max.json` 固定了本轮 Sol/Luna 的模型请求、裁判、预算、修复次数和随机顺序，可与公开合成题包一起运行。题包、验收器、引擎和执行器指纹随收据保存；LLM 输出及 LLM 裁判可能波动，模型服务端身份和客户端版本也可能变化，因此重跑不保证逐字输出或相同分数。涉及未公开题目的完整运行需要有权访问独立私仓。
@@ -39,7 +39,7 @@ DSH 安装与路由按本机已有配置准备。复制 `configs/dsh.example.jso
 ```powershell
 # 如 dsh 不在 PATH，变量内容为原生命令及入口参数组成的 JSON 数组。
 $env:BENCH_DSH_LAUNCHER = '["C:/Tools/node.exe","C:/Tools/dsh/bin.js"]'
-python -m llmagentbench run --pack examples/public/pack.json --config local/dsh.json --out .bench-runs/dsh
+python -m llmagentbench run --pack pack.json --config local/dsh.json --out .bench-runs/dsh
 ```
 
 Windows Desktop 安装可用其原生 Electron 可执行文件和随附 CLI JS 入口，并设 `electron_run_as_node: true`；不使用 `.cmd`/`.bat` 或 shell 拼接。profile 必须预先准备，评估器不修改它。新会话会由 DSH 持久保存。
@@ -51,7 +51,7 @@ Kimi 使用本机 Daimon 的非交互 prompt 入口。复制 `configs/kimi.examp
 ```powershell
 $env:BENCH_KIMI_LAUNCHER = '["powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-File","C:/Tools/kimi-daimon.ps1","--node","C:/Tools/Kimi.exe"]'
 $env:BENCH_KIMI_CONFIG = 'C:/Users/you/.kimi/daimon/config.json'
-python -m llmagentbench run --pack examples/public/pack.json --config local/kimi.json --out .bench-runs/kimi
+python -m llmagentbench run --pack pack.json --config local/kimi.json --out .bench-runs/kimi
 ```
 
 Kimi 候选必须固定 `model`、`reasoning_effort` 和 `local_lookup_audit: "kimi_wire_v1"`。提示要求只输出一个严格的 `{answer, files}` JSON 对象；适配器只移除明确的 Daimon 运行日志并允许合法多行 JSON，代码围栏、前后夹杂文本、多个 JSON 或字段不合格会作为 case 失败。Daimon 会异步改写配置文件的长批次可在候选中提供运行前计算的 `config_identity_sha256`，把启动配置身份冻结在收据中。适配器把 `answer/files` 解析为统一响应，读取单次 wire 收据的 model、thinking、usage 和工具事件摘要；报告到工具调用、wire 缺失或配置不匹配时，该轮为 error。wire 审计是客户端事件观察，不等于操作系统文件隔离；默认工作目录由 Kimi 配置决定，严格隔离需要在独立运行环境中验证。长批次应使用独立的 `KIMI_SHARE_DIR`，避免与桌面 Kimi 的 daemon 状态和锁相互污染。
@@ -72,7 +72,7 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 
 在用户明确授权公开总体数量和耗时时，可用 `export-overall` 合并完整运行：它只输出显式指定的公开候选名称、总体数量和耗时，不输出题目、题号、分类、私有 pack 元数据或原始收据。必须提供 `--allow-private-aggregate` 才能纳入私有运行；发布前仍需审查精确输出内容。
 
-`examples/engineering/pack.json` 是合成工程案例，覆盖代码修改、问题排查、代码评审和性能分析。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。
+`pack.json` 是唯一公开题库索引（13 道合成题：工程案例 + smoke 案例 + 绘图题）；另有 16 道私有难题在独立私仓，同一版本 20261110 合计 29 题，覆盖代码修改、问题排查、代码评审、性能分析和绘图。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。
 
 ## 指标
 
@@ -99,4 +99,4 @@ python -m scripts.export_public_token_usage --run .bench-runs/public-run --summa
 
 `scripts/verify_suite_comparison.py` 可检查两份已完成的私有套件收据是否使用相同题包、引擎、驱动、预算和裁判配置；输出仅包含比较状态与请求的模型名称，不导出题目明细。客户端执行文件变化会单独标注，不能当作完全相同的执行环境。
 
-更多说明：[执行与评分合同](docs/CONTRACTS.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。
+更多说明：[执行与评分合同](docs/CONTRACTS.md)、[运行与发布规范](docs/RUNBOOK.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。

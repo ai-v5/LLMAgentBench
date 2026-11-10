@@ -1,0 +1,274 @@
+<svg id='crocodile-bike' viewBox='0 0 1000 700' role='img' aria-labelledby='svg-title svg-desc' xmlns='http://www.w3.org/2000/svg'>
+<title id='svg-title'>鳄鱼骑自行车</title>
+<desc id='svg-desc'>一只绿色鳄鱼骑着橙色自行车，车轮持续旋转，双腿同步踩踏，身体轻轻摆动。</desc>
+<defs>
+  <linearGradient id='skyGrad' x1='0' y1='0' x2='0' y2='1'>
+    <stop offset='0%' stop-color='#ccefff'/>
+    <stop offset='58%' stop-color='#eafbe1'/>
+    <stop offset='100%' stop-color='#fff5d8'/>
+  </linearGradient>
+  <radialGradient id='sunGrad' cx='50%' cy='42%' r='60%'>
+    <stop offset='0%' stop-color='#fff9c9'/>
+    <stop offset='65%' stop-color='#ffe27a'/>
+    <stop offset='100%' stop-color='#f6c85f'/>
+  </radialGradient>
+  <linearGradient id='frameGrad' x1='0%' y1='0%' x2='100%' y2='100%'>
+    <stop offset='0%' stop-color='#ffb347'/>
+    <stop offset='55%' stop-color='#f26b3a'/>
+    <stop offset='100%' stop-color='#c74930'/>
+  </linearGradient>
+  <linearGradient id='bodyGrad' x1='0%' y1='0%' x2='0%' y2='100%'>
+    <stop offset='0%' stop-color='#8bd15d'/>
+    <stop offset='48%' stop-color='#5fb046'/>
+    <stop offset='100%' stop-color='#3d8438'/>
+  </linearGradient>
+  <linearGradient id='headGrad' x1='0%' y1='0%' x2='100%' y2='100%'>
+    <stop offset='0%' stop-color='#86cc59'/>
+    <stop offset='55%' stop-color='#58a841'/>
+    <stop offset='100%' stop-color='#3e8337'/>
+  </linearGradient>
+  <linearGradient id='bellyGrad' x1='0%' y1='0%' x2='0%' y2='100%'>
+    <stop offset='0%' stop-color='#d8ee91'/>
+    <stop offset='100%' stop-color='#a7d16c'/>
+  </linearGradient>
+  <filter id='softShadow' x='-30%' y='-30%' width='160%' height='160%'>
+    <feDropShadow dx='0' dy='5' stdDeviation='4' flood-color='#295c32' flood-opacity='.23'/>
+  </filter>
+  <filter id='wheelShadow' x='-40%' y='-40%' width='180%' height='180%'>
+    <feDropShadow dx='0' dy='4' stdDeviation='3' flood-color='#1d2a2d' flood-opacity='.25'/>
+  </filter>
+</defs>
+
+<!-- 背景 -->
+<rect width='1000' height='700' fill='url(#skyGrad)'/>
+<circle cx='842' cy='118' r='56' fill='url(#sunGrad)' opacity='.96'/>
+<g stroke='#f4c35a' stroke-width='5' stroke-linecap='round' opacity='.5'>
+  <line x1='842' y1='39' x2='842' y2='22'/>
+  <line x1='842' y1='197' x2='842' y2='214'/>
+  <line x1='763' y1='118' x2='746' y2='118'/>
+  <line x1='921' y1='118' x2='938' y2='118'/>
+  <line x1='786' y1='62' x2='774' y2='50'/>
+  <line x1='898' y1='174' x2='910' y2='186'/>
+  <line x1='786' y1='174' x2='774' y2='186'/>
+  <line x1='898' y1='62' x2='910' y2='50'/>
+  <animateTransform attributeName='transform' type='rotate' from='0 842 118' to='360 842 118' dur='42s' repeatCount='indefinite' calcMode='linear'/>
+</g>
+<g fill='#ffffff' opacity='.76'>
+  <path d='M118 166 c-2 -24 16 -42 39 -42 c12 -29 57 -33 75 -7 c31 -13 67 7 65 38 c27 1 43 22 37 43 l-206 0 c-13 -7 -16 -22 -10 -32 z'/>
+  <path d='M492 116 c-1 -18 13 -32 31 -32 c10 -22 44 -25 58 -5 c24 -10 52 5 50 29 c21 1 34 17 29 33 l-160 0 c-10 -5 -13 -17 -8 -25 z'/>
+  <path d='M730 232 c-2 -17 12 -30 28 -30 c9 -20 40 -23 53 -5 c22 -9 47 5 45 27 c19 1 30 16 26 30 l-145 0 c-9 -5 -11 -15 -7 -22 z'/>
+  <animateTransform attributeName='transform' type='translate' values='-8 0;8 0;-8 0' keyTimes='0;0.5;1' dur='16s' repeatCount='indefinite' calcMode='spline' keySplines='0.45 0 0.55 1;0.45 0 0.55 1'/>
+</g>
+<path d='M0 524 C104 474 190 466 284 516 C365 453 472 446 566 509 C646 451 756 462 850 517 C915 480 964 489 1000 514 L1000 700 L0 700 Z' fill='#bde6a7'/>
+<path d='M0 570 C130 516 246 526 344 575 C448 520 594 512 698 568 C796 524 900 530 1000 575 L1000 700 L0 700 Z' fill='#9bd684'/>
+<rect x='0' y='614' width='1000' height='86' fill='#7ebd63'/>
+<path d='M0 625 C150 618 280 631 430 624 C590 616 760 631 1000 620' stroke='#a9db85' stroke-width='7' fill='none' opacity='.65'/>
+<g fill='#5c9b4c' opacity='.7'>
+  <path d='M74 619 l5 -20 l7 18 z'/>
+  <path d='M112 620 l4 -16 l6 16 z'/>
+  <path d='M868 620 l6 -21 l7 20 z'/>
+  <path d='M918 619 l4 -16 l6 15 z'/>
+</g>
+<ellipse cx='300' cy='626' rx='104' ry='13' fill='#315f38' opacity='.18'/>
+<ellipse cx='700' cy='626' rx='104' ry='13' fill='#315f38' opacity='.18'/>
+<ellipse cx='510' cy='640' rx='230' ry='17' fill='#315f38' opacity='.1'/>
+
+<!-- 鳄鱼尾巴，位于自行车后 -->
+<g id='croc-tail' filter='url(#softShadow)'>
+  <path d='M412 361 C351 329 294 318 251 341 C219 358 213 389 237 407 C260 424 296 419 322 401 C302 421 310 445 335 452 C364 460 393 438 409 412 L426 381 Z' fill='url(#bodyGrad)' stroke='#2d642f' stroke-width='5' stroke-linejoin='round'/>
+  <path d='M417 386 C385 417 358 437 329 448' stroke='#b7dd78' stroke-width='14' fill='none' stroke-linecap='round' opacity='.45'/>
+  <g fill='#2f6b31' stroke='#255228' stroke-width='1.5'>
+    <path d='M264 335 l-2 -18 l18 13 z'/>
+    <path d='M300 324 l1 -18 l16 14 z'/>
+    <path d='M337 328 l6 -17 l14 16 z'/>
+    <path d='M371 343 l8 -16 l11 17 z'/>
+  </g>
+  <animateTransform attributeName='transform' type='rotate' values='-2 412 361;3 412 361;-2 412 361' keyTimes='0;0.5;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'/>
+</g>
+
+<!-- 后轮 -->
+<g id='rear-wheel' filter='url(#wheelShadow)' aria-label='后轮'>
+  <circle cx='300' cy='510' r='112' fill='none' stroke='#203038' stroke-width='13'/>
+  <circle cx='300' cy='510' r='104' fill='none' stroke='#0f1a1c' stroke-width='5' stroke-dasharray='5 11' opacity='.55'/>
+  <circle cx='300' cy='510' r='94' fill='none' stroke='#b7c6c9' stroke-width='2.5' opacity='.55'/>
+  <g stroke='#718b92' stroke-width='3' stroke-linecap='round' opacity='.95'>
+    <line x1='300' y1='510' x2='300' y2='416'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(45 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(90 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(135 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(180 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(225 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(270 300 510)'/>
+    <line x1='300' y1='510' x2='300' y2='416' transform='rotate(315 300 510)'/>
+  </g>
+  <circle cx='300' cy='510' r='16' fill='#f7c948' stroke='#203038' stroke-width='5'/>
+  <circle cx='300' cy='510' r='5' fill='#203038'/>
+  <animateTransform attributeName='transform' type='rotate' from='0 300 510' to='360 300 510' dur='2.4s' repeatCount='indefinite' calcMode='linear'/>
+</g>
+
+<!-- 前轮 -->
+<g id='front-wheel' filter='url(#wheelShadow)' aria-label='前轮'>
+  <circle cx='700' cy='510' r='112' fill='none' stroke='#203038' stroke-width='13'/>
+  <circle cx='700' cy='510' r='104' fill='none' stroke='#0f1a1c' stroke-width='5' stroke-dasharray='5 11' opacity='.55'/>
+  <circle cx='700' cy='510' r='94' fill='none' stroke='#b7c6c9' stroke-width='2.5' opacity='.55'/>
+  <g stroke='#718b92' stroke-width='3' stroke-linecap='round' opacity='.95'>
+    <line x1='700' y1='510' x2='700' y2='416'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(45 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(90 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(135 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(180 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(225 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(270 700 510)'/>
+    <line x1='700' y1='510' x2='700' y2='416' transform='rotate(315 700 510)'/>
+  </g>
+  <circle cx='700' cy='510' r='16' fill='#f7c948' stroke='#203038' stroke-width='5'/>
+  <circle cx='700' cy='510' r='5' fill='#203038'/>
+  <animateTransform attributeName='transform' type='rotate' from='0 700 510' to='360 700 510' dur='2.4s' repeatCount='indefinite' calcMode='linear'/>
+</g>
+
+<!-- 车架 -->
+<g id='bicycle-frame' fill='none' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M300 510 L500 500' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M300 510 L416 344' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M416 344 L500 500' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M416 344 L646 330' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M500 500 L646 330' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M646 330 L700 510' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M636 318 L655 352' stroke='#8a3e29' stroke-width='18'/>
+  <path d='M300 510 L500 500' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M300 510 L416 344' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M416 344 L500 500' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M416 344 L646 330' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M500 500 L646 330' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M646 330 L700 510' stroke='url(#frameGrad)' stroke-width='11'/>
+  <path d='M636 318 L655 352' stroke='#ffb36b' stroke-width='8'/>
+  <circle cx='300' cy='510' r='10' fill='#ffd166' stroke='#8a3e29' stroke-width='3'/>
+  <circle cx='700' cy='510' r='10' fill='#ffd166' stroke='#8a3e29' stroke-width='3'/>
+  <circle cx='500' cy='500' r='9' fill='#ffd166' stroke='#8a3e29' stroke-width='3'/>
+</g>
+
+<!-- 车座与车把 -->
+<g id='bicycle-seat'>
+  <path d='M418 344 L408 316' stroke='#445157' stroke-width='10' stroke-linecap='round'/>
+  <path d='M370 326 C384 307 427 305 454 319 C440 336 402 342 370 326 Z' fill='#3d2c28' stroke='#1f2427' stroke-width='3'/>
+  <path d='M384 318 C405 312 430 314 441 320' stroke='#805b4d' stroke-width='3' fill='none' opacity='.8'/>
+</g>
+<g id='handlebar'>
+  <path d='M646 330 L670 284' stroke='#4c5b60' stroke-width='10' stroke-linecap='round'/>
+  <path d='M638 284 C658 265 686 265 708 286' stroke='#29353a' stroke-width='11' fill='none' stroke-linecap='round'/>
+  <path d='M700 280 L718 293' stroke='#111a1c' stroke-width='13' stroke-linecap='round'/>
+</g>
+
+<!-- 传动、曲柄与踏板 -->
+<g id='drivetrain'>
+  <path d='M500 478 L300 496' stroke='#506268' stroke-width='4' stroke-dasharray='7 4' fill='none'/>
+  <path d='M500 522 L300 524' stroke='#506268' stroke-width='4' stroke-dasharray='7 4' fill='none'/>
+  <circle cx='300' cy='510' r='13' fill='#4b5c62' stroke='#26353a' stroke-width='3'/>
+  <circle cx='500' cy='500' r='28' fill='none' stroke='#d7e0e2' stroke-width='6'/>
+  <circle cx='500' cy='500' r='19' fill='none' stroke='#52656b' stroke-width='3' stroke-dasharray='4 4'/>
+  <circle cx='500' cy='500' r='7' fill='#203038'/>
+  <g id='crank-far'>
+    <line x1='500' y1='500' x2='455' y2='500' stroke='#4b5c62' stroke-width='7' stroke-linecap='round'>
+      <animate attributeName='y2' values='500;486;500;514;500' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+    </line>
+  </g>
+  <g id='crank-near'>
+    <line x1='500' y1='500' x2='545' y2='500' stroke='#4b5c62' stroke-width='7' stroke-linecap='round'>
+      <animate attributeName='y2' values='500;514;500;486;500' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+    </line>
+  </g>
+  <g id='pedal-far'>
+    <rect x='415' y='494' width='80' height='12' rx='5' fill='#3b4448' stroke='#172126' stroke-width='3'/>
+    <animateTransform attributeName='transform' type='translate' values='0 0;0 -14;0 0;0 14;0 0' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+  </g>
+  <g id='pedal-near'>
+    <rect x='505' y='494' width='80' height='12' rx='5' fill='#3b4448' stroke='#172126' stroke-width='3'/>
+    <animateTransform attributeName='transform' type='translate' values='0 0;0 14;0 0;0 -14;0 0' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+  </g>
+</g>
+
+<!-- 鳄鱼身体、头部和手臂 -->
+<g id='croc-rider' filter='url(#softShadow)'>
+  <animateTransform attributeName='transform' type='rotate' values='-1.4 500 350;1.4 500 350;-1.4 500 350' keyTimes='0;0.5;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'/>
+  <g id='crocodile-body'>
+    <path d='M372 352 C378 304 421 270 481 264 C548 257 611 281 648 326 C631 369 570 397 500 396 C440 395 392 383 372 352 Z' fill='url(#bodyGrad)' stroke='#2d642f' stroke-width='6' stroke-linejoin='round'/>
+    <path d='M411 366 C450 390 512 396 599 355 C575 386 522 407 460 398 C429 394 414 382 411 366 Z' fill='url(#bellyGrad)' opacity='.92'/>
+    <g fill='#2f6b31' stroke='#255228' stroke-width='1.5'>
+      <path d='M419 288 l10 -22 l14 24 z'/>
+      <path d='M455 276 l10 -22 l14 24 z'/>
+      <path d='M492 268 l9 -23 l15 22 z'/>
+      <path d='M530 265 l8 -23 l16 20 z'/>
+      <path d='M568 269 l7 -22 l17 18 z'/>
+      <path d='M605 280 l5 -20 l18 17 z'/>
+    </g>
+    <g fill='#3d8438' opacity='.42'>
+      <circle cx='444' cy='312' r='8'/>
+      <circle cx='482' cy='300' r='6'/>
+      <circle cx='525' cy='304' r='9'/>
+      <circle cx='566' cy='316' r='7'/>
+      <circle cx='600' cy='335' r='6'/>
+    </g>
+    <path d='M413 382 C462 407 532 408 599 369' stroke='#8bbf56' stroke-width='3' fill='none' opacity='.55'/>
+  </g>
+
+  <g id='croc-head'>
+    <path d='M608 317 C630 289 655 260 680 241 L708 269 C680 295 654 327 636 353 Z' fill='url(#headGrad)' stroke='#2d642f' stroke-width='5' stroke-linejoin='round'/>
+    <path d='M664 252 C668 225 690 204 720 200 C744 197 766 207 780 225 L824 236 C848 241 862 254 858 269 C854 282 835 290 809 289 L772 284 L736 292 C705 289 681 274 664 252 Z' fill='url(#headGrad)' stroke='#2d642f' stroke-width='6' stroke-linejoin='round'/>
+    <path d='M701 278 L826 276 C849 278 861 288 851 301 L805 310 L734 304 C710 300 696 289 701 278 Z' fill='url(#bellyGrad)' stroke='#2d642f' stroke-width='5' stroke-linejoin='round'/>
+    <path d='M708 282 C754 286 800 288 844 286' stroke='#315e30' stroke-width='4' fill='none' stroke-linecap='round'/>
+    <g fill='#fffdf1' stroke='#315e30' stroke-width='1.4'>
+      <path d='M724 282 l6 12 l6 -12 z'/>
+      <path d='M753 283 l6 12 l6 -12 z'/>
+      <path d='M782 284 l5 11 l6 -11 z'/>
+      <path d='M811 284 l5 11 l6 -11 z'/>
+      <path d='M740 300 l5 -10 l6 10 z'/>
+      <path d='M770 301 l5 -10 l6 10 z'/>
+      <path d='M800 301 l5 -10 l6 10 z'/>
+    </g>
+    <circle cx='720' cy='225' r='15' fill='#fffbe6' stroke='#2d642f' stroke-width='4'/>
+    <ellipse cx='724' cy='225' rx='5' ry='10' fill='#17251d'/>
+    <circle cx='718' cy='220' r='3' fill='#ffffff'/>
+    <path d='M698 211 C709 202 725 200 739 205' stroke='#2d642f' stroke-width='5' fill='none' stroke-linecap='round'/>
+    <ellipse cx='836' cy='249' rx='7' ry='4' fill='#2d642f' transform='rotate(-10 836 249)'/>
+    <path d='M688 244 q8 -8 16 0' stroke='#4a913e' stroke-width='3' fill='none' stroke-linecap='round'/>
+    <path d='M696 260 q8 -6 15 0' stroke='#4a913e' stroke-width='3' fill='none' stroke-linecap='round'/>
+    <circle cx='690' cy='273' r='7' fill='#79c65d' opacity='.75'/>
+  </g>
+
+  <g id='croc-arms'>
+    <path d='M596 319 C624 302 653 291 681 284' stroke='#2d642f' stroke-width='27' fill='none' stroke-linecap='round'/>
+    <path d='M596 319 C624 302 653 291 681 284' stroke='#4b9a3e' stroke-width='19' fill='none' stroke-linecap='round'/>
+    <ellipse cx='682' cy='284' rx='17' ry='13' fill='#4b9a3e' stroke='#2d642f' stroke-width='4' transform='rotate(-10 682 284)'/>
+    <path d='M594 343 C626 327 656 310 684 294' stroke='#2d642f' stroke-width='29' fill='none' stroke-linecap='round'/>
+    <path d='M594 343 C626 327 656 310 684 294' stroke='#6cbd4e' stroke-width='21' fill='none' stroke-linecap='round'/>
+    <ellipse cx='686' cy='294' rx='18' ry='14' fill='#6cbd4e' stroke='#2d642f' stroke-width='4' transform='rotate(-22 686 294)'/>
+    <path d='M674 286 C683 281 693 285 695 292' stroke='#2d642f' stroke-width='3' fill='none' stroke-linecap='round'/>
+    <path d='M678 296 C687 291 697 295 698 302' stroke='#2d642f' stroke-width='3' fill='none' stroke-linecap='round'/>
+    <path d='M690 280 l8 -2' stroke='#f6f2d6' stroke-width='3' stroke-linecap='round'/>
+    <path d='M694 291 l8 0' stroke='#f6f2d6' stroke-width='3' stroke-linecap='round'/>
+  </g>
+</g>
+
+<!-- 鳄鱼双腿，上下踩踏 -->
+<g id='croc-far-leg' filter='url(#softShadow)'>
+  <path d='M438 382 C424 414 430 458 455 492' stroke='#2d642f' stroke-width='36' fill='none' stroke-linecap='round'/>
+  <path d='M438 382 C424 414 430 458 455 492' stroke='#3f8538' stroke-width='26' fill='none' stroke-linecap='round'/>
+  <path d='M428 486 C443 477 467 479 486 491 C472 506 446 508 428 497 Z' fill='#3f8538' stroke='#2d642f' stroke-width='5' stroke-linejoin='round'/>
+  <path d='M472 490 l10 4 l-8 7' fill='none' stroke='#f6f2d6' stroke-width='3' stroke-linecap='round'/>
+  <animateTransform attributeName='transform' type='translate' values='0 0;0 -14;0 0;0 14;0 0' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+</g>
+<g id='croc-near-leg' filter='url(#softShadow)'>
+  <path d='M480 388 C500 418 516 460 540 492' stroke='#2d642f' stroke-width='38' fill='none' stroke-linecap='round'/>
+  <path d='M480 388 C500 418 516 460 540 492' stroke='#6cbd4e' stroke-width='28' fill='none' stroke-linecap='round'/>
+  <path d='M518 486 C533 477 557 479 576 491 C562 506 536 508 518 497 Z' fill='#6cbd4e' stroke='#2d642f' stroke-width='5' stroke-linejoin='round'/>
+  <path d='M562 490 l10 4 l-8 7' fill='none' stroke='#f6f2d6' stroke-width='3' stroke-linecap='round'/>
+  <animateTransform attributeName='transform' type='translate' values='0 0;0 14;0 0;0 -14;0 0' keyTimes='0;0.25;0.5;0.75;1' dur='2.4s' repeatCount='indefinite' calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>
+</g>
+
+<!-- 装饰性小速度线 -->
+<g stroke='#ffffff' stroke-width='6' stroke-linecap='round' opacity='.5'>
+  <path d='M760 350 L810 342'/>
+  <path d='M770 380 L824 374'/>
+  <path d='M742 410 L786 405'/>
+</g>
+</svg>
