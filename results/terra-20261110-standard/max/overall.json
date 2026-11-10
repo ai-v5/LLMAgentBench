@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "pack_version": "20261110",
+  "case_count": 29,
+  "denominator": "assigned_attempts",
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Terra max",
+      "evidence": "MODEL_RUN",
+      "assigned": 58,
+      "first_passed": 56,
+      "passed": 58,
+      "failed": 0,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 2975.831,
+      "candidate_call_seconds": 2757.687,
+      "judge_call_seconds": 121.56299999999999,
+      "mean_attempt_seconds": 51.30743103448276,
+      "mean_pass_seconds": 51.30743103448276,
+      "effective_passes_per_hour": 70.16527484255658
+    }
+  ]
+}

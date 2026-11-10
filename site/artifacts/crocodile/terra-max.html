@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>鳄鱼的骑行时光</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #e2ece2;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+    }
+    main {
+      width: min(100%, 1100px);
+      overflow: hidden;
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(40, 78, 60, .15);
+    }
+    svg { display: block; width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg viewBox='0 0 960 620' xmlns='http://www.w3.org/2000/svg' role='img' aria-labelledby='title description'>
+      <title id='title'>鳄鱼的骑行时光</title>
+      <desc id='description'>一只绿色的小鳄鱼骑着自行车，车轮不停转动，双腿交替踩踏，身体轻轻摆动。</desc>
+      <defs>
+        <linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0' stop-color='#f7f9e9'/>
+          <stop offset='1' stop-color='#e2f0df'/>
+        </linearGradient>
+        <linearGradient id='bodyColor' x1='0' y1='0' x2='0.8' y2='1'>
+          <stop offset='0' stop-color='#8ec67e'/>
+          <stop offset='1' stop-color='#61a969'/>
+        </linearGradient>
+        <g id='wheel'>
+          <circle r='71' fill='#f8f3df' stroke='#294b40' stroke-width='12'/>
+          <circle r='59' fill='#deeee0' stroke='#e8a36f' stroke-width='4'/>
+          <g stroke='#fff9e8' stroke-width='3' stroke-linecap='round'>
+            <path d='M -57 0 H 57 M 0 -57 V 57'/>
+            <path d='M -40 -40 L 40 40 M 40 -40 L -40 40'/>
+            <path d='M -53 -22 L 53 22 M -22 -53 L 22 53'/>
+            <path d='M 22 -53 L -22 53 M 53 -22 L -53 22'/>
+          </g>
+          <circle r='8' fill='#294b40'/>
+          <circle r='3' fill='#f8f3df'/>
+        </g>
+      </defs>
+
+      <rect width='960' height='620' fill='url(#sky)'/>
+      <circle cx='822' cy='115' r='47' fill='#f5d384'/>
+      <circle cx='822' cy='115' r='59' fill='none' stroke='#f5d384' stroke-width='2' opacity='.45'/>
+      <g fill='#fffdf1' opacity='.8'>
+        <path d='M 624 143 h 80 a 13 13 0 0 0 0-26 a 22 22 0 0 0-40-6 a 18 18 0 0 0-29 9 a 12 12 0 0 0-11 23z'/>
+        <path d='M 315 174 h 55 a 10 10 0 0 0 0-20 a 17 17 0 0 0-31-4 a 14 14 0 0 0-22 7 a 9 9 0 0 0-2 17z'/>
+      </g>
+
+      <text x='58' y='63' fill='#6b9674' font-size='12' font-weight='700' letter-spacing='3'>A LITTLE RIDE</text>
+      <text x='56' y='106' fill='#294b40' font-size='35' font-weight='800'>鳄鱼的骑行时光</text>
+      <text x='59' y='135' fill='#779783' font-size='15'>迎着微风，慢慢向前。</text>
+
+      <path d='M 0 398 C 111 343 183 367 259 401 C 350 440 428 367 521 391 C 611 415 690 349 776 384 C 851 415 914 389 960 370 L 960 528 L 0 528 Z' fill='#cde5cf' opacity='.65'/>
+      <path d='M 0 461 C 96 433 168 445 252 467 C 358 494 438 443 538 459 C 661 477 754 429 847 452 C 891 463 928 463 960 451 L 960 536 L 0 536 Z' fill='#bddbbf' opacity='.65'/>
+      <path d='M 0 514 Q 480 506 960 514 L 960 620 L 0 620 Z' fill='#e9e6cc'/>
+      <path d='M 0 526 Q 480 518 960 526' fill='none' stroke='#d6d6b9' stroke-width='2'/>
+      <ellipse cx='474' cy='518' rx='289' ry='12' fill='#8da992' opacity='.23'/>
+
+      <g fill='none' stroke='#8eb69a' stroke-width='4' stroke-linecap='round' opacity='.8'>
+        <path d='M 145 348 h 57 M 125 365 h 49 M 157 382 h 35'/>
+        <path d='M 755 452 q 8-17 0-34 M 755 452 q-2-16-14-21 M 755 452 q 2-14 14-19'/>
+        <path d='M 176 492 q 4-16-2-27 M 176 492 q-5-11-13-13 M 176 492 q 4-10 11-12'/>
+      </g>
+      <g fill='#e9a47d'>
+        <circle cx='741' cy='430' r='3'/><circle cx='770' cy='432' r='3'/>
+        <circle cx='163' cy='478' r='3'/><circle cx='188' cy='479' r='3'/>
+      </g>
+
+      <!-- 车轮各自绕轮心连续旋转。 -->
+      <g transform='translate(274 438)'>
+        <g>
+          <animateTransform attributeName='transform' type='rotate' from='0' to='360' dur='1.6s' repeatCount='indefinite'/>
+          <use href='#wheel'/>
+        </g>
+      </g>
+      <g transform='translate(676 438)'>
+        <g>
+          <animateTransform attributeName='transform' type='rotate' from='0' to='360' dur='1.6s' repeatCount='indefinite'/>
+          <use href='#wheel'/>
+        </g>
+      </g>
+
+      <!-- 远侧腿与近侧腿相差半个周期。 -->
+      <path fill='none' stroke='#478a5b' stroke-width='20' stroke-linecap='round' stroke-linejoin='round'
+            d='M 389 314 L 414 361 L 416 418'>
+        <animate attributeName='d' dur='1.6s' repeatCount='indefinite' calcMode='linear'
+          values='M 389 314 L 414 361 L 416 418; M 389 314 L 414 352 L 423 401; M 389 314 L 425 347 L 440 394; M 389 314 L 438 350 L 457 401; M 389 314 L 440 357 L 464 418; M 389 314 L 442 365 L 457 435; M 389 314 L 435 372 L 440 442; M 389 314 L 426 371 L 423 435; M 389 314 L 414 361 L 416 418'/>
+      </path>
+
+      <!-- 车架、前叉、车座和车把。 -->
+      <g fill='none' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M 274 438 L 394 333 L 440 432 Z M 394 333 L 574 336 L 440 432 M 574 336 L 676 438' stroke='#bf5f47' stroke-width='12'/>
+        <path d='M 274 438 L 394 333 L 440 432 Z M 394 333 L 574 336 L 440 432 M 574 336 L 676 438' stroke='#e7805b' stroke-width='7'/>
+        <path d='M 394 333 L 389 313 M 568 321 L 584 354' stroke='#294b40' stroke-width='8'/>
+        <path d='M 574 326 L 565 301 Q 562 292 572 292 L 592 292' stroke='#294b40' stroke-width='6'/>
+        <path d='M 584 292 H 600' stroke='#c56a50' stroke-width='8'/>
+      </g>
+      <path d='M 367 309 Q 385 302 406 308 Q 412 310 407 314 L 370 317 Q 363 316 367 309 Z' fill='#294b40'/>
+      <circle cx='440' cy='432' r='25' fill='#f6d7a7' stroke='#294b40' stroke-width='4'/>
+      <circle cx='440' cy='432' r='16' fill='none' stroke='#d18b69' stroke-width='2' stroke-dasharray='2 4'/>
+
+      <path fill='none' stroke='#78b879' stroke-width='21' stroke-linecap='round' stroke-linejoin='round'
+            d='M 398 314 L 440 357 L 464 418'>
+        <animate attributeName='d' dur='1.6s' repeatCount='indefinite' calcMode='linear'
+          values='M 398 314 L 440 357 L 464 418; M 398 314 L 442 365 L 457 435; M 398 314 L 435 372 L 440 442; M 398 314 L 426 371 L 423 435; M 398 314 L 414 361 L 416 418; M 398 314 L 414 352 L 423 401; M 398 314 L 425 347 L 440 394; M 398 314 L 438 350 L 457 401; M 398 314 L 440 357 L 464 418'/>
+      </path>
+
+      <!-- 身体围绕臀部轻轻前后摆动。 -->
+      <g>
+        <animateTransform attributeName='transform' type='rotate' values='-1 394 315; 1 394 315; -1 394 315' dur='1.6s' repeatCount='indefinite'/>
+        <path d='M 354 270 C 311 272 284 263 242 250 C 250 279 277 308 318 315 L 362 313 Z' fill='#68ad70' stroke='#4b9562' stroke-width='3' stroke-linejoin='round'/>
+        <path d='M 248 251 L 254 240 L 260 254 L 271 245 L 277 259 L 288 251 L 294 265 L 306 257 L 312 269 L 324 261 L 330 273' fill='#4f9762'/>
+        <path d='M 342 273 C 352 240 390 228 425 234 C 461 240 491 254 489 281 C 487 308 456 322 418 321 L 360 320 C 337 318 329 300 342 273 Z' fill='url(#bodyColor)' stroke='#4b9562' stroke-width='3'/>
+        <path d='M 353 294 C 383 307 435 311 481 290 C 476 310 454 321 418 321 L 360 319 C 353 316 350 305 353 294 Z' fill='#cee4a3'/>
+        <path d='M 358 256 L 365 242 L 372 253 L 381 239 L 388 249 L 399 236 L 405 248 L 416 238 L 423 251 L 434 244 L 441 257' fill='#4f9762'/>
+        <g fill='#4f9762' opacity='.55'>
+          <circle cx='350' cy='281' r='3'/><circle cx='364' cy='270' r='2.5'/><circle cx='375' cy='283' r='3'/>
+          <circle cx='315' cy='288' r='3'/><circle cx='297' cy='280' r='2'/><circle cx='333' cy='296' r='2'/>
+        </g>
+
+        <!-- 鳄鱼的头、眼睛、长嘴和牙齿。 -->
+        <path d='M 453 243 C 454 223 470 211 494 210 L 525 212 C 540 213 547 220 550 229 L 595 229 C 606 229 612 235 612 244 L 611 253 C 610 261 604 264 593 264 L 516 262 C 496 264 483 260 473 254 L 457 257 Z' fill='#83c27a' stroke='#4b9562' stroke-width='3' stroke-linejoin='round'/>
+        <path d='M 505 250 Q 555 255 610 249 L 610 255 Q 609 262 596 263 L 518 261 Q 508 259 505 255 Z' fill='#d1e6a5'/>
+        <path d='M 505 250 Q 555 255 610 249' fill='none' stroke='#4b9562' stroke-width='2.5' stroke-linecap='round'/>
+        <path d='M 533 252 l 5 7 l 5-6 M 557 253 l 5 7 l 5-7 M 582 252 l 4 6 l 4-7' fill='#fffdf0'/>
+        <circle cx='592' cy='237' r='3' fill='#315e45'/>
+        <circle cx='484' cy='214' r='15' fill='#83c27a' stroke='#4b9562' stroke-width='3'/>
+        <circle cx='519' cy='215' r='14' fill='#83c27a' stroke='#4b9562' stroke-width='3'/>
+        <circle cx='486' cy='213' r='8' fill='#fffdf0'/><circle cx='521' cy='214' r='8' fill='#fffdf0'/>
+        <circle cx='489' cy='214' r='3.5' fill='#294b40'/><circle cx='524' cy='215' r='3.5' fill='#294b40'/>
+        <ellipse cx='489' cy='242' rx='9' ry='5' fill='#e7a98d' opacity='.65'/>
+
+        <!-- 两只手扶住车把。 -->
+        <path d='M 447 270 Q 475 278 491 292 Q 497 297 508 294 L 567 289' fill='none' stroke='#4f9865' stroke-width='15' stroke-linecap='round' stroke-linejoin='round'/>
+        <path d='M 459 279 Q 479 288 495 303 Q 500 308 510 305 L 570 297' fill='none' stroke='#79ba78' stroke-width='17' stroke-linecap='round' stroke-linejoin='round'/>
+        <path d='M 563 297 Q 570 288 578 290 L 588 292 Q 592 294 588 297 L 578 297 L 585 299 Q 587 302 583 303 L 572 302' fill='#79ba78' stroke='#4b9562' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>
+      </g>
+
+      <!-- 曲柄与车轮同周期旋转；脚掌反向旋转以保持水平。 -->
+      <g transform='translate(440 432)'>
+        <g>
+          <animateTransform attributeName='transform' type='rotate' from='0' to='360' dur='1.6s' repeatCount='indefinite'/>
+          <path d='M -24 0 H 24' stroke='#294b40' stroke-width='5' stroke-linecap='round'/>
+          <g transform='translate(-24 0)'>
+            <g>
+              <animateTransform attributeName='transform' type='rotate' from='0' to='-360' dur='1.6s' repeatCount='indefinite'/>
+              <rect x='-11' y='-3' width='23' height='6' rx='3' fill='#294b40'/>
+              <path d='M -7 -14 Q -10 -14 -10 -8 L -9 -5 Q -9 -3 -4 -3 L 13 -3 Q 17 -3 17 -6 Q 17 -9 11 -10 L 3 -11 L -1 -14 Z' fill='#4f9865' stroke='#39794f' stroke-width='2'/>
+            </g>
+          </g>
+          <g transform='translate(24 0)'>
+            <g>
+              <animateTransform attributeName='transform' type='rotate' from='0' to='-360' dur='1.6s' repeatCount='indefinite'/>
+              <rect x='-11' y='-3' width='23' height='6' rx='3' fill='#294b40'/>
+              <path d='M -7 -14 Q -10 -14 -10 -8 L -9 -5 Q -9 -3 -4 -3 L 13 -3 Q 17 -3 17 -6 Q 17 -9 11 -10 L 3 -11 L -1 -14 Z' fill='#83c27a' stroke='#4b9562' stroke-width='2'/>
+            </g>
+          </g>
+          <circle r='5' fill='#294b40'/>
+        </g>
+      </g>
+
+      <text x='58' y='576' fill='#789682' font-size='11' font-weight='700' letter-spacing='2'>SLOW DOWN &amp; ENJOY THE RIDE</text>
+      <text x='902' y='576' text-anchor='end' fill='#789682' font-size='12'>骑行中 · 心情晴朗</text>
+    </svg>
+  </main>
+</body>
+</html>

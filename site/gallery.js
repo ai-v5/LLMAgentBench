@@ -4,6 +4,7 @@
   const canvas = document.querySelector("[data-gallery-canvas]");
   if (!tabs || !canvas) return;
   const status = document.querySelector("[data-gallery-status]");
+  const htmlLink = document.querySelector("[data-gallery-html]");
   let requestId = 0;
   fetch("site/gallery.json", { cache: "no-cache" })
     .then((response) => {
@@ -31,8 +32,21 @@
           button.setAttribute("aria-selected", position === index ? "true" : "false");
         });
         const current = ++requestId;
-        canvas.setAttribute("aria-label", entry.label + " " + entry.effort + " 生成的鳄鱼骑自行车 SVG 动画");
+        canvas.setAttribute("aria-label", entry.label + " " + entry.effort + " 生成的鳄鱼骑自行车动画");
         if (status) status.textContent = entry.note || "";
+        if (htmlLink) {
+          htmlLink.hidden = !entry.html;
+          if (entry.html) htmlLink.setAttribute("href", entry.html);
+        }
+        if (entry.html) {
+          const frame = document.createElement("iframe");
+          frame.setAttribute("sandbox", "");
+          frame.setAttribute("referrerpolicy", "no-referrer");
+          frame.setAttribute("title", entry.label + " " + entry.effort + " 的鳄鱼动画");
+          frame.src = entry.html;
+          canvas.replaceChildren(frame);
+          return;
+        }
         fetch(entry.svg, { cache: "no-cache" })
           .then((response) => {
             if (!response.ok) throw new Error("svg unavailable");
