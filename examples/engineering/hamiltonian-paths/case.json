@@ -1,0 +1,20 @@
+{
+  "id": "hamiltonian-paths",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "10 个节点（0..9）的无向图见 edge.txt（每行 `u v`）。求从节点 0 出发、每个节点恰好经过一次的路径总数（终点任意）。只返回 JSON：{\"count\": 路径数}。",
+  "inputs": {
+    "edge.txt": "0 4\n0 5\n0 7\n0 8\n0 9\n1 3\n1 5\n1 6\n1 7\n1 8\n2 4\n2 6\n2 8\n3 5\n3 6\n3 9\n4 7\n4 8\n5 6\n5 7\n6 7\n6 9\n7 8\n7 9\n8 9\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "count",
+      "type": "json_equal",
+      "path": [
+        "count"
+      ],
+      "expected": 1091
+    }
+  ]
+}

@@ -12,6 +12,22 @@
     "review-batch-proof/case.json",
     "review-dirty-cleanup/case.json",
     "slo-goodput/case.json",
-    "overlap-proxy/case.json"
+    "overlap-proxy/case.json",
+    "hash-chain/case.json",
+    "puzzle-8/case.json",
+    "sudoku-hard/case.json",
+    "puzzle-15/case.json",
+    "hamiltonian-paths/case.json",
+    "nonogram-10/case.json",
+    "tsp-14/case.json",
+    "count-3-colorings-16/case.json",
+    "count-perfect-matchings-10/case.json",
+    "count-hamiltonian-cycles/case.json",
+    "count-perfect-matchings-12/case.json",
+    "count-hamiltonian-cycles-12/case.json",
+    "count-perfect-matchings-14/case.json",
+    "count-hamiltonian-cycles-14/case.json",
+    "count-perfect-matchings-16/case.json",
+    "count-hamiltonian-cycles-16/case.json"
   ]
 }

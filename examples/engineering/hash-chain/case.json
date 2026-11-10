@@ -1,0 +1,36 @@
+{
+  "id": "hash-chain",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "按如下规则计算哈希链并只返回 JSON。初始 h0 = 7；对 text.txt 中的字符串按字符顺序逐个更新：h_i = (h_(i-1) * 31 + 该字符的 Unicode 码点) mod 1000003；不要处理文件结尾的换行字符。记 n 为字符数，返回 JSON：{\"final\": h_n, \"min\": h_1..h_n 的最小值, \"max\": h_1..h_n 的最大值}（min/max 不含 h0）。",
+  "inputs": {
+    "text.txt": "requirement-driven-benchmark-for-effort\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "final",
+      "type": "json_equal",
+      "path": [
+        "final"
+      ],
+      "expected": 572204
+    },
+    {
+      "id": "min",
+      "type": "json_equal",
+      "path": [
+        "min"
+      ],
+      "expected": 331
+    },
+    {
+      "id": "max",
+      "type": "json_equal",
+      "path": [
+        "max"
+      ],
+      "expected": 983698
+    }
+  ]
+}

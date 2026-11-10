@@ -1,0 +1,20 @@
+{
+  "id": "puzzle-15",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "15 数码：4x4 棋盘用 0 表示空格，目标状态按行读取为 [1..15,0]。初始状态见 start.json。每次把与空格上下左右相邻的块移入空格。求从初始状态到目标状态的最少移动步数，只返回 JSON：{\"moves\": 步数}。",
+  "inputs": {
+    "start.json": "[5, 1, 3, 4, 2, 6, 15, 7, 13, 8, 0, 11, 10, 9, 14, 12]"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "moves",
+      "type": "json_equal",
+      "path": [
+        "moves"
+      ],
+      "expected": 24
+    }
+  ]
+}

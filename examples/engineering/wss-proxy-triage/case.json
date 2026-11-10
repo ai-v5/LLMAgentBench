@@ -2,7 +2,7 @@
   "id": "wss-proxy-triage",
   "category": "analysis",
   "topic": "diagnosis",
-  "prompt": "根据日志返回 JSON：connect_state、websocket_state、root_cause、next_evidence。不要把代理 CONNECT 视为 WebSocket 成功。 输出字段约束：connect_state: 枚举 WEBSOCKET_ESTABLISHED/CONNECTION_FAILED/HTTP_CONNECT_ONLY；websocket_state: 枚举 ESTABLISHED/NOT_ESTABLISHED/UNKNOWN；root_cause: 枚举 PROXY_POLICY/BACKEND_FAILURE/UNKNOWN；next_evidence: 枚举 HTTP_CONNECT_ONLY/UPGRADE_AND_BIDIRECTIONAL_FRAMES/NO_FURTHER_CHECK。",
+  "prompt": "根据日志返回 JSON：connect_state、websocket_state、root_cause、next_evidence。不要把代理 CONNECT 视为 WebSocket 成功。必须逐条套用以下判定规则，不要自行补充日志中没有的信息。connect_state：CONNECT 失败则为 CONNECTION_FAILED；upgrade 成功且出现 101 则为 WEBSOCKET_ESTABLISHED；其余情况为 HTTP_CONNECT_ONLY。websocket_state：出现 101 且观察到双向帧则为 ESTABLISHED；有 upgrade 记录但没有 101 则为 NOT_ESTABLISHED；没有 upgrade 记录则为 UNKNOWN。root_cause：只有日志写明代理侧拒绝 upgrade（例如代理返回 403/407 并标注策略拒绝）才为 PROXY_POLICY；只有日志写明上游连接失败（例如连接拒绝、连接重置、上游 5xx）才为 BACKEND_FAILURE；日志未写明拒绝来源时（例如只看到 upgrade 返回 403、但未说明由代理还是后端产生）为 UNKNOWN。next_evidence：connect_state 不是 WEBSOCKET_ESTABLISHED 时为 UPGRADE_AND_BIDIRECTIONAL_FRAMES；否则为 NO_FURTHER_CHECK。 输出字段约束：connect_state: 枚举 WEBSOCKET_ESTABLISHED/CONNECTION_FAILED/HTTP_CONNECT_ONLY；websocket_state: 枚举 ESTABLISHED/NOT_ESTABLISHED/UNKNOWN；root_cause: 枚举 PROXY_POLICY/BACKEND_FAILURE/UNKNOWN；next_evidence: 枚举 HTTP_CONNECT_ONLY/UPGRADE_AND_BIDIRECTIONAL_FRAMES/NO_FURTHER_CHECK。",
   "inputs": {
     "log.txt": "合成日志：HTTP CONNECT 200；TLS 握手完成；WebSocket upgrade 返回 403；没有 101 和双向帧。\n"
   },

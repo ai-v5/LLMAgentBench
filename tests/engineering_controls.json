@@ -152,5 +152,275 @@
       },
       "files": []
     }
+  },
+  "hash-chain": {
+    "good": {
+      "answer": {
+        "final": 572204,
+        "min": 331,
+        "max": 983698
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "final": 572204,
+        "min": 96157,
+        "max": 983698
+      },
+      "files": []
+    }
+  },
+  "puzzle-8": {
+    "good": {
+      "answer": {
+        "moves": 18
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "moves": 26
+      },
+      "files": []
+    }
+  },
+  "sudoku-hard": {
+    "good": {
+      "answer": {
+        "grid": [
+          "987654321",
+          "246173985",
+          "351928746",
+          "128537694",
+          "634892157",
+          "795461832",
+          "519286473",
+          "472319568",
+          "863745219"
+        ]
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "grid": [
+          "987654321",
+          "246173985",
+          "351928746",
+          "123597846",
+          "634892157",
+          "795461832",
+          "519286473",
+          "472319568",
+          "863745219"
+        ]
+      },
+      "files": []
+    }
+  },
+  "puzzle-15": {
+    "good": {
+      "answer": {
+        "moves": 24
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "moves": 34
+      },
+      "files": []
+    }
+  },
+  "hamiltonian-paths": {
+    "good": {
+      "answer": {
+        "count": 1091
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 1344
+      },
+      "files": []
+    }
+  },
+  "nonogram-10": {
+    "good": {
+      "answer": {
+        "grid": [
+          "..##......",
+          ".#..#.#.#.",
+          "....#...##",
+          ".#.###.###",
+          ".##.##.#..",
+          "##..##...#",
+          "..#.###...",
+          ".#....#..#",
+          "#.###...##",
+          "....#..##."
+        ]
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "grid": [
+          "..........",
+          ".#..#.#.#.",
+          "....#...##",
+          ".#.###.###",
+          ".##.##.#..",
+          "##..##...#",
+          "..#.###...",
+          ".#....#..#",
+          "#.###...##",
+          "....#..##."
+        ]
+      },
+      "files": []
+    }
+  },
+  "tsp-14": {
+    "good": {
+      "answer": {
+        "length": 432
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "length": 433
+      },
+      "files": []
+    }
+  },
+  "count-3-colorings-16": {
+    "good": {
+      "answer": {
+        "count": 3264
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 5460
+      },
+      "files": []
+    }
+  },
+  "count-perfect-matchings-10": {
+    "good": {
+      "answer": {
+        "count": 3286
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 3196
+      },
+      "files": []
+    }
+  },
+  "count-hamiltonian-cycles": {
+    "good": {
+      "answer": {
+        "count": 257
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 258
+      },
+      "files": []
+    }
+  },
+  "count-perfect-matchings-12": {
+    "good": {
+      "answer": {
+        "count": 3446
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 3434
+      },
+      "files": []
+    }
+  },
+  "count-hamiltonian-cycles-12": {
+    "good": {
+      "answer": {
+        "count": 1642
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 1643
+      },
+      "files": []
+    }
+  },
+  "count-perfect-matchings-14": {
+    "good": {
+      "answer": {
+        "count": 1515310
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 2847744
+      },
+      "files": []
+    }
+  },
+  "count-hamiltonian-cycles-14": {
+    "good": {
+      "answer": {
+        "count": 292
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 459
+      },
+      "files": []
+    }
+  },
+  "count-perfect-matchings-16": {
+    "good": {
+      "answer": {
+        "count": 3643622
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 9236480
+      },
+      "files": []
+    }
+  },
+  "count-hamiltonian-cycles-16": {
+    "good": {
+      "answer": {
+        "count": 6423
+      },
+      "files": []
+    },
+    "bad": {
+      "answer": {
+        "count": 2048
+      },
+      "files": []
+    }
   }
 }

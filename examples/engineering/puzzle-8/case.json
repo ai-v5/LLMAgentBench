@@ -1,0 +1,18 @@
+{
+  "id": "puzzle-8",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "8 数码：3x3 棋盘用 0 表示空格，目标状态按行读取为 [1,2,3,4,5,6,7,8,0]。初始状态按行读取为 [4,1,8,7,6,5,0,3,2]。每次只能把与空格上下左右相邻的块移入空格。求从初始状态到目标状态的最少移动步数，只返回 JSON：{\"moves\": 步数}。",
+  "inputs": {},
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "moves",
+      "type": "json_equal",
+      "path": [
+        "moves"
+      ],
+      "expected": 18
+    }
+  ]
+}

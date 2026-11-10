@@ -1,0 +1,20 @@
+{
+  "id": "count-hamiltonian-cycles-14",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "14 个节点（0..13）的无向图见 edge.txt。求经过所有节点恰好一次并回到 0 的环路数（方向相反视为同一条）。只返回 JSON：{\"count\": 条数}。",
+  "inputs": {
+    "edge.txt": "0 3\n0 4\n0 6\n0 8\n0 9\n0 13\n1 4\n1 9\n1 13\n2 3\n2 4\n2 8\n2 10\n2 13\n3 5\n3 8\n3 9\n3 11\n3 12\n4 5\n4 7\n4 10\n4 11\n4 12\n5 7\n6 9\n6 11\n6 13\n7 8\n7 9\n7 12\n7 13\n9 12\n10 11\n"
+  },
+  "allowed_write_paths": [],
+  "checks": [
+    {
+      "id": "count",
+      "type": "json_equal",
+      "path": [
+        "count"
+      ],
+      "expected": 292
+    }
+  ]
+}
