@@ -53,7 +53,7 @@
       public_provenance: `results/terra-20261110-standard/${effort}/provenance.json`, offset: 8 + index,
       effort, model: "gpt-6.1-terra", models: { [`Codex GPT-6.1 Terra ${effort}`]: "gpt-6.1-terra" },
     })),
-    ...["max"].map((effort, index) => ({
+    ...["max", "high"].map((effort, index) => ({
       public: `results/luna-20261110-standard/${effort}/summary.json`,
       overall: `results/luna-20261110-standard/${effort}/overall.json`,
       overall_provenance: `results/luna-20261110-standard/${effort}/overall-provenance.json`,

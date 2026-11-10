@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鳄鱼骑自行车</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(#dff5ff 0 68%, #b9e58a 68% 100%);
+      font-family: system-ui, sans-serif;
+    }
+    main { width: min(100%, 900px); padding: 16px; }
+    svg { display: block; width: 100%; height: auto; }
+    .bike-line { fill: none; stroke: #e45143; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+    .thin-line { fill: none; stroke: #b93631; stroke-width: 5; stroke-linecap: round; }
+    .limb { fill: none; stroke: #438e3e; stroke-width: 21; stroke-linecap: round; stroke-linejoin: round; }
+    .limb-highlight { fill: none; stroke: #76bd50; stroke-width: 8; stroke-linecap: round; }
+  </style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 680 500" role="img" aria-labelledby="title description" xmlns="http://www.w3.org/2000/svg">
+    <title id="title">鳄鱼骑自行车</title>
+    <desc id="description">戴着头盔的绿色鳄鱼骑红色自行车，车轮旋转，双腿同步交替踩踏，身体轻轻摇摆。</desc>
+    <defs>
+      <linearGradient id="bodyGreen" x1="0" y1="0" x2=".8" y2="1">
+        <stop offset="0" stop-color="#8bd45e"/><stop offset="1" stop-color="#4f9c42"/>
+      </linearGradient>
+      <linearGradient id="belly" x1="0" y1="0" x2="0" y2="1">
+        <stop stop-color="#e4d78a"/><stop offset="1" stop-color="#c7b96c"/>
+      </linearGradient>
+    </defs>
+
+    <path d="M0 420 Q160 400 340 420 T680 414 V500 H0Z" fill="#9bd275"/>
+    <path d="M0 438 Q170 420 340 438 T680 430" fill="none" stroke="#7ebc5c" stroke-width="3" opacity=".7"/>
+    <ellipse cx="340" cy="436" rx="270" ry="20" fill="#719f58" opacity=".18"/>
+
+    <!-- Wheels: the rotating inner groups keep each wheel centered on its hub. -->
+    <g transform="translate(190 390)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2.4s" repeatCount="indefinite"/>
+        <circle r="78" fill="#f8fbff" stroke="#37495a" stroke-width="8"/>
+        <circle r="70" fill="none" stroke="#8aa0ad" stroke-width="2"/>
+        <g stroke="#8aa0ad" stroke-width="2">
+          <path d="M0 0V-70 M0 0V70 M0 0H70 M0 0H-70 M0 0L49.5-49.5 M0 0L-49.5 49.5 M0 0L49.5 49.5 M0 0L-49.5-49.5"/>
+        </g>
+        <circle r="8" fill="#e45143" stroke="#fff" stroke-width="3"/>
+      </g>
+    </g>
+    <g transform="translate(490 390)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2.4s" repeatCount="indefinite"/>
+        <circle r="78" fill="#f8fbff" stroke="#37495a" stroke-width="8"/>
+        <circle r="70" fill="none" stroke="#8aa0ad" stroke-width="2"/>
+        <g stroke="#8aa0ad" stroke-width="2">
+          <path d="M0 0V-70 M0 0V70 M0 0H70 M0 0H-70 M0 0L49.5-49.5 M0 0L-49.5 49.5 M0 0L49.5 49.5 M0 0L-49.5-49.5"/>
+        </g>
+        <circle r="8" fill="#e45143" stroke="#fff" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- Bicycle frame, seat, handlebar, crank, and pedals. -->
+    <g aria-label="自行车">
+      <path class="bike-line" d="M190 390 L300 270 L330 390 L190 390 L390 270 L490 390 L330 390 L390 270"/>
+      <path class="thin-line" d="M300 270 L270 245 M255 245 H290 M390 270 L408 245 M394 245 H430"/>
+      <circle cx="330" cy="390" r="16" fill="#f8fbff" stroke="#37495a" stroke-width="5"/>
+      <path d="M330 390 L354 408 M330 390 L306 372" stroke="#37495a" stroke-width="6" stroke-linecap="round"/>
+      <path d="M347 410 H367 M296 370 H316" stroke="#37495a" stroke-width="7" stroke-linecap="round"/>
+      <path d="M255 245 Q272 236 291 245" fill="none" stroke="#273947" stroke-width="11" stroke-linecap="round"/>
+      <path d="M395 245 H431" stroke="#273947" stroke-width="9" stroke-linecap="round"/>
+    </g>
+
+    <!-- Crocodile body and head sway gently as one group. -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="-2 330 220; 2 330 220; -2 330 220" dur="1.2s" repeatCount="indefinite"/>
+      <path d="M268 231 Q225 244 202 224 Q221 260 273 251Z" fill="url(#bodyGreen)" stroke="#327c39" stroke-width="3"/>
+      <path d="M268 231 Q232 242 211 231" fill="none" stroke="#327c39" stroke-width="3"/>
+      <path d="M264 180 Q307 149 362 172 Q396 188 394 222 Q373 252 311 254 Q275 248 252 220Z" fill="url(#bodyGreen)" stroke="#327c39" stroke-width="4"/>
+      <path d="M270 219 Q318 245 384 214 Q375 250 315 254 Q281 249 263 230Z" fill="url(#belly)"/>
+      <path d="M283 225 Q323 239 369 223 M291 236 Q326 247 359 235" fill="none" stroke="#ae9e56" stroke-width="2" opacity=".7"/>
+      <path d="M281 174 l9-13 9 12 9-16 10 15 10-15 10 16 10-12 9 16" fill="#67b34c" stroke="#327c39" stroke-width="2"/>
+
+      <!-- Arms and hands reach the handlebar. -->
+      <path d="M350 190 Q380 198 401 229 L416 246" fill="none" stroke="#438e3e" stroke-width="18" stroke-linecap="round"/>
+      <path d="M352 187 Q382 197 403 229" fill="none" stroke="#76bd50" stroke-width="7" stroke-linecap="round"/>
+      <path d="M410 244 Q416 239 424 243 L430 249 Q426 257 418 255 L411 252Z" fill="#72bd4e" stroke="#327c39" stroke-width="2"/>
+      <path d="M323 194 Q351 206 371 232 L398 245" fill="none" stroke="#438e3e" stroke-width="15" stroke-linecap="round"/>
+      <path d="M324 192 Q353 204 373 231" fill="none" stroke="#76bd50" stroke-width="6" stroke-linecap="round"/>
+      <path d="M393 241 Q400 237 407 242 L412 248 Q407 255 399 252 L393 248Z" fill="#72bd4e" stroke="#327c39" stroke-width="2"/>
+
+      <!-- Neck, long snout, teeth, eye, nostrils, and head scales. -->
+      <path d="M354 183 Q378 163 383 139 L422 140 Q416 171 396 197Z" fill="url(#bodyGreen)" stroke="#327c39" stroke-width="4"/>
+      <path d="M373 160 Q396 173 416 163" fill="none" stroke="#327c39" stroke-width="3"/>
+      <path d="M375 132 Q385 99 421 91 Q453 83 475 105 L520 117 Q538 123 532 138 Q529 148 510 149 L467 147 Q445 169 414 166 Q388 164 375 150Z" fill="url(#bodyGreen)" stroke="#327c39" stroke-width="4"/>
+      <path d="M444 126 Q478 112 520 123 Q536 127 532 138 Q530 146 510 147 L463 143Z" fill="#82c951" stroke="#327c39" stroke-width="3"/>
+      <path d="M463 143 Q496 148 528 139" fill="none" stroke="#327c39" stroke-width="3"/>
+      <path d="M478 144 l6 10 5-9 7 10 5-10 7 8 5-9" fill="#fff9db" stroke="#ae9e56" stroke-width="1"/>
+      <path d="M485 119 l5-7 M503 120 l5-7" stroke="#327c39" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="428" cy="105" rx="15" ry="17" fill="#fff8d8" stroke="#327c39" stroke-width="3"/>
+      <ellipse cx="432" cy="107" rx="5" ry="8" fill="#253d2c"/>
+      <circle cx="434" cy="103" r="2" fill="white"/>
+      <circle cx="514" cy="127" r="3" fill="#327c39"/>
+      <circle cx="525" cy="130" r="3" fill="#327c39"/>
+      <path d="M391 104 l8-10 8 7 9-12 8 10" fill="#69b84c" stroke="#327c39" stroke-width="2"/>
+    </g>
+
+    <!-- Paired legs pedal in sync; the offset keeps their strokes alternating. -->
+    <g transform="translate(296 244)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate" values="-8; 8; -8" dur="1.2s" repeatCount="indefinite"/>
+        <path class="limb" d="M0 0 Q26 38 44 82"/>
+        <path class="limb-highlight" d="M1 2 Q23 39 40 77"/>
+        <g transform="translate(44 82)">
+          <g>
+            <animateTransform attributeName="transform" type="rotate" values="8; -24; 8" dur="1.2s" repeatCount="indefinite"/>
+            <path class="limb" d="M0 0 Q9 39 18 78"/>
+            <path class="limb-highlight" d="M1 4 Q9 39 15 72"/>
+            <path d="M14 75 Q28 76 39 83 L50 84 Q55 89 48 94 L18 94 Q8 91 11 84Z" fill="#67ad48" stroke="#327c39" stroke-width="3"/>
+            <path d="M20 84 L43 87" stroke="#a1d46b" stroke-width="3" stroke-linecap="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g transform="translate(324 246)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate" values="8; -8; 8" dur="1.2s" repeatCount="indefinite"/>
+        <path class="limb" d="M0 0 Q-22 37 -34 82"/>
+        <path class="limb-highlight" d="M-1 2 Q-20 38 -31 77"/>
+        <g transform="translate(-34 82)">
+          <g>
+            <animateTransform attributeName="transform" type="rotate" values="-24; 8; -24" dur="1.2s" repeatCount="indefinite"/>
+            <path class="limb" d="M0 0 Q-7 39 -14 78"/>
+            <path class="limb-highlight" d="M-1 4 Q-7 39 -11 72"/>
+            <path d="M-12 75 Q-26 76 -37 83 L-48 84 Q-53 89 -46 94 L-16 94 Q-6 91 -9 84Z" fill="#67ad48" stroke="#327c39" stroke-width="3"/>
+            <path d="M-18 84 L-41 87" stroke="#a1d46b" stroke-width="3" stroke-linecap="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- Helmet -->
+    <path d="M398 99 Q409 69 439 71 Q462 73 474 97 L450 101 Q436 86 416 95 L407 104Z" fill="#f4bd42" stroke="#b77d22" stroke-width="3"/>
+    <path d="M405 100 Q430 88 457 100" fill="none" stroke="#fff0ad" stroke-width="4"/>
+    <path d="M416 95 L414 77 M432 91 L433 73 M449 94 L454 79" stroke="#fff0ad" stroke-width="3"/>
+  </svg>
+</main>
+</body>
+</html>
