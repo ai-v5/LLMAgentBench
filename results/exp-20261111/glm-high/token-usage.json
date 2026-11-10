@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 1,
+  "source_receipt_sha256": [
+    "1593565b6838a765b1592bd84aa80ba9f9f2713b8fc5ba84ea90a8c3c9571089"
+  ],
+  "engine_sha256": "fe54f8b45060968ea5f50a4620622ba59e86ca29c0f4ddb3cd4a5a6427de0a70",
+  "config_sha256": "95e6a787733757a44c05a12394d318c7ddad329bc95a853abd2d381e3e7075ea",
+  "candidates": [
+    {
+      "label": "GLM 5.3",
+      "candidate_id": "glm5.3-high",
+      "adapter": "dsh",
+      "requested_model": "glm5.3",
+      "reasoning_effort": "high",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 13,
+      "candidate_calls": 13,
+      "usage_calls": 13,
+      "output_tokens": 11035,
+      "candidate_call_seconds": 110.593
+    }
+  ]
+}

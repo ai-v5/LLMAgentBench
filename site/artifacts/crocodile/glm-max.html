@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>鳄鱼骑自行车 · SVG 动画</title>
+<style>
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: linear-gradient(#eef7f2, #dcefe4); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; }
+  h1 { color: #2f6b2a; font-size: 1.35rem; margin: 14px 0 4px; }
+  p.hint { color: #5a7d5a; font-size: 0.85rem; margin: 0 0 14px; }
+  .stage { width: min(96vw, 960px); background: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); padding: 8px; box-sizing: border-box; }
+  svg { width: 100%; height: auto; display: block; border-radius: 10px; }
+</style>
+</head>
+<body>
+<h1>🐊 鳄鱼骑自行车</h1>
+<p class="hint">纯 SVG + SMIL 动画，不依赖任何外部脚本</p>
+<div class="stage">
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一只鳄鱼正在骑自行车：车轮旋转、双腿踩踏、身体前后摆动">
+<title>鳄鱼骑自行车</title>
+<defs>
+<linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#bfe6f9" />
+<stop offset="1" stop-color="#ecf9ff" />
+</linearGradient>
+</defs>
+
+<!-- ===================== 一、背景：天空、太阳、云、草地与道路 ===================== -->
+<rect x="0" y="0" width="900" height="470" fill="url(#skyGrad)" />
+<circle cx="812" cy="82" r="46" fill="#ffe082" opacity="0.45" />
+<circle cx="812" cy="82" r="33" fill="#ffd54d" />
+<g fill="#ffffff" opacity="0.92">
+<ellipse cx="150" cy="88" rx="42" ry="17" />
+<ellipse cx="186" cy="78" rx="30" ry="14" />
+<ellipse cx="118" cy="80" rx="26" ry="12" />
+<ellipse cx="600" cy="132" rx="46" ry="17" />
+<ellipse cx="638" cy="122" rx="28" ry="13" />
+<ellipse cx="566" cy="124" rx="24" ry="11" />
+</g>
+<rect x="0" y="470" width="900" height="90" fill="#a8d878" />
+<rect x="0" y="470" width="900" height="42" fill="#6b7280" />
+<rect x="0" y="470" width="900" height="4" fill="#aab2ba" opacity="0.6" />
+<!-- 道路虚线向左流动，营造前进感 -->
+<line x1="0" y1="496" x2="900" y2="496" stroke="#f5d76e" stroke-width="5" stroke-dasharray="46 34">
+<animate attributeName="stroke-dashoffset" from="0" to="80" dur="0.2s" repeatCount="indefinite" />
+</line>
+<!-- 速度线：向后掠过的气流 -->
+<g stroke="#ffffff" stroke-width="6" stroke-linecap="round">
+<animateTransform attributeName="transform" type="translate" values="25 0; -70 0" keyTimes="0;1" dur="0.55s" repeatCount="indefinite" />
+<animate attributeName="opacity" values="0;0.8;0" keyTimes="0;0.3;1" dur="0.55s" repeatCount="indefinite" />
+<line x1="95" y1="308" x2="165" y2="308" />
+<line x1="70" y1="352" x2="145" y2="352" />
+<line x1="100" y1="396" x2="168" y2="396" />
+</g>
+
+<!-- ===================== 二、鳄鱼远侧手臂与腿（位于车架后方） ===================== -->
+<g id="croc-far-limbs">
+<!-- 与身体同步的轻微上下起伏 -->
+<animateTransform attributeName="transform" type="translate" values="0 0; 0 3; 0 0" keyTimes="0;0.5;1" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1" dur="0.6s" repeatCount="indefinite" />
+<!-- 远侧手臂 -->
+<path d="M 413 206 C 448 220 480 231 507 249" fill="none" stroke="#358030" stroke-width="14" stroke-linecap="round" />
+<circle cx="509" cy="250" r="7.5" fill="#358030" />
+<!-- 远侧腿：踩踏动画（与曲柄同周期，相位相差半圈） -->
+<g id="croc-far-leg">
+<animateTransform attributeName="transform" type="translate" values="0 0; 0 15; 0 0; 0 -15; 0 0" keyTimes="0;0.25;0.5;0.75;1" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1" dur="1.2s" begin="-0.6s" repeatCount="indefinite" />
+<path d="M 312 265 L 350 335 L 378 398" fill="none" stroke="#358030" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M 368 392 L 402 397 L 397 409 L 365 404 Z" fill="#358030" />
+</g>
+</g>
+
+<!-- ===================== 三、自行车 ===================== -->
+<g id="bicycle">
+<!-- 后轮：animateTransform 实现连续旋转 -->
+<g id="wheel-rear">
+<circle cx="250" cy="378" r="85" fill="none" stroke="#2f3640" stroke-width="13" />
+<circle cx="250" cy="378" r="71" fill="none" stroke="#c8ced6" stroke-width="6" />
+<g stroke="#9fb2bf" stroke-width="3">
+<animateTransform attributeName="transform" type="rotate" from="0 250 378" to="360 250 378" dur="0.9s" repeatCount="indefinite" />
+<line x1="182" y1="378" x2="318" y2="378" />
+<line x1="250" y1="310" x2="250" y2="446" />
+<line x1="201.9" y1="329.9" x2="298.1" y2="426.1" />
+<line x1="201.9" y1="426.1" x2="298.1" y2="329.9" />
+<rect x="246" y="312" width="8" height="12" rx="2" fill="#57606f" stroke="none" />
+</g>
+<circle cx="250" cy="378" r="10" fill="#57606f" />
+</g>
+<!-- 前轮：animateTransform 实现连续旋转 -->
+<g id="wheel-front">
+<circle cx="585" cy="378" r="85" fill="none" stroke="#2f3640" stroke-width="13" />
+<circle cx="585" cy="378" r="71" fill="none" stroke="#c8ced6" stroke-width="6" />
+<g stroke="#9fb2bf" stroke-width="3">
+<animateTransform attributeName="transform" type="rotate" from="0 585 378" to="360 585 378" dur="0.9s" repeatCount="indefinite" />
+<line x1="517" y1="378" x2="653" y2="378" />
+<line x1="585" y1="310" x2="585" y2="446" />
+<line x1="536.9" y1="329.9" x2="633.1" y2="426.1" />
+<line x1="536.9" y1="426.1" x2="633.1" y2="329.9" />
+<rect x="581" y="312" width="8" height="12" rx="2" fill="#57606f" stroke="none" />
+</g>
+<circle cx="585" cy="378" r="10" fill="#57606f" />
+</g>
+<!-- 车架：座管、上管、下管、后上叉、后下叉、头管 -->
+<g fill="none" stroke="#d64541" stroke-linecap="round">
+<path d="M 400 400 L 330 278" stroke-width="9" />
+<path d="M 332 282 L 547 285" stroke-width="9" />
+<path d="M 400 400 L 562 323" stroke-width="9" />
+<path d="M 400 400 L 250 378" stroke-width="7" />
+<path d="M 330 280 L 250 378" stroke-width="7" />
+<path d="M 547 285 L 562 323" stroke-width="11" />
+</g>
+<!-- 前叉、把立与车把 -->
+<path d="M 562 323 L 585 378" fill="none" stroke="#3a3f47" stroke-width="8" stroke-linecap="round" />
+<path d="M 547 285 L 538 254 C 535 244 522 242 512 250" fill="none" stroke="#3a3f47" stroke-width="7" stroke-linecap="round" />
+<circle cx="512" cy="250" r="5" fill="#2f3640" />
+<!-- 车座 -->
+<path d="M 290 280 C 300 272 334 271 347 279 C 345 289 327 297 303 295 C 294 293 289 287 290 280 Z" fill="#4e342e" />
+<!-- 传动系统：飞轮、链条（链条持续流动） -->
+<circle cx="250" cy="378" r="10" fill="#7f8c8d" stroke="#5d6d7e" stroke-width="2" />
+<path d="M 250 368 L 400 380" fill="none" stroke="#4a5560" stroke-width="4" stroke-dasharray="6 3">
+<animate attributeName="stroke-dashoffset" from="9" to="0" dur="0.15s" repeatCount="indefinite" />
+</path>
+<path d="M 250 388 L 400 420" fill="none" stroke="#4a5560" stroke-width="4" stroke-dasharray="6 3">
+<animate attributeName="stroke-dashoffset" from="0" to="9" dur="0.15s" repeatCount="indefinite" />
+</path>
+<!-- 曲柄与踏板：整体旋转，踏板反向旋转保持水平 -->
+<g id="crank">
+<animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="1.2s" repeatCount="indefinite" />
+<circle cx="400" cy="400" r="20" fill="#aab4bd" stroke="#8a97a3" stroke-width="3" />
+<circle cx="413" cy="400" r="3.5" fill="#6f7d8c" />
+<circle cx="393.5" cy="411.3" r="3.5" fill="#6f7d8c" />
+<circle cx="393.5" cy="388.7" r="3.5" fill="#6f7d8c" />
+<circle cx="400" cy="400" r="7" fill="#6f7d8c" />
+<line x1="400" y1="400" x2="442" y2="400" stroke="#57606f" stroke-width="7" stroke-linecap="round" />
+<g>
+<animateTransform attributeName="transform" type="rotate" from="0 442 400" to="-360 442 400" dur="1.2s" repeatCount="indefinite" />
+<rect x="427" y="395" width="30" height="10" rx="4" fill="#2f3640" />
+</g>
+<line x1="400" y1="400" x2="358" y2="400" stroke="#57606f" stroke-width="7" stroke-linecap="round" />
+<g>
+<animateTransform attributeName="transform" type="rotate" from="0 358 400" to="-360 358 400" dur="1.2s" repeatCount="indefinite" />
+<rect x="343" y="395" width="30" height="10" rx="4" fill="#2f3640" />
+</g>
+</g>
+</g>
+
+<!-- ===================== 四、鳄鱼主体（位于车架前方） ===================== -->
+<g id="croc-main">
+<!-- 整体轻微上下颠簸，与踩踏节奏同步 -->
+<animateTransform attributeName="transform" type="translate" values="0 0; 0 3; 0 0" keyTimes="0;0.5;1" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1" dur="0.6s" repeatCount="indefinite" />
+<!-- 身体绕髋部前后摆动，模拟骑行动作 -->
+<g id="croc-sway">
+<animateTransform attributeName="transform" type="rotate" values="-2.2 318 262; 2.2 318 262; -2.2 318 262" keyTimes="0;0.5;1" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1" dur="1.2s" repeatCount="indefinite" />
+<!-- 尾巴（带背脊突起） -->
+<path d="M 332 240 C 275 238 218 252 170 282 C 158 290 150 300 156 305 C 202 292 260 288 320 294 C 337 278 339 254 332 240 Z" fill="#4a9c3f" />
+<path d="M 322 241 L 314 229 L 305 241 Z M 293 242 L 285 230 L 276 243 Z M 262 246 L 254 234 L 246 248 Z M 230 254 L 222 242 L 214 257 Z M 202 264 L 195 253 L 188 269 Z" fill="#2f6b2a" />
+<!-- 躯干：身体 + 浅色腹部 + 背部鳞甲 + 斑点 -->
+<g transform="rotate(-38 363 236)">
+<ellipse cx="363" cy="236" rx="72" ry="37" fill="#4a9c3f" />
+<ellipse cx="366" cy="249" rx="56" ry="20" fill="#b9dd7a" />
+<path d="M 306 213.5 L 313 197 L 320 207 Z M 330 202.7 L 337 187 L 344 200.4 Z M 356 199.2 L 363 184 L 370 199.3 Z M 382 200.3 L 389 185 L 396 203.1 Z M 407 206.7 L 414 191.5 L 421 214.1 Z" fill="#2f6b2a" />
+<g fill="#3d8a33" opacity="0.85">
+<ellipse cx="340" cy="222" rx="6" ry="4.5" />
+<ellipse cx="368" cy="216" rx="5" ry="4" />
+<ellipse cx="395" cy="228" rx="5.5" ry="4" />
+<ellipse cx="332" cy="232" rx="5" ry="3.5" />
+</g>
+</g>
+<!-- 头部：下颚、嘴、上颚、牙齿、鼻孔、眼睛（带眨眼） -->
+<path d="M 410 200 C 432 210 462 218 496 223 C 522 226.5 548 227 563 224 C 567 231 563 238 553 240 C 518 245 470 239 442 229 C 425 223 412 213 408 205 C 407 202 408 200 410 200 Z" fill="#3f8a36" />
+<path d="M 408 200 C 438 210 480 217 563 223" fill="none" stroke="#7a3030" stroke-width="5" stroke-linecap="round" />
+<path d="M 404 192 C 402 174 414 160 434 158 C 452 158 470 164 496 176 C 522 187 546 196 564 203 C 570 205 571 210 566 213 C 540 218 505 216 470 212 C 442 209 416 204 406 198 C 402 196 403 194 404 192 Z" fill="#4a9c3f" />
+<g fill="#fffdf5">
+<path d="M 443 205 L 448 214 L 453 206 Z" />
+<path d="M 473 208 L 478 217 L 483 209 Z" />
+<path d="M 503 211 L 508 220 L 513 212 Z" />
+<path d="M 533 213 L 538 222 L 543 214 Z" />
+<path d="M 451 215 L 456 207 L 461 216 Z" />
+<path d="M 481 219 L 486 211 L 491 220 Z" />
+<path d="M 511 223 L 516 215 L 521 224 Z" />
+<path d="M 541 226 L 546 218 L 551 227 Z" />
+</g>
+<ellipse cx="551" cy="201" rx="3.2" ry="2.2" fill="#2f6b2a" />
+<path d="M 421 152 Q 434 145 447 152" fill="none" stroke="#2f6b2a" stroke-width="3.5" stroke-linecap="round" />
+<circle cx="434" cy="157" r="10.5" fill="#4a9c3f" />
+<circle cx="434" cy="156" r="7" fill="#fffdf5" />
+<circle cx="436.5" cy="155" r="3.2" fill="#20242a" />
+<ellipse cx="434" cy="156" rx="8" ry="0" fill="#4a9c3f">
+<animate attributeName="ry" values="0;0;8;0;0" keyTimes="0;0.88;0.92;0.96;1" dur="4.6s" repeatCount="indefinite" />
+</ellipse>
+<!-- 近侧手臂与手（握住车把） -->
+<path d="M 420 212 C 455 227 487 238 513 249" fill="none" stroke="#4a9c3f" stroke-width="15" stroke-linecap="round" />
+<circle cx="514" cy="251" r="8" fill="#4a9c3f" />
+</g>
+<!-- 近侧腿：与曲柄同步的上下踩踏动画 -->
+<g id="croc-near-leg">
+<animateTransform attributeName="transform" type="translate" values="0 0; 0 15; 0 0; 0 -15; 0 0" keyTimes="0;0.25;0.5;0.75;1" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1" dur="1.2s" repeatCount="indefinite" />
+<path d="M 322 265 L 385 332 L 420 392" fill="none" stroke="#4a9c3f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M 408 386 L 448 391 L 443 404 L 404 399 Z" fill="#4a9c3f" />
+</g>
+</g>
+</svg>
+</div>
+</body>
+</html>
