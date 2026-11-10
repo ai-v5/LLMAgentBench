@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 1,
+  "source_receipt_sha256": [
+    "bc7a8e0b167c7f3aa823ad0c7aadf0e34d02ff2fbdc159fd0f1ff20a400231e5"
+  ],
+  "engine_sha256": "fe54f8b45060968ea5f50a4620622ba59e86ca29c0f4ddb3cd4a5a6427de0a70",
+  "config_sha256": "980364661eb4db2a3bd113628ef0f49f36c0b6f3c06ca6b7603e3afce0c7bc1b",
+  "candidates": [
+    {
+      "label": "DSH V4.1 Flash 1017 Flex",
+      "candidate_id": "ds-v4.1-flash-1017-flex-high",
+      "adapter": "dsh",
+      "requested_model": "ds-v4.1-flash-1017-flex",
+      "reasoning_effort": "high",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 13,
+      "candidate_calls": 13,
+      "usage_calls": 13,
+      "output_tokens": 40324,
+      "candidate_call_seconds": 287.049
+    }
+  ]
+}
