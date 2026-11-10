@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "authorized_private_overall": true,
+  "private_details_exported": false,
+  "assigned_attempts_verified": true,
+  "denominator": "assigned_attempts",
+  "requested_models": [
+    "ds-v4.1-flash-1017"
+  ],
+  "kind": "reasoning_effort_comparison",
+  "note": "经用户授权公开的 1017 不同推理强度总体计数；不包含私有题号、题目内容或逐题结果。"
+}

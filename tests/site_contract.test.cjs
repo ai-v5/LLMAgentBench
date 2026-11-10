@@ -19,6 +19,14 @@ const kimiPublicData = read('results/engineering-kimi-public-r1/summary.json');
 const kimiOverallData = read('results/engineering-kimi-overall-r1/summary.json');
 const kimiUsage = read('results/engineering-kimi-public-r1/token-usage.json');
 const kimiProvenance = read('results/engineering-kimi-overall-r1/provenance.json');
+const effortEfforts = ['low', 'high', 'xhigh', 'max'];
+const effortData = Object.fromEntries(effortEfforts.map((effort) => [effort, {
+  public: read(`results/engineering-1017-efforts/public-${effort}.json`),
+  overall: read(`results/engineering-1017-efforts/overall-${effort}.json`),
+  tokens: read(`results/engineering-1017-efforts/tokens-${effort}.json`),
+}]));
+const effortRevision = read('results/engineering-1017-efforts/revision.json');
+const effortProvenance = read('results/engineering-1017-efforts/provenance.json');
 for (const summary of [overallData, newOverallData]) {
   assert.deepEqual(Object.keys(summary).sort(), ['candidates', 'case_count', 'denominator', 'schema_version']);
   for (const row of summary.candidates) {
@@ -38,12 +46,12 @@ const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
-assert.equal((table[1].match(/data-result-row=/g) || []).length, 5);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, 9);
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
-  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 5, field);
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 9, field);
 }
 const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
@@ -110,7 +118,7 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 5 }, (_, index) => ({
+  const rows = Array.from({ length: 9 }, (_, index) => ({
     hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
   }));
   const order = rows.slice();
@@ -146,6 +154,12 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   };
   const code = fs.readFileSync(path.join(root, 'site/app.js'), 'utf8');
   const fetch = async (url) => {
+    if (url.includes('engineering-1017-efforts/revision.json')) return ok(effortRevision);
+    if (url.includes('engineering-1017-efforts/provenance.json')) return ok(effortProvenance);
+    if (url.includes('engineering-1017-efforts/')) {
+      const match = url.match(/engineering-1017-efforts\/(public|overall|tokens)-(\w+)\.json/);
+      return ok(effortData[match[2]][match[1]]);
+    }
     if (url.includes('engineering-overall-case-retest-r1/provenance.json')) return revisionResponse || ok(revision);
     if (url.includes('engineering-overall-ale-r1/provenance.json')) return overallProvenanceResponse || ok(overallProvenance);
     if (url.includes('engineering-kimi-overall-r1/provenance.json')) return ok(kimiProvenance);
@@ -237,7 +251,18 @@ const ok = (value) => ({ ok: true, json: async () => value });
 
   const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
-  const allRows = [...result.rows, ...newResult.rows, ...kimiResult.rows];
+  const effortResults = effortEfforts.map((effort) => derive(effortData[effort].public, effortData[effort].overall, effortData[effort].tokens));
+  const allRows = [...result.rows, ...newResult.rows, ...kimiResult.rows, ...effortResults.map((entry) => entry.rows[0])];
+  const expectedOrder = (valueOf, direction) => {
+    const items = Array.from({ length: 9 }, (_, index) => ({ index, value: valueOf(index) }));
+    items.sort((left, right) => {
+      const a = left.value, b = right.value;
+      if (a == null || b == null) return a == null && b == null ? left.index - right.index : a == null ? 1 : -1;
+      const comparison = typeof a === 'string' ? a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' }) : a - b;
+      return (direction === 'ascending' ? comparison : -comparison) || left.index - right.index;
+    });
+    return items.map((item) => item.index);
+  };
   const expectedOverall = (direction) => allRows.map((row, index) => ({ value: row.overallFirst, index }))
     .sort((a, b) => direction * (a.value - b.value) || a.index - b.index).map(item => item.index);
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond);
@@ -249,35 +274,35 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.overallFirst.click());
   assert.deepEqual(indices(page), expectedOverall(1), 'An early click overrides the default while data loads');
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.tokens.click());
-  assert.deepEqual(indices(page), [1, 4, 3, 0, 2], 'A sort selected before loading must include all batches');
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].tokens ? allRows[i].tokens.rate : null, 'descending'), 'A sort selected before loading must include all batches');
   assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'descending');
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), [2, 0, 3, 4, 1], 'Token rates sort numerically in ascending order');
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].tokens ? allRows[i].tokens.rate : null, 'ascending'), 'Token rates sort numerically in ascending order');
   assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'ascending');
   page.buttons.publicFirst.click();
-  assert.deepEqual(indices(page), [0, 2, 3, 1, 4], 'Public scores default to descending with stable ties');
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].publicFirst, 'descending'), 'Public scores default to descending with stable ties');
   assert.equal(page.buttons.tokens.header.attributes['aria-sort'], undefined);
   assert.equal(page.buttons.publicFirst.header.attributes['aria-sort'], 'descending');
   page.buttons.publicFirst.click();
-  assert.deepEqual(indices(page), [4, 1, 0, 2, 3]);
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].publicFirst, 'ascending'));
   page.buttons.overallFirst.click();
   assert.deepEqual(indices(page), expectedOverall(-1), 'Overall scores use the unrounded first-pass values');
   page.buttons.overallFirst.click();
   assert.deepEqual(indices(page), expectedOverall(1));
   page.buttons.label.click();
-  assert.deepEqual(indices(page), [3, 2, 0, 1, 4], 'Names default to ascending');
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'ascending'), 'Names default to ascending');
   page.buttons.label.click();
-  assert.deepEqual(indices(page), [4, 1, 0, 2, 3]);
+  assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'descending'));
   assert.equal(page.nodes.get('[data-public-first="2"]').textContent, '100.0%');
 
   page = await checkLoading(ok(publicData), ok(overallData), { ok: false }, realSecond);
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), [4, 3, 2, 0, 1], 'Missing token rates stay last when descending');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'descending'), 'Missing token rates stay last when descending');
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), [2, 3, 4, 0, 1], 'Missing token rates stay last when ascending');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'ascending'), 'Missing token rates stay last when ascending');
   page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, realSecond);
   page.buttons.publicFirst.click();
-  assert.deepEqual(indices(page), [2, 3, 4, 0, 1], 'Hidden rows stay after loaded results');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : allRows[i].publicFirst, 'descending'), 'Hidden rows stay after loaded results');
   assert.equal(page.rows[0].hidden, true);
   console.log('Site aggregate, sorting, and failure handling: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
