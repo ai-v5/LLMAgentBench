@@ -2,6 +2,7 @@
   "schema_version": 1,
   "case_count": 12,
   "repeats": 2,
+  "pack_version": "20261108",
   "candidates": [
     {
       "label": "DSH V4.1 Flash 1017 · max",

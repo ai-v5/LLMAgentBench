@@ -2,6 +2,7 @@
   "schema_version": 2,
   "case_count": 31,
   "denominator": "assigned_attempts",
+  "pack_version": "20261108",
   "candidates": [
     {
       "label": "DSH V4.1 Flash 1017 · high",
