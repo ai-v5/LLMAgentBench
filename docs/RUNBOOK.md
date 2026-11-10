@@ -119,5 +119,5 @@ python -m llmagentbench validate --pack pack.json
 ## 5. 已退役的模型
 
 `ds-v4.1-flash-1017`（非 flex）自 2026-11-11 起不再出现在 18900 端点的 `/v1/models` 中，历史行已从结果表删除，
-其旧结果目录 `results/engineering-1017-efforts/` 一并移除。若该模型重新部署，用 `local/apply_site_20261111.py`
-的 `ROWS`/`BATCHES` 生成逻辑加回三行即可，不要复用旧数据。
+其旧结果目录 `results/engineering-1017-efforts/` 已移除；替代模型 `ds-v4.1-flash-1017-flex` 的结果在
+`results/exp-20261111/flex/`。若该模型重新部署，用站点 `BATCHES` 的 `effort` 映射加回三行即可，不要复用旧数据。
