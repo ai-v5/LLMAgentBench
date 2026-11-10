@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang='zh-CN'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>鳄鱼骑自行车</title>
+<style>
+:root { color-scheme: light; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(145deg, #e9f7ef, #cde9dc); color: #214b40; }
+main { width: min(960px, 100%); }
+header { padding: 0 12px 16px; }
+h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.25rem); letter-spacing: .04em; }
+header p { margin: 6px 0 0; color: #53796c; }
+.card { overflow: hidden; border: 1px solid rgba(44, 100, 78, .16); border-radius: 24px; background: #f8fff9; box-shadow: 0 22px 60px rgba(35, 90, 68, .16); }
+svg { display: block; width: 100%; height: auto; }
+footer { padding: 14px 12px 0; color: #53796c; font-size: .92rem; }
+</style>
+</head>
+<body>
+<main>
+<header><h1>鳄鱼骑自行车</h1><p>迎着微风，轻快地踩起踏板。</p></header>
+<div class='card'>
+<svg viewBox='0 0 900 540' role='img' aria-labelledby='scene-title scene-desc' xmlns='http://www.w3.org/2000/svg'>
+<title id='scene-title'>戴着头盔的鳄鱼正在骑自行车</title>
+<desc id='scene-desc'>一只绿色鳄鱼握住车把，双腿交替踩踏；自行车车轮持续旋转，鳄鱼身体轻轻摆动。</desc>
+<defs>
+<linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#d8f2ef'/><stop offset='1' stop-color='#f4fbdf'/></linearGradient>
+<linearGradient id='bike-paint' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#47a994'/><stop offset='1' stop-color='#25756e'/></linearGradient>
+<linearGradient id='croc-green' x1='0' y1='0' x2='0' y2='1'><stop stop-color='#9bdb64'/><stop offset='1' stop-color='#54a94d'/></linearGradient>
+<linearGradient id='helmet' x1='0' y1='0' x2='0' y2='1'><stop stop-color='#ffcf55'/><stop offset='1' stop-color='#f29a35'/></linearGradient>
+<filter id='soft-shadow' x='-30%' y='-30%' width='160%' height='160%'><feGaussianBlur stdDeviation='7'/></filter>
+</defs>
+<rect width='900' height='540' fill='url(#sky)'/>
+<circle cx='752' cy='86' r='36' fill='#fff2ae' opacity='.88'/>
+<g fill='#fff' opacity='.7'><ellipse cx='160' cy='103' rx='43' ry='13'/><ellipse cx='183' cy='96' rx='24' ry='17'/><ellipse cx='205' cy='104' rx='32' ry='11'/><ellipse cx='677' cy='139' rx='34' ry='10'/><ellipse cx='697' cy='133' rx='20' ry='14'/></g>
+<path d='M0 337 Q125 280 248 330 T500 320 T900 314 V540 H0Z' fill='#c5e5a8'/>
+<path d='M0 383 Q165 344 320 377 T640 369 T900 376 V540 H0Z' fill='#9dce82'/>
+<path d='M0 455 Q214 422 432 452 T900 444 V540 H0Z' fill='#e6f0c5'/>
+<path d='M0 475 Q210 444 432 473 T900 465' fill='none' stroke='#c8dca6' stroke-width='3' stroke-dasharray='8 12'/>
+<ellipse cx='455' cy='454' rx='260' ry='16' fill='#547d63' opacity='.18' filter='url(#soft-shadow)'/>
+<g fill='#78b96c' opacity='.7'><path d='M72 369q8-25 16 0q10-32 18 0q9-22 16 0z'/><path d='M811 352q8-26 16 0q10-34 18 0q9-23 16 0z'/></g>
+<!-- rear wheel -->
+<g aria-label='后车轮'>
+<g>
+<animateTransform attributeName='transform' type='rotate' from='0 285 410' to='360 285 410' dur='2s' repeatCount='indefinite'/>
+<circle cx='285' cy='410' r='80' fill='none' stroke='#294b45' stroke-width='13'/>
+<circle cx='285' cy='410' r='70' fill='none' stroke='#eaf5e8' stroke-width='3'/>
+<circle cx='285' cy='410' r='67' fill='none' stroke='#7ca9a0' stroke-width='2'/>
+<g stroke='#b4d2c8' stroke-width='2'><path d='M285 342V478 M217 410H353 M237 362L333 458 M333 362L237 458 M259 345L311 475 M220 384L350 436 M311 345L259 475 M350 384L220 436'/></g>
+</g><circle cx='285' cy='410' r='8' fill='#e9f4e8' stroke='#315d53' stroke-width='4'/>
+</g>
+<!-- front wheel -->
+<g aria-label='前车轮'>
+<g>
+<animateTransform attributeName='transform' type='rotate' from='0 620 410' to='360 620 410' dur='2s' repeatCount='indefinite'/>
+<circle cx='620' cy='410' r='80' fill='none' stroke='#294b45' stroke-width='13'/>
+<circle cx='620' cy='410' r='70' fill='none' stroke='#eaf5e8' stroke-width='3'/>
+<circle cx='620' cy='410' r='67' fill='none' stroke='#7ca9a0' stroke-width='2'/>
+<g stroke='#b4d2c8' stroke-width='2'><path d='M620 342V478 M552 410H688 M572 362L668 458 M668 362L572 458 M594 345L646 475 M555 384L685 436 M646 345L594 475 M685 384L555 436'/></g>
+</g><circle cx='620' cy='410' r='8' fill='#e9f4e8' stroke='#315d53' stroke-width='4'/>
+</g>
+<!-- frame, seat and handlebar -->
+<g fill='none' stroke='url(#bike-paint)' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'>
+<path d='M285 410 L395 325 L550 325 L455 410 Z'/>
+<path d='M285 410 L455 410'/>
+<path d='M550 325 L620 410'/>
+</g>
+<g fill='none' stroke='#477f72' stroke-width='5' stroke-linecap='round'>
+<path d='M395 325 L390 356'/><path d='M550 325 L566 286'/><path d='M557 286 L600 286'/>
+</g>
+<path d='M367 319 Q389 311 414 318 L421 325 Q394 329 368 326Z' fill='#314f47'/>
+<path d='M561 282 L601 282 Q606 282 606 288 L606 290 L562 290Z' fill='#314f47'/>
+<path d='M567 284 L580 284 M588 284 L600 284' stroke='#79c8b0' stroke-width='2' stroke-linecap='round'/>
+<!-- chain and chainring -->
+<g fill='none' stroke='#658a78' stroke-width='2.5'>
+<path d='M294 400 L435 385 M294 420 L435 435'/>
+<circle cx='285' cy='410' r='15'/><circle cx='455' cy='410' r='27'/>
+</g>
+<circle cx='455' cy='410' r='7' fill='#d4e7c8' stroke='#477f72' stroke-width='3'/>
+<!-- far leg -->
+<g fill='none' stroke-linecap='round' stroke-linejoin='round'>
+<path d='M399 300 L415 357' stroke='#285d42' stroke-width='27'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M399 300 L415 357;M399 300 L420 350;M399 300 L445 343;M399 300 L465 350;M399 300 L415 357'/></path>
+<path d='M399 300 L415 357' stroke='#80c754' stroke-width='18'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M399 300 L415 357;M399 300 L420 350;M399 300 L445 343;M399 300 L465 350;M399 300 L415 357'/></path>
+<path d='M415 357 L455 448' stroke='#285d42' stroke-width='25'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M415 357 L455 448;M420 350 L417 410;M445 343 L455 372;M465 350 L493 410;M415 357 L455 448'/></path>
+<path d='M415 357 L455 448' stroke='#76bd50' stroke-width='16'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M415 357 L455 448;M420 350 L417 410;M445 343 L455 372;M465 350 L493 410;M415 357 L455 448'/></path>
+<circle cx='415' cy='357' r='13' fill='#285d42' stroke='none'><animate attributeName='cx' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='415;420;445;465;415'/><animate attributeName='cy' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='357;350;343;350;357'/></circle>
+<circle cx='415' cy='357' r='8' fill='#9bda63' stroke='none'><animate attributeName='cx' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='415;420;445;465;415'/><animate attributeName='cy' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='357;350;343;350;357'/></circle>
+</g>
+<!-- near leg -->
+<g fill='none' stroke-linecap='round' stroke-linejoin='round'>
+<path d='M420 300 L447 343' stroke='#285d42' stroke-width='28'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M420 300 L447 343;M420 300 L466 348;M420 300 L450 360;M420 300 L430 350;M420 300 L447 343'/></path>
+<path d='M420 300 L447 343' stroke='#91d65d' stroke-width='19'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M420 300 L447 343;M420 300 L466 348;M420 300 L450 360;M420 300 L430 350;M420 300 L447 343'/></path>
+<path d='M447 343 L455 372' stroke='#285d42' stroke-width='26'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M447 343 L455 372;M466 348 L493 410;M450 360 L455 448;M430 350 L417 410;M447 343 L455 372'/></path>
+<path d='M447 343 L455 372' stroke='#8bce56' stroke-width='17'><animate attributeName='d' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='M447 343 L455 372;M466 348 L493 410;M450 360 L455 448;M430 350 L417 410;M447 343 L455 372'/></path>
+<circle cx='447' cy='343' r='14' fill='#285d42' stroke='none'><animate attributeName='cx' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='447;466;450;430;447'/><animate attributeName='cy' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='343;348;360;350;343'/></circle>
+<circle cx='447' cy='343' r='9' fill='#a0df67' stroke='none'><animate attributeName='cx' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='447;466;450;430;447'/><animate attributeName='cy' dur='2s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1' values='343;348;360;350;343'/></circle>
+</g>
+<!-- rotating crank and pedals -->
+<g>
+<animateTransform attributeName='transform' type='rotate' from='0 455 410' to='360 455 410' dur='2s' repeatCount='indefinite'/>
+<path d='M455 372 V448' stroke='#426e5c' stroke-width='7' stroke-linecap='round'/>
+<circle cx='455' cy='372' r='7' fill='#d6ebcf' stroke='#315d53' stroke-width='3'/>
+<circle cx='455' cy='448' r='7' fill='#d6ebcf' stroke='#315d53' stroke-width='3'/>
+<g fill='#263f39' stroke='#203a34' stroke-width='3'><path d='M440 366 Q455 361 471 368 L471 376 Q454 381 440 375Z'/><path d='M440 442 Q455 437 471 444 L471 452 Q454 457 440 451Z'/></g>
+<path d='M443 368 L461 367 M443 444 L461 443' stroke='#8ad8bf' stroke-width='2' stroke-linecap='round'/>
+</g>
+<!-- gently bobbing rider -->
+<g>
+<animateTransform attributeName='transform' type='translate' values='0 0;0 -2;0 0;0 2;0 0' keyTimes='0;0.25;0.5;0.75;1' dur='2s' repeatCount='indefinite'/>
+<g>
+<animateTransform attributeName='transform' type='rotate' values='0 405 292;1.4 405 292;0 405 292;-1.4 405 292;0 405 292' keyTimes='0;0.25;0.5;0.75;1' dur='2s' repeatCount='indefinite'/>
+<!-- tail -->
+<path d='M365 255 Q330 244 297 256 Q278 263 265 279 Q292 274 307 294 Q337 296 374 280Z' fill='url(#croc-green)' stroke='#397b43' stroke-width='4' stroke-linejoin='round'/>
+<g fill='#4e9849'><path d='M334 250l-7-13 18 10z'/><path d='M313 254l-4-13 16 11z'/><path d='M293 263l-1-12 15 10z'/></g>
+<!-- torso -->
+<path d='M354 244 Q373 224 410 230 Q447 232 472 255 L458 296 Q427 314 389 300 Q360 288 346 269Z' fill='url(#croc-green)' stroke='#397b43' stroke-width='4'/>
+<path d='M371 271 Q409 286 454 269 L448 293 Q416 309 385 294Z' fill='#c6e88a' opacity='.92'/>
+<g fill='#438c46' opacity='.85'><circle cx='371' cy='255' r='4'/><circle cx='385' cy='244' r='3.5'/><circle cx='403' cy='250' r='4'/><circle cx='421' cy='240' r='3.5'/><circle cx='439' cy='252' r='4'/><circle cx='386' cy='269' r='3'/><circle cx='427' cy='275' r='3.5'/></g>
+<g fill='#4c9747'><path d='M373 238l-7-13 18 9z'/><path d='M394 232l-3-14 17 12z'/><path d='M417 234l2-14 14 15z'/><path d='M439 244l7-12 10 18z'/></g>
+<!-- arms reaching for the bars -->
+<path d='M449 252 Q493 257 525 271 T566 284' fill='none' stroke='#397b43' stroke-width='21' stroke-linecap='round' stroke-linejoin='round'/>
+<path d='M449 252 Q493 257 525 271 T566 284' fill='none' stroke='#8fd05c' stroke-width='13' stroke-linecap='round' stroke-linejoin='round'/>
+<path d='M454 263 Q494 270 525 280 T568 291' fill='none' stroke='#397b43' stroke-width='20' stroke-linecap='round' stroke-linejoin='round'/>
+<path d='M454 263 Q494 270 525 280 T568 291' fill='none' stroke='#a0da66' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/>
+<!-- hands and fingers -->
+<ellipse cx='568' cy='284' rx='12' ry='9' fill='#86ca54' stroke='#397b43' stroke-width='3'/>
+<ellipse cx='570' cy='292' rx='12' ry='8' fill='#91d35c' stroke='#397b43' stroke-width='3'/>
+<path d='M570 280q8 2 9 7 M573 286q8 2 8 7 M570 291q6 3 7 7' fill='none' stroke='#397b43' stroke-width='3' stroke-linecap='round'/>
+<!-- crocodile head and long snout -->
+<path d='M474 207 Q472 184 490 170 Q506 157 528 166 Q546 169 556 181 L605 187 Q623 190 622 201 L615 211 Q582 217 548 211 Q536 230 510 229 Q489 226 478 216Z' fill='url(#croc-green)' stroke='#397b43' stroke-width='4' stroke-linejoin='round'/>
+<path d='M486 207 Q537 203 617 198 L613 211 Q574 222 537 216 Q514 231 490 219Z' fill='#77b94f' stroke='#397b43' stroke-width='3' stroke-linejoin='round'/>
+<path d='M490 207 Q543 204 615 200' fill='none' stroke='#315f3d' stroke-width='3'/>
+<!-- little teeth -->
+<path d='M523 205l5 9 5-10 6 9 5-10 6 9 5-10 6 9 5-10 6 8' fill='#fff4cf' stroke='#d2c58e' stroke-width='1'/>
+<circle cx='602' cy='193' r='3.4' fill='#315f3d'/><circle cx='590' cy='191' r='2.2' fill='#6d9f4d'/>
+<!-- eye -->
+<path d='M491 176 Q495 160 510 160 Q524 160 528 176 L523 186 L497 186Z' fill='#80bf50' stroke='#397b43' stroke-width='3'/>
+<ellipse cx='510' cy='178' rx='10' ry='11' fill='#fff8da'/><ellipse cx='513' cy='179' rx='4.2' ry='7' fill='#263f39'/><circle cx='514' cy='176' r='1.5' fill='#fff'/>
+<path d='M500 165 Q510 158 520 165' fill='none' stroke='#397b43' stroke-width='3' stroke-linecap='round'/>
+<!-- cycling helmet -->
+<path d='M482 169 Q487 145 509 142 Q535 140 550 157 Q555 162 557 170 Q526 163 482 174Z' fill='url(#helmet)' stroke='#bb7130' stroke-width='3' stroke-linejoin='round'/>
+<path d='M492 157 Q512 149 537 157' fill='none' stroke='#ffe18a' stroke-width='5' stroke-linecap='round'/>
+<path d='M492 171 Q497 190 493 204' fill='none' stroke='#d18738' stroke-width='3' stroke-linecap='round'/>
+<path d='M491 202 Q501 211 512 211' fill='none' stroke='#d18738' stroke-width='3' stroke-linecap='round'/>
+</g></g>
+</svg>
+</div>
+<footer>车轮持续转动 · 双腿同步交替踩踏 · 身体随骑行轻轻摆动</footer>
+</main>
+</body>
+</html>

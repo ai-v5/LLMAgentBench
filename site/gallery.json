@@ -31,6 +31,15 @@
       "note": "low · 公开题第 1 次样本 · 首轮结构检查 pass"
     },
     {
+      "id": "luna-max",
+      "label": "Codex GPT-6 Luna",
+      "effort": "max",
+      "html": "site/artifacts/crocodile/luna-max.html",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "max · 公开题第 1 次样本 · 首轮结构检查 pass"
+    },
+    {
       "id": "dsh-v4.1-flash-1017-low",
       "label": "DSH V4.1 Flash 1017",
       "effort": "low",

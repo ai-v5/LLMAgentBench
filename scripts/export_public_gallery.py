@@ -13,8 +13,10 @@ from scripts.audit_public import audit
 
 
 TAGS = {"html", "head", "meta", "title", "style", "body", "main", "div", "section", "figure", "figcaption",
+        "header", "footer", "h1", "h2", "h3", "p",
         "svg", "desc", "defs", "lineargradient", "radialgradient", "stop", "g", "circle", "path", "rect",
-        "text", "ellipse", "line", "polyline", "polygon", "animatetransform", "animate", "use"}
+        "text", "ellipse", "line", "polyline", "polygon", "animatetransform", "animate", "use",
+        "filter", "fegaussianblur"}
 REFERENCE_ATTRIBUTES = {"href", "xlink:href"}
 
 

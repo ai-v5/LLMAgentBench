@@ -30,7 +30,7 @@ def test_gallery_entries_are_inert_public_drawings():
         assert entry["id"] == path.stem
         if entry.get("html"):
             validate_html(svg)
-    assert {entry["id"] for entry in data["entries"]} >= {"terra-max", "terra-high", "terra-low"}
+    assert {entry["id"] for entry in data["entries"]} >= {"terra-max", "terra-high", "terra-low", "luna-max"}
 
 
 @pytest.mark.parametrize("unsafe", [
@@ -42,6 +42,7 @@ def test_gallery_entries_are_inert_public_drawings():
     '<style/>svg { background: image-set("https://example.org/x" 1x); }</style>',
     '<rect fill="url(https://example.org/x)"/>',
     '<rect style="fill:u&#114;l(/probe)"/>',
+    '<filter><feImage href="https://example.org/x"/></filter>',
     '<animate attributeName="href" values="#a;https://example.org"/>',
     '<meta http-equiv="refresh" content="0;url=https://example.org"/>',
 ])
