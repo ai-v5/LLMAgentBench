@@ -32,7 +32,7 @@
 
 ### 2.1 矩阵
 
-每个模型固定跑 `low`、`high`、`xhigh`、`max` 四个 `reasoning_effort`；同一批次内 pack 版本、执行器、judge、预算必须一致。
+每个模型固定跑 `low`、`high`、`max` 三个 `reasoning_effort`（服务端只保证这三档；`xhigh` 仅在模型声明支持时使用）；同一批次内 pack 版本、执行器、judge、预算必须一致。
 
 ### 2.2 题包与预算
 
@@ -83,9 +83,9 @@ python -m llmagentbench run --pack .bench-runs/croc-pack.json --config local/<mo
 1. `public-<effort>.json`：schema 1，`case_count`=公开题数，`repeats`=2，`candidates[].assigned = case_count*repeats`；含 `pack_version`。
 2. `overall-<effort>.json`：schema 2，`denominator: "assigned_attempts"`，含 `pack_version`。
 3. `tokens-<effort>.json`：schema 2，`case_count/repeats` 与 public 一致，`source_receipt_sha256` 为公开 run 的收据哈希。
-4. `provenance.json` / `revision.json`：与现有 `results/engineering-1017-efforts/` 同构。
+4. `provenance.json` / `overall-provenance.json`：与 `results/terra-20261110-standard/<effort>/` 同构；新批次统一放在 `results/exp-<version>/<模型简写>/<effort>/`。
 
-public 与 overall 的 `label` 必须一致（如 `"DSH V4.1 Flash 1017 · low"`）；token 的 `requested_model` 必须与 `models` 映射一致。
+public 与 overall 的 `label` 必须一致，且等于 `"<显示名> <effort>"`（如 `"DSH V4.1 Flash 1017 Flex low"`）；行首另显示 `题库 <pack_version>`，无版本的历史行显示「未标注」。
 
 ### 3.2 页面
 
@@ -115,3 +115,9 @@ python -m llmagentbench validate --pack pack.json
 - [ ] `pytest` 与 site contract 测试通过
 - [ ] 新增 SVG 通过 inert 校验
 - [ ] 隐私/凭据/原始输出未进入公开仓
+
+## 5. 已退役的模型
+
+`ds-v4.1-flash-1017`（非 flex）自 2026-11-11 起不再出现在 18900 端点的 `/v1/models` 中，历史行已从结果表删除，
+其旧结果目录 `results/engineering-1017-efforts/` 一并移除。若该模型重新部署，用 `local/apply_site_20261111.py`
+的 `ROWS`/`BATCHES` 生成逻辑加回三行即可，不要复用旧数据。
