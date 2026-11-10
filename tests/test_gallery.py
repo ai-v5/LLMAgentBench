@@ -30,7 +30,7 @@ def test_gallery_entries_are_inert_public_drawings():
         assert entry["id"] == path.stem
         if entry.get("html"):
             validate_html(svg)
-    assert {entry["id"] for entry in data["entries"]} >= {"terra-max", "terra-high", "terra-low", "luna-max"}
+    assert {entry["id"] for entry in data["entries"]} >= {"terra-max", "terra-high", "terra-low", "luna-max", "luna-high"}
 
 
 @pytest.mark.parametrize("unsafe", [
