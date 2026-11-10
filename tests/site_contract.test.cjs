@@ -138,10 +138,12 @@ assert.deepEqual(Object.keys(overallProvenance).sort(), [
 ].sort());
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 assert.doesNotMatch(html, /Terra 20261110|Luna 20261110/, 'The homepage should not display dated report headings');
+assert.doesNotMatch(html, /<strong>(?:结果边界|怎么看|输出速度)：<\/strong>/, 'The homepage should not display these explanatory notes');
 const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
+assert.match(table[1], /data-sort-key="tokens">输出速度/);
 assert.equal((table[1].match(/data-result-row=/g) || []).length, 12);
 assert.doesNotMatch(table[1], /data-result-row="(?:0|2)"/);
 assert.match(table[1], /data-result-row="8"[^>]*>[\s\S]*?含历史样本/);
