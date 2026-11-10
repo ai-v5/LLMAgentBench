@@ -23,7 +23,7 @@ def next_version(current: str | None) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pack", type=Path, default=Path("examples/engineering/pack.json"))
+    parser.add_argument("--pack", type=Path, default=Path("pack.json"))
     parser.add_argument("--bump", action="store_true", help="Set the next version for today")
     args = parser.parse_args()
     data = json.loads(args.pack.read_text(encoding="utf-8"))

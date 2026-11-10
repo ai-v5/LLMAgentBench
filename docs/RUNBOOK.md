@@ -8,7 +8,7 @@
 - 任何 case、检查脚本、controls、pack 列表的修改，都必须在同一次提交里 bump 版本：
 
   ```powershell
-  python scripts/pack_version.py --pack examples/engineering/pack.json --bump
+  python scripts/pack_version.py --pack pack.json --bump
   ```
 
 - 版本号会进入 `pack_sha256` 的计算，并记录到 run 的 `manifest.json`、`summary.json`（`pack_version`）和报告里。
@@ -26,9 +26,8 @@
 
 | 用途 | 题包 | repeats | repair | timeout |
 |---|---|---:|---:|---:|
-| 公开题 | `examples/engineering/pack.json`（当前 25 题） | 2 | 1 | 240 s |
-| 公开 smoke | `examples/public/pack.json` | 2 | 1 | 240 s |
-| 混合总体 | 5 个工程 pack + 8 个 admitted ALE pack（见私仓） | 工程 2 / ALE 1 | 1 | 工程 240 / ALE 420 |
+| 公开题 | `pack.json`（当前 29 题，唯一索引） | 2 | 1 | 600 s |
+| 混合总体 | 公开 `pack.json` + 8 个 admitted ALE pack（见私仓） | 公开 2 / ALE 1 | 1 | 公开 600 / ALE 420 |
 
 - judge：`codex` / `gpt-6.1-sol` / `reasoning_effort: low`（仅含 `llm_rubric` 的题需要）。
 - 运行命名：`<model>-<effort>-<pack_version>-r1`；产物放 `.bench-runs/`（公开仓忽略）或私仓忽略目录，**不要提交到公开仓**。
@@ -37,8 +36,8 @@
 ### 2.3 命令
 
 ```powershell
-python -m llmagentbench validate --pack examples/engineering/pack.json
-python -m llmagentbench run --pack examples/engineering/pack.json --config local/<model>-<effort>.json --out .bench-runs/<model>-<effort>-<version>
+python -m llmagentbench validate --pack pack.json
+python -m llmagentbench run --pack pack.json --config local/<model>-<effort>.json --out .bench-runs/<model>-<effort>-<version>
 python -m llmagentbench report --run .bench-runs/<model>-<effort>-<version>
 ```
 
@@ -88,7 +87,7 @@ public 与 overall 的 `label` 必须一致（如 `"DSH V4.1 Flash 1017 · low"`
 ```powershell
 python -m pytest
 node tests/site_contract.test.cjs
-python -m llmagentbench validate --pack examples/engineering/pack.json
+python -m llmagentbench validate --pack pack.json
 ```
 
 - 新运行必须是完整 receipt；缺失的尝试按 unscored/error/timeout 计入分母。

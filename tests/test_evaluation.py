@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import copy
 import json
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -16,11 +18,30 @@ from llmagentbench.runner import load_run, run
 from tests.fixtures import BAD, GOOD, JUDGE, demo_config
 
 ROOT = Path(__file__).resolve().parents[1]
-PACK = ROOT / "examples/public/pack.json"
+SMOKE_CASES = ("roofline", "unknown", "patch", "explanation")
+_SMOKE_PACK_DIR = None
+
+
+def _write_smoke_pack(directory: Path) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    for name in SMOKE_CASES:
+        shutil.copytree(ROOT / "examples/public" / name, directory / name)
+    manifest = {"schema_version": 1, "id": "smoke-subset", "version": "20261110",
+                "visibility": "public", "synthetic": True, "purpose": "smoke",
+                "cases": [f"{name}/case.json" for name in SMOKE_CASES]}
+    (directory / "pack.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return directory
+
+
+def smoke_pack():
+    global _SMOKE_PACK_DIR
+    if _SMOKE_PACK_DIR is None:
+        _SMOKE_PACK_DIR = _write_smoke_pack(Path(tempfile.mkdtemp(prefix="llmbench-smoke-")))
+    return load_pack(_SMOKE_PACK_DIR / "pack.json")
 
 
 def test_real_before_red_for_patch(tmp_path):
-    pack = load_pack(PACK)
+    pack = smoke_pack()
     entry = next(e for e in pack["cases"] if e["definition"]["id"] == "patch")
     case = entry["definition"]
     for name, content in case["inputs"].items():
@@ -31,7 +52,7 @@ def test_real_before_red_for_patch(tmp_path):
 
 @pytest.mark.parametrize("body", ["raise SystemExit(0)\n", "import os\nos._exit(0)\n"])
 def test_candidate_cannot_bypass_verifier_with_success_exit(tmp_path, body):
-    pack = load_pack(PACK)
+    pack = smoke_pack()
     entry = next(e for e in pack["cases"] if e["definition"]["id"] == "patch")
     case = entry["definition"]
     for name, content in case["inputs"].items():
@@ -43,7 +64,7 @@ def test_candidate_cannot_bypass_verifier_with_success_exit(tmp_path, body):
 
 @pytest.fixture
 def completed(tmp_path):
-    return run(load_pack(PACK), demo_config(), tmp_path / "run")
+    return run(smoke_pack(), demo_config(), tmp_path / "run")
 
 
 def test_full_smoke_and_repair_are_not_best_of_n(completed):
@@ -63,7 +84,7 @@ def test_receipts_are_not_overwritten(tmp_path):
     destination.mkdir()
     (destination / "keep.txt").write_text("owned")
     with pytest.raises(ContractError):
-        run(load_pack(PACK), demo_config(), destination)
+        run(smoke_pack(), demo_config(), destination)
     assert (destination / "keep.txt").read_text() == "owned"
 
 
@@ -87,7 +108,7 @@ def test_missing_attempt_cannot_be_reported_as_completed(completed, tmp_path):
 
 
 def test_private_results_cannot_enter_public_checkout():
-    pack = load_pack(PACK)
+    pack = smoke_pack()
     pack["manifest"]["visibility"] = "private"
     with pytest.raises(ContractError):
         run(pack, demo_config(), ROOT / ".bench-runs/forbidden-private")
@@ -102,7 +123,7 @@ def test_path_escape_is_rejected(tmp_path, name):
 def test_candidate_cannot_modify_protected_note(tmp_path):
     config = demo_config()
     config["candidates"] = [{"id": "bad-write", "adapter": "fixture", "responses": {**GOOD, "patch": {"answer": "fixed", "files": [{"path": "NOTICE.txt", "content": "overwritten"}]}}}]
-    record = run(load_pack(PACK), config, tmp_path / "run")
+    record = run(smoke_pack(), config, tmp_path / "run")
     attempted = [a for a in record["attempts"] if a["case_id"] == "patch"]
     assert all(a["outcome"] == "fail" and len(a["rounds"]) == 1 for a in attempted)
 
@@ -121,7 +142,7 @@ def test_format_error_is_a_case_failure(monkeypatch, tmp_path):
                 "evidence_level": "FIXTURE_SMOKE", "adapter": "fixture", "error": "KimiFormatError"}
 
     monkeypatch.setattr(runner_module, "invoke", fake_invoke)
-    record = run(load_pack(PACK), config, tmp_path / "format-error")
+    record = run(smoke_pack(), config, tmp_path / "format-error")
     assert all(attempt["outcome"] == "fail" for attempt in record["attempts"])
     assert all(attempt["rounds"][0]["checks"][0]["id"] == "response_contract" for attempt in record["attempts"])
 
@@ -136,7 +157,7 @@ def test_large_numeric_answer_is_a_failure_and_does_not_abort_matrix(tmp_path):
         {"id": "huge", "adapter": "fixture", "responses": huge},
         {"id": "good", "adapter": "fixture", "responses": GOOD},
     ]
-    record = run(load_pack(PACK), config, tmp_path / "run")
+    record = run(smoke_pack(), config, tmp_path / "run")
     assert record["state"] == "completed"
     assert len(record["attempts"]) == 8
     assert next(a for a in record["attempts"] if a["candidate_id"] == "huge" and a["case_id"] == "roofline")["outcome"] == "fail"
@@ -147,7 +168,7 @@ def test_unavailable_judge_remains_unscored(tmp_path):
     config = demo_config()
     config["candidates"] = config["candidates"][:1]
     config.pop("judge")
-    record = run(load_pack(PACK), config, tmp_path / "run")
+    record = run(smoke_pack(), config, tmp_path / "run")
     assert all(a["outcome"] == "unscored" for a in record["attempts"] if a["case_id"] == "explanation")
     assert summarize(record)["candidates"][0]["strict_success_rate"] == 0.75
 
@@ -157,7 +178,7 @@ def test_invented_judge_citation_cannot_pass(tmp_path):
     config["candidates"] = config["candidates"][:1]
     config["judge"] = copy.deepcopy(JUDGE)
     config["judge"]["responses"]["explanation.rubric"]["answer"]["evidence"][0]["quote"] = "This text does not exist."
-    record = run(load_pack(PACK), config, tmp_path / "run")
+    record = run(smoke_pack(), config, tmp_path / "run")
     assert all(a["outcome"] == "unscored" for a in record["attempts"] if a["case_id"] == "explanation")
 
 
@@ -189,7 +210,7 @@ def test_report_explicitly_labels_synthetic_and_non_synthetic_runs(completed):
 
 def test_check_script_is_part_of_pack_identity(tmp_path):
     import shutil
-    shutil.copytree(ROOT / "examples/public", tmp_path / "pack")
+    _write_smoke_pack(tmp_path / "pack")
     before = load_pack(tmp_path / "pack/pack.json")["sha256"]
     path = tmp_path / "pack/patch/verify_patch.py"
     path.write_text(path.read_text() + "\n# evaluator revision\n")
@@ -198,7 +219,7 @@ def test_check_script_is_part_of_pack_identity(tmp_path):
 
 def test_changed_check_script_is_not_scored_under_old_pack_hash(tmp_path):
     import shutil
-    shutil.copytree(ROOT / "examples/public", tmp_path / "pack")
+    _write_smoke_pack(tmp_path / "pack")
     pack = load_pack(tmp_path / "pack/pack.json")
     script = tmp_path / "pack/patch/verify_patch.py"
     script.write_text("pass\n")
@@ -219,7 +240,7 @@ def test_engine_change_invalidates_run_instead_of_exporting_mixed_results(tmp_pa
     config["repeats"] = 1
     config["candidates"] = config["candidates"][:1]
     with pytest.raises(ContractError):
-        run(load_pack(PACK), config, tmp_path / "run")
+        run(smoke_pack(), config, tmp_path / "run")
     record = json.loads((tmp_path / "run/manifest.json").read_text(encoding="utf-8"))
     assert record["state"] == "invalidated"
     with pytest.raises(ContractError):
@@ -230,7 +251,7 @@ def test_transient_identity_drift_cannot_return_to_completed(tmp_path, monkeypat
     import llmagentbench.runner as runner
     checks = iter(["baseline", "baseline", "baseline", "baseline", "changed"] + ["baseline"] * 50)
     monkeypatch.setattr(runner, "engine_digest", lambda: next(checks))
-    pack = load_pack(PACK)
+    pack = smoke_pack()
     pack["cases"] = [entry for entry in pack["cases"] if entry["definition"]["id"] == "roofline"]
     config = demo_config()
     config["repeats"] = 1
@@ -261,7 +282,7 @@ def test_other_adapters_are_explicitly_out_of_scope(tmp_path):
 
 def test_boolean_expected_value_is_not_a_number(tmp_path):
     import shutil
-    shutil.copytree(ROOT / "examples/public", tmp_path / "pack")
+    _write_smoke_pack(tmp_path / "pack")
     path = tmp_path / "pack/roofline/case.json"
     case = json.loads(path.read_text(encoding="utf-8"))
     case["checks"][0]["expected"] = True
@@ -403,7 +424,7 @@ def test_overall_export_is_explicit_and_never_copies_private_case_data(tmp_path)
     config = demo_config()
     config["repeats"] = 1
     config["candidates"] = config["candidates"][:1]
-    public = load_pack(PACK)
+    public = smoke_pack()
     private = copy.deepcopy(public)
     private["manifest"]["id"] = "private-sentinel-pack"
     private["manifest"]["visibility"] = "private"
@@ -436,7 +457,7 @@ def test_overall_export_rejects_adapter_or_judge_identity_drift(tmp_path, monkey
     config = demo_config()
     config['repeats'] = 1
     config['candidates'] = config['candidates'][:1]
-    public = load_pack(PACK)
+    public = smoke_pack()
     private = copy.deepcopy(public)
     private['manifest']['id'] = 'different-private-pack'
     private['manifest']['visibility'] = 'private'
@@ -457,7 +478,7 @@ def test_overall_export_rejects_adapter_or_judge_identity_drift(tmp_path, monkey
 
 
 def test_existing_patch_rejects_side_effects_before_execution(tmp_path):
-    pack = load_pack(PACK)
+    pack = smoke_pack()
     pack['cases'] = [next(c for c in pack['cases'] if c['definition']['id'] == 'patch')]
     sentinel = tmp_path / 'outside-workspace-sentinel'
     code = f'open({str(sentinel)!r}, "w").write("unexpected")\n' + GOOD['patch']['files'][0]['content']
