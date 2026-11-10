@@ -10,7 +10,7 @@
       "html": "site/artifacts/crocodile/terra-max.html",
       "created": "2026-11-10",
       "outcome": "pass",
-      "note": "max · 公开题第 1 次样本 · 首轮结构检查 pass"
+      "note": "max · 历史公开题第 1 次样本（复用） · 首轮结构检查 pass"
     },
     {
       "id": "terra-high",
@@ -19,7 +19,7 @@
       "html": "site/artifacts/crocodile/terra-high.html",
       "created": "2026-11-10",
       "outcome": "pass",
-      "note": "high · 公开题第 1 次样本 · 首轮结构检查 pass"
+      "note": "high · 历史公开题第 1 次样本（复用） · 首轮结构检查 pass"
     },
     {
       "id": "terra-low",
@@ -28,7 +28,7 @@
       "html": "site/artifacts/crocodile/terra-low.html",
       "created": "2026-11-10",
       "outcome": "pass",
-      "note": "low · 公开题第 1 次样本 · 首轮结构检查 pass"
+      "note": "low · 历史公开题第 1 次样本（复用） · 首轮结构检查 pass"
     },
     {
       "id": "luna-max",
@@ -37,7 +37,7 @@
       "html": "site/artifacts/crocodile/luna-max.html",
       "created": "2026-11-10",
       "outcome": "pass",
-      "note": "max · 公开题第 1 次样本 · 首轮结构检查 pass"
+      "note": "max · 历史公开题第 1 次样本（复用） · 首轮结构检查 pass"
     },
     {
       "id": "luna-high",
@@ -46,7 +46,7 @@
       "html": "site/artifacts/crocodile/luna-high.html",
       "created": "2026-11-10",
       "outcome": "fail",
-      "note": "high · 公开题第 1 次样本 · 自动修复后结构检查 fail"
+      "note": "high · 历史公开题第 1 次样本（复用） · 自动修复后结构检查 fail"
     },
     {
       "id": "luna-low",
@@ -55,7 +55,7 @@
       "html": "site/artifacts/crocodile/luna-low.html",
       "created": "2026-11-10",
       "outcome": "fail",
-      "note": "low · 公开题第 1 次样本 · 自动修复后结构检查 fail"
+      "note": "low · 历史公开题第 1 次样本（复用） · 自动修复后结构检查 fail"
     },
     {
       "id": "dsh-v4.1-flash-1017-low",

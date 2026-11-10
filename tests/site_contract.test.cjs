@@ -28,18 +28,19 @@ const effortData = Object.fromEntries(effortEfforts.map((effort) => [effort, {
 const effortRevision = read('results/engineering-1017-efforts/revision.json');
 const effortProvenance = read('results/engineering-1017-efforts/provenance.json');
 const terra = Object.fromEntries(['max', 'high', 'low'].map((effort) => [effort, {
-  summary: read(`results/terra-20261110-standard/${effort}/summary.json`),
-  tokens: read(`results/terra-20261110-standard/${effort}/token-usage.json`),
-  provenance: read(`results/terra-20261110-standard/${effort}/provenance.json`),
-  overall: read(`results/terra-20261110-standard/${effort}/overall.json`),
-  overallProvenance: read(`results/terra-20261110-standard/${effort}/overall-provenance.json`),
+  summary: read(`results/terra-20261111-standard/${effort}/summary.json`),
+  tokens: read(`results/terra-20261111-standard/${effort}/token-usage.json`),
+  provenance: read(`results/terra-20261111-standard/${effort}/provenance.json`),
+  overall: read(`results/terra-20261111-standard/${effort}/overall.json`),
+  overallProvenance: read(`results/terra-20261111-standard/${effort}/overall-provenance.json`),
 }]));
 for (const [effort, entry] of Object.entries(terra)) {
   const row = derive(entry.summary, entry.overall, entry.tokens).rows[0];
-  assert.equal(entry.summary.pack_version, '20261110');
+  assert.equal(entry.summary.pack_version, '20261111');
   assert.equal(entry.summary.case_count, 13);
   assert.equal(entry.summary.repeats, 2);
   assert.equal(entry.provenance.source_receipts_verified, true);
+  assert.equal(entry.provenance.source_receipts_reverified_now, false);
   assert.equal(entry.provenance.visibility, 'public');
   assert.equal(entry.provenance.synthetic, true);
   assert.equal(entry.provenance.requested_model, 'gpt-6.1-terra');
@@ -48,80 +49,83 @@ for (const [effort, entry] of Object.entries(terra)) {
   assert.equal(entry.provenance.sources.reduce((sum, source) => sum + source.selected_cases, 0), 13);
   assert.deepEqual(entry.tokens.source_receipt_sha256.slice().sort(),
     entry.provenance.sources.map(source => source.receipt_sha256).sort());
-  assert.equal(entry.overall.case_count, 29);
+  assert.equal(entry.overall.case_count, 91);
   assert.equal(entry.overall.pack_version, entry.summary.pack_version);
-  assert.equal(entry.overall.candidates[0].assigned, 58);
+  assert.equal(entry.overall.candidates[0].assigned, 104);
   assert.equal(entry.overallProvenance.authorized_private_overall, true);
   assert.equal(entry.overallProvenance.private_details_exported, false);
-  assert.equal(row.overallFirst, entry.overall.candidates[0].first_passed / 58 * 100);
+  assert.equal(row.overallFirst, entry.overall.candidates[0].first_passed / 104 * 100);
 }
 assert.equal(new Set(Object.values(terra).map(entry => entry.provenance.target_pack_sha256)).size, 1);
 const lunaMax = {
-  summary: read('results/luna-20261110-standard/max/summary.json'),
-  tokens: read('results/luna-20261110-standard/max/token-usage.json'),
-  provenance: read('results/luna-20261110-standard/max/provenance.json'),
-  overall: read('results/luna-20261110-standard/max/overall.json'),
-  overallProvenance: read('results/luna-20261110-standard/max/overall-provenance.json'),
+  summary: read('results/luna-20261111-standard/max/summary.json'),
+  tokens: read('results/luna-20261111-standard/max/token-usage.json'),
+  provenance: read('results/luna-20261111-standard/max/provenance.json'),
+  overall: read('results/luna-20261111-standard/max/overall.json'),
+  overallProvenance: read('results/luna-20261111-standard/max/overall-provenance.json'),
 };
 assert.equal(lunaMax.summary.case_count, 13);
 assert.equal(lunaMax.summary.repeats, 2);
-assert.equal(lunaMax.overall.case_count, 29);
+assert.equal(lunaMax.overall.case_count, 91);
 assert.equal(lunaMax.overall.pack_version, lunaMax.summary.pack_version);
-assert.equal(lunaMax.overall.candidates[0].assigned, 58);
+assert.equal(lunaMax.overall.candidates[0].assigned, 104);
 assert.equal(lunaMax.provenance.requested_model, 'gpt-6-luna');
 assert.equal(lunaMax.provenance.reasoning_effort, 'max');
 assert.equal(lunaMax.provenance.mixed_conditions, true);
 assert.equal(lunaMax.provenance.source_receipts_verified, true);
+assert.equal(lunaMax.provenance.source_receipts_reverified_now, false);
 assert.deepEqual(lunaMax.tokens.source_receipt_sha256.slice().sort(),
   lunaMax.provenance.sources.map(source => source.receipt_sha256).sort());
 assert.equal(lunaMax.overallProvenance.authorized_private_overall, true);
 assert.equal(lunaMax.overallProvenance.private_details_exported, false);
 assert.equal(derive(lunaMax.summary, lunaMax.overall, lunaMax.tokens).rows[0].overallFirst,
-  lunaMax.overall.candidates[0].first_passed / 58 * 100);
+  lunaMax.overall.candidates[0].first_passed / 104 * 100);
 const lunaHigh = {
-  summary: read('results/luna-20261110-standard/high/summary.json'),
-  tokens: read('results/luna-20261110-standard/high/token-usage.json'),
-  provenance: read('results/luna-20261110-standard/high/provenance.json'),
-  overall: read('results/luna-20261110-standard/high/overall.json'),
-  overallProvenance: read('results/luna-20261110-standard/high/overall-provenance.json'),
+  summary: read('results/luna-20261111-standard/high/summary.json'),
+  tokens: read('results/luna-20261111-standard/high/token-usage.json'),
+  provenance: read('results/luna-20261111-standard/high/provenance.json'),
+  overall: read('results/luna-20261111-standard/high/overall.json'),
+  overallProvenance: read('results/luna-20261111-standard/high/overall-provenance.json'),
 };
 assert.equal(lunaHigh.summary.case_count, 13);
 assert.equal(lunaHigh.summary.repeats, 2);
-assert.equal(lunaHigh.overall.case_count, 29);
+assert.equal(lunaHigh.overall.case_count, 91);
 assert.equal(lunaHigh.overall.pack_version, lunaHigh.summary.pack_version);
-assert.equal(lunaHigh.overall.candidates[0].assigned, 58);
+assert.equal(lunaHigh.overall.candidates[0].assigned, 104);
 assert.equal(lunaHigh.provenance.requested_model, 'gpt-6-luna');
 assert.equal(lunaHigh.provenance.reasoning_effort, 'high');
 assert.equal(lunaHigh.provenance.mixed_conditions, false);
 assert.equal(lunaHigh.provenance.source_receipts_verified, true);
+assert.equal(lunaHigh.provenance.source_receipts_reverified_now, false);
 assert.deepEqual(lunaHigh.tokens.source_receipt_sha256.slice().sort(),
   lunaHigh.provenance.sources.map(source => source.receipt_sha256).sort());
 assert.equal(lunaHigh.overallProvenance.authorized_private_overall, true);
 assert.equal(lunaHigh.overallProvenance.private_details_exported, false);
 assert.equal(derive(lunaHigh.summary, lunaHigh.overall, lunaHigh.tokens).rows[0].overallFirst,
-  lunaHigh.overall.candidates[0].first_passed / 58 * 100);
+  lunaHigh.overall.candidates[0].first_passed / 104 * 100);
 const lunaLow = {
-  summary: read('results/luna-20261110-standard/low/summary.json'),
-  tokens: read('results/luna-20261110-standard/low/token-usage.json'),
-  provenance: read('results/luna-20261110-standard/low/provenance.json'),
-  overall: read('results/luna-20261110-standard/low/overall.json'),
-  overallProvenance: read('results/luna-20261110-standard/low/overall-provenance.json'),
+  summary: read('results/luna-20261111-standard/low/summary.json'),
+  tokens: read('results/luna-20261111-standard/low/token-usage.json'),
+  provenance: read('results/luna-20261111-standard/low/provenance.json'),
+  overall: read('results/luna-20261111-standard/low/overall.json'),
+  overallProvenance: read('results/luna-20261111-standard/low/overall-provenance.json'),
 };
 assert.equal(lunaLow.summary.case_count, 13);
 assert.equal(lunaLow.summary.repeats, 2);
-assert.equal(lunaLow.overall.case_count, 29);
+assert.equal(lunaLow.overall.case_count, 91);
 assert.equal(lunaLow.overall.pack_version, lunaLow.summary.pack_version);
-assert.equal(lunaLow.overall.candidates[0].assigned, 58);
+assert.equal(lunaLow.overall.candidates[0].assigned, 104);
 assert.equal(lunaLow.provenance.requested_model, 'gpt-6-luna');
 assert.equal(lunaLow.provenance.reasoning_effort, 'low');
 assert.equal(lunaLow.provenance.mixed_conditions, false);
 assert.equal(lunaLow.provenance.source_receipts_verified, true);
+assert.equal(lunaLow.provenance.source_receipts_reverified_now, false);
 assert.deepEqual(lunaLow.tokens.source_receipt_sha256.slice().sort(),
   lunaLow.provenance.sources.map(source => source.receipt_sha256).sort());
 assert.equal(lunaLow.overallProvenance.authorized_private_overall, true);
 assert.equal(lunaLow.overallProvenance.private_details_exported, false);
 assert.equal(derive(lunaLow.summary, lunaLow.overall, lunaLow.tokens).rows[0].overallFirst,
-  lunaLow.overall.candidates[0].first_passed / 58 * 100);
+  lunaLow.overall.candidates[0].first_passed / 104 * 100);
 for (const summary of [overallData, newOverallData]) {
   assert.deepEqual(Object.keys(summary).sort(), ['candidates', 'case_count', 'denominator', 'schema_version']);
   for (const row of summary.candidates) {
@@ -138,6 +142,8 @@ assert.deepEqual(Object.keys(overallProvenance).sort(), [
 ].sort());
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 assert.doesNotMatch(html, /Terra 20261110|Luna 20261110/, 'The homepage should not display dated report headings');
+assert.doesNotMatch(html, /(?:terra|luna)-20261110-standard\/report\.md/, 'Old model reports must not remain linked');
+assert.match(html, /results\/20261111-model-results\.md/, 'Historical reuse needs a visible source explanation');
 assert.doesNotMatch(html, /<strong>(?:结果边界|怎么看|输出速度)：<\/strong>/, 'The homepage should not display these explanatory notes');
 const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
@@ -146,7 +152,9 @@ assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
 assert.match(table[1], /data-sort-key="tokens">输出速度/);
 assert.equal((table[1].match(/data-result-row=/g) || []).length, 12);
 assert.doesNotMatch(table[1], /data-result-row="(?:0|2)"/);
-assert.match(table[1], /data-result-row="8"[^>]*>[\s\S]*?含历史样本/);
+for (const index of [8, 9, 10, 11, 12, 13]) {
+  assert.match(table[1], new RegExp(`data-result-row="${index}"[^>]*>[^\\n]*公开题沿用历史汇总[^\\n]*含历史样本`));
+}
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
@@ -157,7 +165,7 @@ const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
 const kimiResult = derive(kimiPublicData, kimiOverallData, kimiUsage);
 assert.deepEqual(kimiResult.rows.map(row => row.label), ['Kimi K3.1 Pro']);
-assert.deepEqual(newResult.rows.map(row => row.label), ['Codex GPT-6.1 Sol', 'Codex GPT-6 Luna']);
+assert.deepEqual(newResult.rows.map(row => row.label), ['Codex GPT-6.1 Sol']);
 assert.equal(newComparison.same_assignment_order, true);
 assert.equal(newComparison.same_judge_executable, false);
 for (let i = 0; i < result.rows.length; i++) {
@@ -180,6 +188,8 @@ const wrongDenominator = structuredClone(overallData);
 wrongDenominator.denominator = 'unknown';
 assert.throws(() => derive(publicData, wrongDenominator, usage), /Invalid summary/);
 const wrongAssignment = structuredClone(overallData);
+wrongAssignment.candidates.push(structuredClone(wrongAssignment.candidates[0]));
+wrongAssignment.candidates[1].label = 'Synthetic second candidate';
 wrongAssignment.candidates[1].assigned += 1;
 wrongAssignment.candidates[1].unscored += 1;
 wrongAssignment.candidates[1].mean_attempt_seconds = wrongAssignment.candidates[1].attempt_seconds / wrongAssignment.candidates[1].assigned;
@@ -209,6 +219,7 @@ const secondOverall = structuredClone(overallData);
 const secondUsage = structuredClone(usage);
 const secondLabels = ['Codex GPT-6.1 Sol', 'Codex GPT-6 Luna'];
 for (const source of [secondPublic, secondOverall, secondUsage]) {
+  source.candidates.push(structuredClone(source.candidates[0]));
   source.candidates.forEach((row, index) => { row.label = secondLabels[index]; });
 }
 secondUsage.candidates[0].requested_model = 'gpt-6.1-sol';
@@ -220,7 +231,7 @@ const publicOnlyData = Object.fromEntries(['max', 'high', 'low'].map((effort) =>
   const label = `Codex GPT-6.1 Terra ${effort}`;
   summary.candidates = [summary.candidates[0]];
   summary.candidates[0].label = label;
-  summary.pack_version = '20261110';
+  summary.pack_version = '20261111';
   tokens.candidates = [tokens.candidates[0]];
   tokens.candidates[0].label = label;
   tokens.candidates[0].requested_model = 'gpt-6.1-terra';
@@ -300,14 +311,14 @@ async function checkLoading(secondResponses, beforeLoad, revisionResponse, overa
   };
   const code = fs.readFileSync(path.join(root, 'site/app.js'), 'utf8');
   const fetch = async (url) => {
-    if (url.includes('terra-20261110-standard/')) {
-      const match = url.match(/terra-20261110-standard\/(max|high|low)\/(summary|token-usage|provenance|overall|overall-provenance)\.json/);
+    if (url.includes('terra-20261111-standard/')) {
+      const match = url.match(/terra-20261111-standard\/(max|high|low)\/(summary|token-usage|provenance|overall|overall-provenance)\.json/);
       const entry = (publicOnlyOverride || publicOnlyData)[match[1]];
       const key = match[2] === 'token-usage' ? 'tokens' : match[2] === 'overall-provenance' ? 'overallProvenance' : match[2];
       return entry[key] && entry[key].ok === false ? entry[key] : ok(entry[key]);
     }
-    if (url.includes('luna-20261110-standard/')) {
-      const match = url.match(/luna-20261110-standard\/(max|high|low)\/(summary|token-usage|provenance|overall|overall-provenance)\.json/);
+    if (url.includes('luna-20261111-standard/')) {
+      const match = url.match(/luna-20261111-standard\/(max|high|low)\/(summary|token-usage|provenance|overall|overall-provenance)\.json/);
       const key = match[2] === 'token-usage' ? 'tokens' : match[2] === 'overall-provenance' ? 'overallProvenance' : match[2];
       return ok((lunaOverride || lunaSynthetic)[match[1]][key]);
     }
@@ -358,7 +369,7 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading({ ...second, tokens: { ok: false } });
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, false);
-  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, '100.0%');
+  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, result.rows[0].publicFirst.toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, '未记录');
   const wrongSecondScope = structuredClone(secondUsage);
   wrongSecondScope.case_count += 1;
@@ -368,7 +379,7 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading(second);
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
-  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, (12448 / 1357.219).toFixed(2));
+  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, result.rows[0].tokens.rate.toFixed(2));
   assert.equal(page.nodes.get('[data-pack="1"]').textContent, '题库 未标注');
   assert.equal(page.nodes.get('[data-all-first="1"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-name="1"]').textContent, 'Codex GPT-6.1 Sol');
@@ -393,8 +404,13 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading(second, null, null, null, badPublicProvenance);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[8].hidden, true);
+  const incompleteHistoricalBoundary = structuredClone(publicOnlyData);
+  incompleteHistoricalBoundary.max.provenance.source_receipts_reverified_now = false;
+  page = await checkLoading(second, null, null, null, incompleteHistoricalBoundary);
+  assert.equal(page.alerts['data-error'].hidden, false);
+  assert.equal(page.rows[8].hidden, true);
   const wrongCurrentVersion = structuredClone(publicOnlyData);
-  wrongCurrentVersion.max.overall.pack_version = '20261110-v2';
+  wrongCurrentVersion.max.overall.pack_version = '20261111-v2';
   page = await checkLoading(second, null, null, null, wrongCurrentVersion);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[8].hidden, true);

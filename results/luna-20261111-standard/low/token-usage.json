@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "43de669617daecb48ecda13e79c3cd2a1a1e3d1a3a5db9bbfc55ff4fa44c38b0"
+  ],
+  "candidates": [
+    {
+      "label": "Codex GPT-6 Luna low",
+      "adapter": "codex",
+      "requested_model": "gpt-6-luna",
+      "reasoning_effort": "low",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 26,
+      "candidate_calls": 35,
+      "usage_calls": 35,
+      "output_tokens": 12816,
+      "candidate_call_seconds": 568.659
+    }
+  ]
+}
