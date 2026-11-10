@@ -8,6 +8,8 @@
 
 Codex 调用显式配置为不注入或生成本机记忆；但沿用原 Codex 目录时，全局 `AGENTS.md` 仍可能注入，`read-only` 只读模式也不等于工作区外文件不可读。收据分别标记这些配置与未核实的文件读取隔离。需要严格隔离时，请先在独立环境验证上下文和可读范围，再运行模型。历史结果未记录这一隔离核验，不能据此断言模型当时无法访问本机文件。
 
+Windows 上调用 Codex 时显式使用原生 `unelevated` 沙盒并保持 `read-only`；该设置及其局限记录在运行身份中，不代表已验证工作区外的读取隔离。
+
 可运行 `python scripts/probe_codex_context.py --out .bench-runs/context-probe-001` 检查合成的全局与项目指令是否进入调试上下文；Windows 还可运行 `python scripts/probe_codex_readonly.py --out .bench-runs/read-probe-001`，对内置只读、unelevated 沙箱做合成文件读访问诊断。两者都不调用模型、不读取本机记忆；诊断结果只针对各自探针，不能认证其他沙箱或历史模型调用。
 
 Codex 候选可显式配置 `"local_lookup_audit": "cli_items_v1"`，配置关闭记忆及命令工具，并以 CLI 报告的事件抽查工具使用；发现工具事件或事件不完整、异常时该轮不评分。收据只记录脱敏的状态，不保存命令或工具输出。`python scripts/probe_codex_tool_events.py --out .bench-runs/tool-event-probe-001` 使用本机模拟服务与合成文件检查一条命令读取路径的可见性；加 `--commands-disabled` 可检查命令工具关闭时的同一路径。这些探针不调用模型。CLI 事件不一定覆盖所有嵌套调用，因此未报告工具事件不能证明本地文件绝对不可读或未被访问。需要 HTTPS 时可另设 `"codex_transport": "https"`，仅对该次调用配置使用官方认证的 HTTPS provider，收据记录此条件。

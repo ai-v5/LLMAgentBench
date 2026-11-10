@@ -27,6 +27,28 @@ const effortData = Object.fromEntries(effortEfforts.map((effort) => [effort, {
 }]));
 const effortRevision = read('results/engineering-1017-efforts/revision.json');
 const effortProvenance = read('results/engineering-1017-efforts/provenance.json');
+const terra = Object.fromEntries(['max', 'high', 'low'].map((effort) => [effort, {
+  summary: read(`results/terra-20261110-standard/${effort}/summary.json`),
+  tokens: read(`results/terra-20261110-standard/${effort}/token-usage.json`),
+  provenance: read(`results/terra-20261110-standard/${effort}/provenance.json`),
+}]));
+for (const [effort, entry] of Object.entries(terra)) {
+  const row = derive(entry.summary, null, entry.tokens).rows[0];
+  assert.equal(entry.summary.pack_version, '20261110');
+  assert.equal(entry.summary.case_count, 13);
+  assert.equal(entry.summary.repeats, 2);
+  assert.equal(entry.provenance.source_receipts_verified, true);
+  assert.equal(entry.provenance.visibility, 'public');
+  assert.equal(entry.provenance.synthetic, true);
+  assert.equal(entry.provenance.requested_model, 'gpt-6.1-terra');
+  assert.equal(entry.provenance.reasoning_effort, effort);
+  assert.equal(entry.provenance.mixed_conditions, effort === 'max');
+  assert.equal(entry.provenance.sources.reduce((sum, source) => sum + source.selected_cases, 0), 13);
+  assert.deepEqual(entry.tokens.source_receipt_sha256.slice().sort(),
+    entry.provenance.sources.map(source => source.receipt_sha256).sort());
+  assert.equal(row.overallFirst, null);
+}
+assert.equal(new Set(Object.values(terra).map(entry => entry.provenance.target_pack_sha256)).size, 1);
 for (const summary of [overallData, newOverallData]) {
   assert.deepEqual(Object.keys(summary).sort(), ['candidates', 'case_count', 'denominator', 'schema_version']);
   for (const row of summary.candidates) {
@@ -46,12 +68,13 @@ const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
-assert.equal((table[1].match(/data-result-row=/g) || []).length, 8);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, 11);
+assert.match(table[1], /data-result-row="8"[^>]*>[\s\S]*?含历史样本/);
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
-  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 8, field);
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 11, field);
 }
 const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
@@ -114,11 +137,31 @@ for (const source of [secondPublic, secondOverall, secondUsage]) {
 secondUsage.candidates[0].requested_model = 'gpt-6.1-sol';
 secondUsage.candidates[1].requested_model = 'gpt-6-luna';
 
-async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad, revisionResponse, overallProvenanceResponse) {
+const publicOnlyData = Object.fromEntries(['max', 'high', 'low'].map((effort) => {
+  const summary = structuredClone(publicData);
+  const tokens = structuredClone(usage);
+  const label = `Codex GPT-6.1 Terra ${effort}`;
+  summary.candidates = [summary.candidates[0]];
+  summary.candidates[0].label = label;
+  summary.pack_version = '20261110';
+  tokens.candidates = [tokens.candidates[0]];
+  tokens.candidates[0].label = label;
+  tokens.candidates[0].requested_model = 'gpt-6.1-terra';
+  tokens.candidates[0].reasoning_effort = effort;
+  tokens.source_receipt_sha256 = [tokens.source_receipt_sha256[0]];
+  const provenance = { schema_version: 1, visibility: 'public', synthetic: true, source_receipts_verified: true,
+    case_count: summary.case_count, repeats: summary.repeats, pack_version: summary.pack_version,
+    requested_model: 'gpt-6.1-terra', reasoning_effort: effort, mixed_conditions: effort === 'max',
+    target_pack_sha256: 'a'.repeat(64), sources: [{ selected_cases: summary.case_count,
+      receipt_sha256: tokens.source_receipt_sha256[0] }] };
+  return [effort, { summary, tokens, provenance }];
+}));
+
+async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad, revisionResponse, overallProvenanceResponse, publicOnlyOverride) {
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 8 }, (_, index) => ({
+  const rows = Array.from({ length: 11 }, (_, index) => ({
     hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
   }));
   const order = rows.slice();
@@ -154,6 +197,12 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   };
   const code = fs.readFileSync(path.join(root, 'site/app.js'), 'utf8');
   const fetch = async (url) => {
+    if (url.includes('terra-20261110-standard/')) {
+      const match = url.match(/terra-20261110-standard\/(max|high|low)\/(summary|token-usage|provenance)\.json/);
+      const entry = (publicOnlyOverride || publicOnlyData)[match[1]];
+      const key = match[2] === 'token-usage' ? 'tokens' : match[2];
+      return entry[key] && entry[key].ok === false ? entry[key] : ok(entry[key]);
+    }
     if (url.includes('engineering-1017-efforts/revision.json')) return ok(effortRevision);
     if (url.includes('engineering-1017-efforts/provenance.json')) return ok(effortProvenance);
     if (url.includes('engineering-1017-efforts/')) {
@@ -216,7 +265,21 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.equal(page.nodes.get('[data-pack="1"]').textContent, '题库 未标注');
   assert.equal(page.nodes.get('[data-all-first="0"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-name="1"]').textContent, 'Codex GPT-6.1 Sol');
+  assert.equal(page.nodes.get('[data-all-first="8"]').textContent, '未公开');
+  assert.equal(page.nodes.get('[data-all-final="8"]').textContent, '仅展示公开题');
   assert.equal(page.rows.every(row => !row.hidden), true);
+  const badPublicProvenance = structuredClone(publicOnlyData);
+  badPublicProvenance.max.provenance.source_receipts_verified = false;
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, badPublicProvenance);
+  assert.equal(page.alerts['data-error'].hidden, false);
+  assert.equal(page.rows[8].hidden, true);
+  const mismatchedPublicTokens = structuredClone(publicOnlyData);
+  mismatchedPublicTokens.max.tokens.source_receipt_sha256 = ['b'.repeat(64)];
+  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, mismatchedPublicTokens);
+  assert.equal(page.alerts['data-error'].hidden, true);
+  assert.equal(page.alerts['token-error'].hidden, false);
+  assert.equal(page.rows[8].hidden, false);
+  assert.equal(page.nodes.get('[data-token-rate="8"]').textContent, '未记录');
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, public: { ok: false } });
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[0].hidden, false);
@@ -254,9 +317,10 @@ const ok = (value) => ({ ok: true, json: async () => value });
   const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
   const effortResults = effortEfforts.map((effort) => derive(effortData[effort].public, effortData[effort].overall, effortData[effort].tokens));
-  const allRows = [result.rows[0], ...newResult.rows, kimiResult.rows[0], ...effortResults.map((entry) => entry.rows[0])];
+  const publicOnlyRows = ['max', 'high', 'low'].map((effort) => derive(publicOnlyData[effort].summary, null, publicOnlyData[effort].tokens).rows[0]);
+  const allRows = [result.rows[0], ...newResult.rows, kimiResult.rows[0], ...effortResults.map((entry) => entry.rows[0]), ...publicOnlyRows];
   const expectedOrder = (valueOf, direction) => {
-    const items = Array.from({ length: 8 }, (_, index) => ({ index, value: valueOf(index) }));
+    const items = Array.from({ length: 11 }, (_, index) => ({ index, value: valueOf(index) }));
     items.sort((left, right) => {
       const a = left.value, b = right.value;
       if (a == null || b == null) return a == null && b == null ? left.index - right.index : a == null ? 1 : -1;
@@ -265,8 +329,7 @@ const ok = (value) => ({ ok: true, json: async () => value });
     });
     return items.map((item) => item.index);
   };
-  const expectedOverall = (direction) => allRows.map((row, index) => ({ value: row.overallFirst, index }))
-    .sort((a, b) => direction * (a.value - b.value) || a.index - b.index).map(item => item.index);
+  const expectedOverall = (direction) => expectedOrder((i) => allRows[i].overallFirst, direction === 1 ? 'ascending' : 'descending');
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond);
   assert.deepEqual(indices(page), expectedOverall(-1), 'Overall first-pass score defaults to descending');
   assert.equal(page.buttons.overallFirst.header.attributes['aria-sort'], 'descending');

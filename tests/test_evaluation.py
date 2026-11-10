@@ -328,6 +328,26 @@ def test_codex_is_noninteractive_read_only_and_schema_bound(tmp_path, monkeypatc
     assert identity['filesystem_read_isolation'] == 'not_verified'
 
 
+@pytest.mark.skipif(sys.platform != 'win32', reason='Windows native sandbox configuration')
+@pytest.mark.parametrize('audit', [False, True])
+def test_codex_selects_windows_read_only_sandbox_with_or_without_audit(tmp_path, monkeypatch, audit):
+    monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
+    def fake_execute(argv, **kwargs):
+        assert argv[argv.index('--sandbox') + 1] == 'read-only'
+        assert 'windows.sandbox="unelevated"' in argv
+        assert ('shell_tool' in argv) == audit
+        Path(argv[argv.index('--output-last-message') + 1]).write_text(json.dumps({'answer': 'ok', 'files': []}))
+        events = [{'type': 'thread.started'}, {'type': 'turn.started'},
+                  {'type': 'item.completed', 'item': {'type': 'agent_message'}}, {'type': 'turn.completed'}]
+        return {'exit_code': 0, 'timed_out': False, 'stdout': '\n'.join(map(json.dumps, events)), 'stderr': ''}
+    monkeypatch.setattr(adapters, 'execute', fake_execute)
+    candidate = {'adapter': 'codex', 'model': 'test-model'}
+    if audit:
+        candidate['local_lookup_audit'] = 'cli_items_v1'
+    assert adapters.invoke(candidate, {'case_id': 'test', 'round': 0}, tmp_path, tmp_path / 'control', 5)['status'] == 'ok'
+    assert adapters.adapter_identity(candidate)['windows_sandbox'] == 'unelevated'
+
+
 def test_codex_tool_telemetry_omits_command_and_unknown_item_content(tmp_path, monkeypatch):
     monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
     def fake_execute(argv, **kwargs):

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "0017d0425eddb962a7fe3968cc645937927b0ee2e5ff053300690f339db33e64",
+    "11a5e00098e591e0a0413c242dbab2ec2456e12ec3e18ce1c543b17b28f2d1b9",
+    "c6cf2c651fc84786fad87f4bfdb71d0a0c83f10c32788c38c6295f29ddee2c4c"
+  ],
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Terra max",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-terra",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 26,
+      "candidate_calls": 26,
+      "usage_calls": 26,
+      "output_tokens": 36945,
+      "candidate_call_seconds": 1651.61
+    }
+  ]
+}

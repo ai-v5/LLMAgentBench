@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "4b0162de9e6ad9455943a573973e42da789ca96f5f63b1e1b71e1c4dea3f1ff7"
+  ],
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Terra low",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-terra",
+      "reasoning_effort": "low",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 26,
+      "candidate_calls": 26,
+      "usage_calls": 26,
+      "output_tokens": 6391,
+      "candidate_call_seconds": 264.001
+    }
+  ]
+}

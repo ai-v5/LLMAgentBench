@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "visibility": "public",
+  "synthetic": true,
+  "source_receipts_verified": true,
+  "target_pack_sha256": "f7d2bbbdea3c86e1d70d336c3fd2cd3898c81e8fbfe67d73b2ae41f83025dac5",
+  "pack_version": "20261110",
+  "case_count": 13,
+  "repeats": 2,
+  "requested_model": "gpt-6.1-terra",
+  "reasoning_effort": "low",
+  "mixed_conditions": false,
+  "sources": [
+    {
+      "selected_cases": 13,
+      "receipt_sha256": "4b0162de9e6ad9455943a573973e42da789ca96f5f63b1e1b71e1c4dea3f1ff7",
+      "pack_sha256": "f7d2bbbdea3c86e1d70d336c3fd2cd3898c81e8fbfe67d73b2ae41f83025dac5",
+      "engine_sha256": "fe54f8b45060968ea5f50a4620622ba59e86ca29c0f4ddb3cd4a5a6427de0a70",
+      "config_sha256": "06ad7b7587e6c55fdea02f32cadd418b7ba9ff9104f938d5fa0b686889d0ba7b",
+      "timeout_seconds": 600,
+      "created_at": "2026-11-10T11:32:27.125533+00:00",
+      "check_timeout_seconds": 15,
+      "python_version": "3.12.15",
+      "platform": "Windows",
+      "candidate_executable_sha256": "4f91ae86895ff124760d70ed1630e2354ca874765c9bb61ae524b600327efc17",
+      "candidate_lookup_audit": "not_recorded",
+      "candidate_windows_sandbox": "unelevated",
+      "candidate_transport": "https",
+      "judge_config_sha256": "8747f0b2a6bcf4a828f4416d9daee59c6813dcc381f38ad70a2fec562b462c38",
+      "judge_executable_sha256": "4f91ae86895ff124760d70ed1630e2354ca874765c9bb61ae524b600327efc17"
+    }
+  ]
+}
