@@ -100,6 +100,28 @@ assert.equal(lunaHigh.overallProvenance.authorized_private_overall, true);
 assert.equal(lunaHigh.overallProvenance.private_details_exported, false);
 assert.equal(derive(lunaHigh.summary, lunaHigh.overall, lunaHigh.tokens).rows[0].overallFirst,
   lunaHigh.overall.candidates[0].first_passed / 58 * 100);
+const lunaLow = {
+  summary: read('results/luna-20261110-standard/low/summary.json'),
+  tokens: read('results/luna-20261110-standard/low/token-usage.json'),
+  provenance: read('results/luna-20261110-standard/low/provenance.json'),
+  overall: read('results/luna-20261110-standard/low/overall.json'),
+  overallProvenance: read('results/luna-20261110-standard/low/overall-provenance.json'),
+};
+assert.equal(lunaLow.summary.case_count, 13);
+assert.equal(lunaLow.summary.repeats, 2);
+assert.equal(lunaLow.overall.case_count, 29);
+assert.equal(lunaLow.overall.pack_version, lunaLow.summary.pack_version);
+assert.equal(lunaLow.overall.candidates[0].assigned, 58);
+assert.equal(lunaLow.provenance.requested_model, 'gpt-6-luna');
+assert.equal(lunaLow.provenance.reasoning_effort, 'low');
+assert.equal(lunaLow.provenance.mixed_conditions, false);
+assert.equal(lunaLow.provenance.source_receipts_verified, true);
+assert.deepEqual(lunaLow.tokens.source_receipt_sha256.slice().sort(),
+  lunaLow.provenance.sources.map(source => source.receipt_sha256).sort());
+assert.equal(lunaLow.overallProvenance.authorized_private_overall, true);
+assert.equal(lunaLow.overallProvenance.private_details_exported, false);
+assert.equal(derive(lunaLow.summary, lunaLow.overall, lunaLow.tokens).rows[0].overallFirst,
+  lunaLow.overall.candidates[0].first_passed / 58 * 100);
 for (const summary of [overallData, newOverallData]) {
   assert.deepEqual(Object.keys(summary).sort(), ['candidates', 'case_count', 'denominator', 'schema_version']);
   for (const row of summary.candidates) {
@@ -119,13 +141,13 @@ const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
-assert.equal((table[1].match(/data-result-row=/g) || []).length, 13);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, 14);
 assert.match(table[1], /data-result-row="8"[^>]*>[\s\S]*?含历史样本/);
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
-  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 13, field);
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 14, field);
 }
 const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
@@ -222,7 +244,7 @@ const publicOnlyData = Object.fromEntries(['max', 'high', 'low'].map((effort) =>
     assigned_attempts_verified: true, denominator: 'assigned_attempts', requested_models: ['gpt-6.1-terra'] };
   return [effort, { summary, tokens, provenance, overall, overallProvenance }];
 }));
-const lunaSynthetic = Object.fromEntries(['max', 'high'].map((effort) => {
+const lunaSynthetic = Object.fromEntries(['max', 'high', 'low'].map((effort) => {
   const entry = structuredClone(publicOnlyData[effort]);
   const label = `Codex GPT-6 Luna ${effort}`;
   for (const data of [entry.summary, entry.overall, entry.tokens]) data.candidates[0].label = label;
@@ -236,7 +258,7 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 13 }, (_, index) => ({
+  const rows = Array.from({ length: 14 }, (_, index) => ({
     hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
   }));
   const order = rows.slice();
@@ -414,10 +436,10 @@ const ok = (value) => ({ ok: true, json: async () => value });
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
   const effortResults = effortEfforts.map((effort) => derive(effortData[effort].public, effortData[effort].overall, effortData[effort].tokens));
   const publicOnlyRows = ['max', 'high', 'low'].map((effort) => derive(publicOnlyData[effort].summary, publicOnlyData[effort].overall, publicOnlyData[effort].tokens).rows[0]);
-  const lunaRows = ['max', 'high'].map((effort) => derive(lunaSynthetic[effort].summary, lunaSynthetic[effort].overall, lunaSynthetic[effort].tokens).rows[0]);
+  const lunaRows = ['max', 'high', 'low'].map((effort) => derive(lunaSynthetic[effort].summary, lunaSynthetic[effort].overall, lunaSynthetic[effort].tokens).rows[0]);
   const allRows = [result.rows[0], ...newResult.rows, kimiResult.rows[0], ...effortResults.map((entry) => entry.rows[0]), ...publicOnlyRows, ...lunaRows];
   const expectedOrder = (valueOf, direction) => {
-    const items = Array.from({ length: 13 }, (_, index) => ({ index, value: valueOf(index) }));
+    const items = Array.from({ length: 14 }, (_, index) => ({ index, value: valueOf(index) }));
     items.sort((left, right) => {
       const a = left.value, b = right.value;
       if (a == null || b == null) return a == null && b == null ? left.index - right.index : a == null ? 1 : -1;

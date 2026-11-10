@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>鳄鱼骑自行车</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(#dff5ff 0 68%, #b8df9b 68% 100%);
+      font-family: sans-serif;
+    }
+    svg { display: block; width: min(900px, 96vw); height: auto; }
+    .wheel { fill: none; stroke: #263238; stroke-width: 8; }
+    .spoke { stroke: #73808a; stroke-width: 2.5; }
+    .frame { fill: none; stroke: #e65a36; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+    .bike-detail { fill: none; stroke: #263238; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+    .gator { fill: #72b84b; stroke: #316e37; stroke-width: 5; stroke-linejoin: round; }
+    .belly { fill: #b9d87b; stroke: #659644; stroke-width: 3; }
+    .limb { fill: none; stroke: #4c963e; stroke-width: 17; stroke-linecap: round; stroke-linejoin: round; }
+    .hand { fill: #72b84b; stroke: #316e37; stroke-width: 3; }
+    .eye-white { fill: white; stroke: #316e37; stroke-width: 3; }
+    .pupil { fill: #182b1b; }
+    .scale { fill: none; stroke: #4f9942; stroke-width: 2; opacity: .7; }
+    .ground { stroke: #78a85b; stroke-width: 5; stroke-linecap: round; }
+    .pedal { fill: #263238; }
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 900 560" role="img" aria-labelledby="title desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="title">鳄鱼骑自行车</title>
+  <desc id="desc">一只绿色鳄鱼骑着红色自行车，车轮持续旋转，双腿同步交替踩踏，身体轻轻摆动。</desc>
+  <defs>
+    <g id="wheel">
+      <circle class="wheel" r="88"/>
+      <circle r="8" fill="#263238"/>
+      <g class="spoke">
+        <line x1="0" y1="0" x2="0" y2="-82"/><line x1="0" y1="0" x2="0" y2="82"/>
+        <line x1="0" y1="0" x2="82" y2="0"/><line x1="0" y1="0" x2="-82" y2="0"/>
+        <line x1="0" y1="0" x2="58" y2="-58"/><line x1="0" y1="0" x2="-58" y2="58"/>
+        <line x1="0" y1="0" x2="58" y2="58"/><line x1="0" y1="0" x2="-58" y2="-58"/>
+      </g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2.5s" repeatCount="indefinite"/>
+    </g>
+  </defs>
+
+  <path class="ground" d="M70 440 H830"/>
+  <g fill="#8fbd71" opacity=".55">
+    <circle cx="126" cy="457" r="4"/><circle cx="270" cy="465" r="3"/><circle cx="690" cy="457" r="4"/><circle cx="790" cy="465" r="3"/>
+  </g>
+
+  <!-- 自行车车轮与车架 -->
+  <g transform="translate(275 350)"><use href="#wheel"/></g>
+  <g transform="translate(635 350)"><use href="#wheel"/></g>
+  <g class="frame">
+    <path d="M275 350 L402 350 L477 245 L365 245 L275 350"/>
+    <path d="M402 350 L515 350 L477 245"/>
+    <path d="M515 350 L635 350 L578 235"/>
+    <path d="M457 245 H495"/><path d="M562 235 H600"/>
+  </g>
+  <g class="bike-detail">
+    <path d="M365 236 H420"/><path d="M570 235 L578 214"/><path d="M515 350 L535 326"/>
+  </g>
+  <circle cx="402" cy="350" r="13" fill="#e65a36" stroke="#263238" stroke-width="4"/>
+  <g>
+    <path d="M402 350 L429 370" stroke="#263238" stroke-width="6" stroke-linecap="round"/>
+    <circle class="pedal" cx="429" cy="370" r="7"/>
+    <animateTransform attributeName="transform" type="rotate" from="0 402 350" to="360 402 350" dur="1.1s" repeatCount="indefinite"/>
+  </g>
+  <g>
+    <path d="M402 350 L375 330" stroke="#53616a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="375" cy="330" r="6" fill="#53616a"/>
+    <animateTransform attributeName="transform" type="rotate" from="0 402 350" to="360 402 350" dur="1.1s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- 鳄鱼身体与骑行动作 -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" values="-2 465 220; 2 465 220; -2 465 220" dur="1.1s" repeatCount="indefinite"/>
+    <path class="gator" d="M365 190 Q380 151 441 151 Q500 151 524 183 L511 232 Q478 260 417 251 Q374 243 354 217 Z"/>
+    <path class="belly" d="M382 215 Q431 237 504 211 L497 235 Q448 261 394 239 Z"/>
+    <path class="scale" d="M393 174 l10 -8 10 8 M422 164 l10 -8 10 8 M451 165 l10 -8 10 8 M478 176 l10 -8 10 8"/>
+
+    <!-- 头部与长吻 -->
+    <path class="gator" d="M436 158 Q448 117 490 108 Q530 99 558 120 L589 142 Q600 150 590 161 L554 171 Q529 190 488 182 L458 186 Z"/>
+    <path d="M508 145 Q551 132 590 148 Q595 153 588 159 Q548 168 511 160 Z" fill="#91c85a" stroke="#316e37" stroke-width="3"/>
+    <path d="M531 151 l5 5 M548 149 l5 5 M565 149 l5 5 M581 151 l4 4" stroke="#f4f3d0" stroke-width="4" stroke-linecap="round"/>
+    <ellipse class="eye-white" cx="503" cy="121" rx="15" ry="18"/>
+    <circle class="pupil" cx="508" cy="122" r="6"/><circle cx="510" cy="120" r="2" fill="white"/>
+    <circle cx="572" cy="143" r="3" fill="#316e37"/>
+    <path d="M466 112 l12 -10 11 9" fill="#72b84b" stroke="#316e37" stroke-width="3" stroke-linejoin="round"/>
+
+    <!-- 手臂和握把 -->
+    <path class="limb" d="M470 183 Q495 197 529 214 L570 232"/>
+    <path class="hand" d="M563 224 Q574 219 581 227 L589 236 Q591 242 584 245 L570 242 Q563 239 560 233 Z"/>
+    <path d="M571 227 l10 11 M566 231 l10 12" stroke="#316e37" stroke-width="2"/>
+
+    <!-- 双腿反向摆动，与曲柄同周期 -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="-12 419 239; 12 419 239; -12 419 239" dur="1.1s" repeatCount="indefinite"/>
+      <path class="limb" d="M419 235 Q409 275 402 309 L429 370"/>
+      <path class="hand" d="M416 225 Q427 225 431 234 Q431 241 422 244 L410 242 Q405 238 408 231 Z"/>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="12 461 237; -12 461 237; 12 461 237" dur="1.1s" repeatCount="indefinite"/>
+      <path class="limb" d="M461 235 Q474 268 467 304 L375 330" opacity=".88"/>
+      <path class="hand" d="M454 226 Q464 222 470 230 Q474 236 468 242 L456 244 Q449 241 449 235 Z" opacity=".9"/>
+    </g>
+  </g>
+
+  <text x="450" y="510" text-anchor="middle" fill="#315b36" font-size="24" font-weight="700">鳄鱼骑行中</text>
+</svg>
+</body>
+</html>

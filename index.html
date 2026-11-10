@@ -8,7 +8,7 @@
   <title>LLMAgentBench | 工程任务评估</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=croc-2">
-  <script src="site/app.js?v=luna-20261110-3" defer></script>
+  <script src="site/app.js?v=luna-20261110-4" defer></script>
   <script src="site/gallery.js?v=croc-2" defer></script>
 </head>
 <body>
@@ -64,6 +64,7 @@
             <tr data-result-row="10" hidden><th scope="row"><strong data-name="10">—</strong><small>请求模型 · low</small><small data-pack="10">题库 —</small></th><td><strong data-public-first="10">—</strong><small data-public-final="10">含修复 —</small></td><td><strong data-all-first="10">—</strong><small data-all-final="10">—</small></td><td><strong data-token-rate="10">—</strong><small data-token-detail="10">—</small></td></tr>
             <tr data-result-row="11" hidden><th scope="row"><strong data-name="11">—</strong><small>请求模型 · max · 含历史样本</small><small data-pack="11">题库 —</small></th><td><strong data-public-first="11">—</strong><small data-public-final="11">含修复 —</small></td><td><strong data-all-first="11">—</strong><small data-all-final="11">—</small></td><td><strong data-token-rate="11">—</strong><small data-token-detail="11">—</small></td></tr>
             <tr data-result-row="12" hidden><th scope="row"><strong data-name="12">—</strong><small>请求模型 · high</small><small data-pack="12">题库 —</small></th><td><strong data-public-first="12">—</strong><small data-public-final="12">含修复 —</small></td><td><strong data-all-first="12">—</strong><small data-all-final="12">—</small></td><td><strong data-token-rate="12">—</strong><small data-token-detail="12">—</small></td></tr>
+            <tr data-result-row="13" hidden><th scope="row"><strong data-name="13">—</strong><small>请求模型 · low</small><small data-pack="13">题库 —</small></th><td><strong data-public-first="13">—</strong><small data-public-final="13">含修复 —</small></td><td><strong data-all-first="13">—</strong><small data-all-final="13">—</small></td><td><strong data-token-rate="13">—</strong><small data-token-detail="13">—</small></td></tr>
           </tbody>
         </table>
       </div>
@@ -73,7 +74,7 @@
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；输出 token 可能包含推理 token，各执行器口径和分词器可能不同，这不是服务端纯解码速度。</p>
         <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。部分题目曾用于模型试跑与调整，并非独立留出集。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
         <p><strong>Terra 20261110：</strong>公开题得分和经授权的总体得分分别展示；私有题目内容与逐题结果不公开。max 复用了题目和验收一致的历史样本并补测其余题目。历史单轮超时为 240 秒，新运行是 600 秒；执行器、客户端和 Windows 沙盒条件也不同，不应将三档视为完全相同条件的对照。只读沙盒不代表已验证工作区外文件的读取隔离。</p>
-        <p><strong>Luna 20261110：</strong>max 复用了题目和验收一致的历史公开样本；历史单轮超时为 240 秒，新运行是 600 秒，执行器、客户端和沙盒条件也不同。high 的两次绘图样本使用旋转式腿和身体动画，现有结构检查未识别，保留了原始失败结果；各档条件及边界见结果说明。</p>
+        <p><strong>Luna 20261110：</strong>max 复用了题目和验收一致的历史公开样本；历史单轮超时为 240 秒，新运行是 600 秒，执行器、客户端和沙盒条件也不同。high、low 的绘图样本使用旋转或 CSS 动画，现有结构检查未识别，保留了原始失败结果；各档条件及边界见结果说明。</p>
       </div>
       <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/terra-20261110-standard/report.md">Terra 20261110 说明 ↗</a><a href="results/luna-20261110-standard/report.md">Luna 20261110 说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
