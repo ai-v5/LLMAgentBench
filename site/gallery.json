@@ -1,8 +1,35 @@
 {
   "schema_version": 1,
   "task": "crocodile-bike",
-  "prompt_note": "同一个 SVG 动画 prompt；模型独立输出完整 HTML，网页只内联其中的 SVG（不执行脚本）。",
+  "prompt_note": "同一个 SVG 动画题；完整 HTML 作品使用禁用脚本的沙箱展示。",
   "entries": [
+    {
+      "id": "terra-max",
+      "label": "Codex GPT-6.1 Terra",
+      "effort": "max",
+      "html": "site/artifacts/crocodile/terra-max.html",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "max · 公开题第 1 次样本 · 首轮结构检查 pass"
+    },
+    {
+      "id": "terra-high",
+      "label": "Codex GPT-6.1 Terra",
+      "effort": "high",
+      "html": "site/artifacts/crocodile/terra-high.html",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "high · 公开题第 1 次样本 · 首轮结构检查 pass"
+    },
+    {
+      "id": "terra-low",
+      "label": "Codex GPT-6.1 Terra",
+      "effort": "low",
+      "html": "site/artifacts/crocodile/terra-low.html",
+      "created": "2026-11-10",
+      "outcome": "pass",
+      "note": "low · 公开题第 1 次样本 · 首轮结构检查 pass"
+    },
     {
       "id": "dsh-v4.1-flash-1017-low",
       "label": "DSH V4.1 Flash 1017",

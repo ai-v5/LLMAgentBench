@@ -46,10 +46,12 @@
       revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
       models: { "DSH V4.1 Flash 1017 · max": "ds-v4.1-flash-1017" } },
     ...["max", "high", "low"].map((effort, index) => ({
-      public_only: true, public: `results/terra-20261110-standard/${effort}/summary.json`,
+      public: `results/terra-20261110-standard/${effort}/summary.json`,
+      overall: `results/terra-20261110-standard/${effort}/overall.json`,
+      overall_provenance: `results/terra-20261110-standard/${effort}/overall-provenance.json`,
       tokens: `results/terra-20261110-standard/${effort}/token-usage.json`,
       public_provenance: `results/terra-20261110-standard/${effort}/provenance.json`, offset: 8 + index,
-      effort, models: { [`Codex GPT-6.1 Terra ${effort}`]: "gpt-6.1-terra" },
+      effort, model: "gpt-6.1-terra", models: { [`Codex GPT-6.1 Terra ${effort}`]: "gpt-6.1-terra" },
     })),
   ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
@@ -163,7 +165,7 @@
   function validatePublicProvenance(value, data, batch) {
     if (!value || value.schema_version !== 1 || value.visibility !== "public" || value.synthetic !== true ||
         value.source_receipts_verified !== true || value.case_count !== data.case_count || value.repeats !== data.repeats ||
-        value.pack_version !== data.pack_version || value.requested_model !== "gpt-6.1-terra" ||
+        value.pack_version !== data.pack_version || value.requested_model !== batch.model ||
         value.reasoning_effort !== batch.effort || typeof value.mixed_conditions !== "boolean" ||
         !/^[a-f0-9]{64}$/.test(value.target_pack_sha256) || !Array.isArray(value.sources) || !value.sources.length ||
         value.sources.some((source) => !Number.isInteger(source.selected_cases) || source.selected_cases < 1 ||
@@ -234,15 +236,18 @@
     async function loadBatch(batch) {
       try {
         let publicData, overallData, publicProvenance;
-        if (batch.public_only) {
-          const [summary, provenance] = await Promise.all([
+        if (batch.public_provenance) {
+          const [summary, provenance, total, totalProvenance] = await Promise.all([
             fetch(batch.public, { cache: "no-cache" }), fetch(batch.public_provenance, { cache: "no-cache" }),
+            fetch(batch.overall, { cache: "no-cache" }), fetch(batch.overall_provenance, { cache: "no-cache" }),
           ]);
-          if (!summary.ok || !provenance.ok) throw new Error("Public summary or provenance unavailable");
+          if (!summary.ok || !provenance.ok || !total.ok || !totalProvenance.ok) throw new Error("Summary or provenance unavailable");
           publicData = await summary.json();
           publicProvenance = await provenance.json();
           validatePublicProvenance(publicProvenance, publicData, batch);
-          overallData = null;
+          overallData = await total.json();
+          validateOverallProvenance(await totalProvenance.json(), [batch.model]);
+          if (overallData.pack_version !== publicData.pack_version) throw new Error("Overall pack version differs");
         } else {
           const revision = await fetch(batch.revision, { cache: "no-cache" });
           if (!revision.ok) throw new Error("Case revision provenance unavailable");
@@ -287,7 +292,7 @@
           throw new Error("Token aggregate model identity mismatch");
         }
         try {
-          if (batch.public_only && (usage.candidates.some((row) => row.reasoning_effort !== batch.effort) ||
+          if (batch.public_provenance && (usage.candidates.some((row) => row.reasoning_effort !== batch.effort) ||
               !Array.isArray(usage.source_receipt_sha256) ||
               usage.source_receipt_sha256.slice().sort().join(",") !== publicProvenance.sources.map((source) => source.receipt_sha256).sort().join(","))) {
             throw new Error("Token aggregate source identity mismatch");
