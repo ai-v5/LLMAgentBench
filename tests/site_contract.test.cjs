@@ -7,17 +7,14 @@ const { derive } = require('../site/app.js');
 const root = path.resolve(__dirname, '..');
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 
-const ROWS = 17;
+const ROWS = 14;
 const EXP = [
-  ['1017', 'low', 'DSH V4.1 Flash 1017', 'ds-v4.1-flash-1017', 8],
-  ['1017', 'high', 'DSH V4.1 Flash 1017', 'ds-v4.1-flash-1017', 9],
-  ['1017', 'max', 'DSH V4.1 Flash 1017', 'ds-v4.1-flash-1017', 10],
-  ['flex', 'low', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 11],
-  ['flex', 'high', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 12],
-  ['flex', 'max', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 13],
-  ['glm', 'low', 'GLM 5.3', 'glm5.3', 14],
-  ['glm', 'high', 'GLM 5.3', 'glm5.3', 15],
-  ['glm', 'max', 'GLM 5.3', 'glm5.3', 16],
+  ['flex', 'low', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 8],
+  ['flex', 'high', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 9],
+  ['flex', 'max', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 10],
+  ['glm', 'low', 'GLM 5.3', 'glm5.3', 11],
+  ['glm', 'high', 'GLM 5.3', 'glm5.3', 12],
+  ['glm', 'max', 'GLM 5.3', 'glm5.3', 13],
 ];
 
 const hex = (letter) => letter.repeat(64);
@@ -261,7 +258,7 @@ async function load({ overrides = {}, failTokens = false } = {}) {
   brokenProvenance.provenance.requested_model = 'gpt-6-luna';
   page = await load({ overrides: { 'glm-max': brokenProvenance } });
   assert.equal(page.alerts['data-error'].hidden, false, 'A wrong model in provenance must be rejected');
-  assert.equal(page.rows[16].hidden, true);
+  assert.equal(page.rows[13].hidden, true);
   assert.equal(page.rows[8].hidden, false);
 
   page = await load({ failTokens: true });

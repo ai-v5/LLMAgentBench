@@ -33,19 +33,11 @@
       effort, model: "gpt-6-luna", models: { [`Codex GPT-6 Luna ${effort}`]: "gpt-6-luna" },
     })),
     ...['low', 'high', 'max'].map((effort, index) => ({
-      public: `results/exp-20261111/1017/${effort}/summary.json`,
-      overall: `results/exp-20261111/1017/${effort}/overall.json`,
-      overall_provenance: `results/exp-20261111/1017/${effort}/overall-provenance.json`,
-      tokens: `results/exp-20261111/1017/${effort}/token-usage.json`,
-      public_provenance: `results/exp-20261111/1017/${effort}/provenance.json`, offset: 8 + index,
-      effort, model: "ds-v4.1-flash-1017", models: { [`DSH V4.1 Flash 1017 ${effort}`]: "ds-v4.1-flash-1017" },
-    })),
-    ...['low', 'high', 'max'].map((effort, index) => ({
       public: `results/exp-20261111/flex/${effort}/summary.json`,
       overall: `results/exp-20261111/flex/${effort}/overall.json`,
       overall_provenance: `results/exp-20261111/flex/${effort}/overall-provenance.json`,
       tokens: `results/exp-20261111/flex/${effort}/token-usage.json`,
-      public_provenance: `results/exp-20261111/flex/${effort}/provenance.json`, offset: 11 + index,
+      public_provenance: `results/exp-20261111/flex/${effort}/provenance.json`, offset: 8 + index,
       effort, model: "ds-v4.1-flash-1017-flex", models: { [`DSH V4.1 Flash 1017 Flex ${effort}`]: "ds-v4.1-flash-1017-flex" },
     })),
     ...['low', 'high', 'max'].map((effort, index) => ({
@@ -53,7 +45,7 @@
       overall: `results/exp-20261111/glm/${effort}/overall.json`,
       overall_provenance: `results/exp-20261111/glm/${effort}/overall-provenance.json`,
       tokens: `results/exp-20261111/glm/${effort}/token-usage.json`,
-      public_provenance: `results/exp-20261111/glm/${effort}/provenance.json`, offset: 14 + index,
+      public_provenance: `results/exp-20261111/glm/${effort}/provenance.json`, offset: 11 + index,
       effort, model: "glm5.3", models: { [`GLM 5.3 ${effort}`]: "glm5.3" },
     })),
   ];
