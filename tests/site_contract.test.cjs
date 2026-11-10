@@ -46,12 +46,12 @@ const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
-assert.equal((table[1].match(/data-result-row=/g) || []).length, 9);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, 8);
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
-  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 9, field);
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 8, field);
 }
 const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
@@ -118,7 +118,7 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 9 }, (_, index) => ({
+  const rows = Array.from({ length: 8 }, (_, index) => ({
     hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
   }));
   const order = rows.slice();
@@ -189,13 +189,13 @@ const ok = (value) => ({ ok: true, json: async () => value });
   let page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, undefined,
     ok({ ...revision, case_revision_verified: false }));
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows.slice(0, 4).every(row => row.hidden), true);
-  assert.equal(page.rows[4].hidden, false);
+  assert.equal(page.rows.slice(0, 3).every(row => row.hidden), true);
+  assert.equal(page.rows[3].hidden, false);
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, undefined, undefined,
     ok({ ...overallProvenance, private_details_exported: true }));
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows.slice(0, 4).every(row => row.hidden), true);
-  assert.equal(page.rows[4].hidden, false);
+  assert.equal(page.rows.slice(0, 3).every(row => row.hidden), true);
+  assert.equal(page.rows[3].hidden, false);
   page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, second);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[0].hidden, true);
@@ -213,7 +213,7 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.equal(page.alerts['token-error'].hidden, true);
   assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, (12448 / 1357.219).toFixed(2));
   assert.equal(page.nodes.get('[data-all-first="0"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
-  assert.equal(page.nodes.get('[data-name="2"]').textContent, 'Codex GPT-6.1 Sol');
+  assert.equal(page.nodes.get('[data-name="1"]').textContent, 'Codex GPT-6.1 Sol');
   assert.equal(page.rows.every(row => !row.hidden), true);
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, public: { ok: false } });
   assert.equal(page.alerts['data-error'].hidden, false);
@@ -228,8 +228,8 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
   assert.equal(page.rows.every(row => !row.hidden), true);
-  assert.equal(page.nodes.get('[data-public-first="2"]').textContent, newResult.rows[0].publicFirst.toFixed(1) + '%');
-  assert.equal(page.nodes.get('[data-token-rate="3"]').textContent, newResult.rows[1].tokens.rate.toFixed(2));
+  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, newResult.rows[0].publicFirst.toFixed(1) + '%');
+  assert.equal(page.nodes.get('[data-token-rate="2"]').textContent, newResult.rows[1].tokens.rate.toFixed(2));
   const swapped = structuredClone(secondUsage);
   swapped.candidates[0].requested_model = 'gpt-6-luna';
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, tokens: ok(swapped) });
@@ -246,15 +246,15 @@ const ok = (value) => ({ ok: true, json: async () => value });
   page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
     ...second, public: ok(withError), overall: ok(overallWithError) });
   const issueRow = overallWithError.candidates[1];
-  assert.ok(page.nodes.get('[data-all-final="3"]').textContent.includes(
+  assert.ok(page.nodes.get('[data-all-final="2"]').textContent.includes(
     `未评分/错误/超时 ${issueRow.unscored}/${issueRow.errors}/${issueRow.timeouts}`));
 
   const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
   const effortResults = effortEfforts.map((effort) => derive(effortData[effort].public, effortData[effort].overall, effortData[effort].tokens));
-  const allRows = [...result.rows, ...newResult.rows, ...kimiResult.rows, ...effortResults.map((entry) => entry.rows[0])];
+  const allRows = [result.rows[0], ...newResult.rows, kimiResult.rows[0], ...effortResults.map((entry) => entry.rows[0])];
   const expectedOrder = (valueOf, direction) => {
-    const items = Array.from({ length: 9 }, (_, index) => ({ index, value: valueOf(index) }));
+    const items = Array.from({ length: 8 }, (_, index) => ({ index, value: valueOf(index) }));
     items.sort((left, right) => {
       const a = left.value, b = right.value;
       if (a == null || b == null) return a == null && b == null ? left.index - right.index : a == null ? 1 : -1;
@@ -293,16 +293,16 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'ascending'), 'Names default to ascending');
   page.buttons.label.click();
   assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'descending'));
-  assert.equal(page.nodes.get('[data-public-first="2"]').textContent, '100.0%');
+  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, '100.0%');
 
   page = await checkLoading(ok(publicData), ok(overallData), { ok: false }, realSecond);
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'descending'), 'Missing token rates stay last when descending');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'descending'), 'Missing token rates stay last when descending');
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'ascending'), 'Missing token rates stay last when ascending');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'ascending'), 'Missing token rates stay last when ascending');
   page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, realSecond);
   page.buttons.publicFirst.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 2 ? null : allRows[i].publicFirst, 'descending'), 'Hidden rows stay after loaded results');
+  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : allRows[i].publicFirst, 'descending'), 'Hidden rows stay after loaded results');
   assert.equal(page.rows[0].hidden, true);
   console.log('Site aggregate, sorting, and failure handling: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
