@@ -49,6 +49,15 @@
       "note": "high · 公开题第 1 次样本 · 自动修复后结构检查 fail"
     },
     {
+      "id": "luna-low",
+      "label": "Codex GPT-6 Luna",
+      "effort": "low",
+      "html": "site/artifacts/crocodile/luna-low.html",
+      "created": "2026-11-10",
+      "outcome": "fail",
+      "note": "low · 公开题第 1 次样本 · 自动修复后结构检查 fail"
+    },
+    {
       "id": "dsh-v4.1-flash-1017-low",
       "label": "DSH V4.1 Flash 1017",
       "effort": "low",
