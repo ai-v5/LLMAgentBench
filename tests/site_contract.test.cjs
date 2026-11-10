@@ -212,6 +212,8 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
   assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, (12448 / 1357.219).toFixed(2));
+  assert.equal(page.nodes.get('[data-pack="0"]').textContent, '题库 未标注');
+  assert.equal(page.nodes.get('[data-pack="1"]').textContent, '题库 未标注');
   assert.equal(page.nodes.get('[data-all-first="0"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-name="1"]').textContent, 'Codex GPT-6.1 Sol');
   assert.equal(page.rows.every(row => !row.hidden), true);

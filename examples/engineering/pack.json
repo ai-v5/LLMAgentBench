@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "id": "engineering-public-v1",
+  "version": "20261110",
   "visibility": "public",
   "synthetic": true,
   "purpose": "benchmark",

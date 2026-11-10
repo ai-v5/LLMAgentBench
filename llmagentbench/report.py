@@ -49,7 +49,8 @@ def summarize(record: dict) -> dict:
         "visibility": record["visibility"], "synthetic": record["synthetic"],
         "purpose": record.get("purpose", "benchmark"),
         "source_receipt_sha256": record.get("receipt_sha256"),
-        "pack_id": record["pack_id"], "pack_sha256": record["pack_sha256"],
+        "pack_id": record["pack_id"], "pack_version": record.get("pack_version"),
+        "pack_sha256": record["pack_sha256"],
         "engine_version": record["engine_version"], "engine_sha256": record["engine_sha256"],
         "config_sha256": record["config_sha256"], "repeats": record["repeats"],
         "max_repair_rounds": record["max_repair_rounds"], "timeout_seconds": record["timeout_seconds"],
@@ -69,7 +70,8 @@ def markdown(summary: dict) -> str:
         outcomes = row["outcomes"]
         throughput = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
         lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} | {row['candidate_call_seconds']:.3f} | {throughput} |")
-    lines += ["", f"Pack SHA256: `{summary['pack_sha256']}`", "", f"Engine SHA256: `{summary['engine_sha256']}`", "",
+    lines += ["", f"题库版本: `{summary.get('pack_version') or '未标注'}`", "",
+              f"Pack SHA256: `{summary['pack_sha256']}`", "", f"Engine SHA256: `{summary['engine_sha256']}`", "",
               "成本未知时为 null；费用不由模型猜测。通过率包含全部分配样本；修复轮次不是独立样本。", "",
               "有效吞吐 = 预算内通过数 / 全部尝试计时之和 × 3600。尝试计时从输入准备完成后开始，包含候选调用、CLI 内的网络与服务端排队等待、自动检查、LLM 评分器调用、修复和轮次收据写入；不含输入准备、样本开始前的评估器等待、最终样本收据写入或人工核验。此值是本次串行评估的指标，不是并发服务吞吐。", "",
               "候选模型为请求值；服务端实际模型身份未观测时不能独立确认。", ""]
@@ -130,8 +132,10 @@ def export_overall(run_paths: list[Path], output: Path, labels: dict[str, str], 
             "mean_pass_seconds": statistics.mean(passed_elapsed) if passed_elapsed else None,
             "effective_passes_per_hour": counts["pass"] * 3600 / elapsed if elapsed > 0 else None,
         })
+    versions = sorted({r.get("pack_version") for r in records}, key=lambda value: (value is None, value or ""))
     result = {"schema_version": 1, "case_count": sum(len(r["case_ids"]) for r in records),
-              "repeats": records[0]["repeats"], "candidates": rows}
+              "repeats": records[0]["repeats"], "pack_versions": versions,
+              "pack_version": versions[0] if len(versions) == 1 else None, "candidates": rows}
     lines = ["# 总体评估汇总", "", "仅发布总体数量与耗时；通过率和吞吐不代表人工核验时间。", "",
              f"总题数：{result['case_count']}；每题重复：{result['repeats']}。", "",
              "| 候选 | 首次通过 | 预算内通过 | 失败/未评分/错误/超时 | 平均尝试耗时(s) | 有效吞吐(题/小时) |",

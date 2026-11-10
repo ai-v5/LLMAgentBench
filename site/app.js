@@ -112,7 +112,8 @@
           tokens = { count: row.output_tokens, seconds: row.candidate_call_seconds, rate: row.output_tokens / row.candidate_call_seconds };
         }
       }
-      return { label: item.label, publicFirst: item.first_passed / item.assigned * 100,
+      return { label: item.label, packVersion: publicData.pack_version || overallData.pack_version || null,
+        publicFirst: item.first_passed / item.assigned * 100,
         publicFinal: item.passed / item.assigned * 100, overallFirst: total.first_passed / total.assigned * 100,
         overallFinal: total.passed / total.assigned * 100,
         publicIssues: [item.unscored, item.errors, item.timeouts],
@@ -179,6 +180,7 @@
       const index = position + offset;
       const attr = (name) => "[" + name + '="' + index + '"]';
       put(attr("data-name"), row.label);
+      put(attr("data-pack"), "题库 " + (row.packVersion || "未标注"));
       put(attr("data-public-first"), row.publicFirst.toFixed(1) + "%");
       put(attr("data-public-final"), finalText(row.publicFinal, row.publicIssues));
       put(attr("data-all-first"), row.overallFirst.toFixed(1) + "%");

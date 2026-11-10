@@ -15,4 +15,4 @@
 - `engineering-kimi-overall-r1`：经用户授权的 Kimi 私有题库总体计数与耗时聚合；不包含私有题身份、内容、题包元数据、逐题结果或原始收据。
 - `engineering-public-v1`（pack）后续修订：`quality-rate` 明确 elapsed 计入所有 status，`wss-proxy-triage` 明确 `UNKNOWN` 的判定规则；新增 17 道高难度题：`hash-chain`、`puzzle-8`、`puzzle-15`、`sudoku-hard`、`hamiltonian-paths`、`nonogram-10`、`tsp-14`、`count-3-colorings-16`、`count-perfect-matchings-10/12/14/16`、`count-hamiltonian-cycles`、`count-hamiltonian-cycles-12/14/16`、`crocodile-bike`（HTML/SVG 绘图）。这些题在 ds-v4.1-flash-1017 的 low/high/max 上均观察到真实失败（答错，或串行实测 600 s 超时）；仅超时、未复现答错的题（nqueens-12、subset-sum、nqueens-count）已移除。上列所有基于旧口径或旧 8 题 pack 的结果不可与修订后的 pack 逐位比较。
 
-公开合成题的单包 summary 包含 pack 和引擎 SHA256；混合题库只展示总体数量和耗时，不包含私有题包标识或逐题、分类数据。模型字段是请求值，服务端实际模型版本若未被观测则保持未知。私有 case 的输入和明细不在本目录。
+公开合成题的单包 summary 包含 pack 版本、pack 和引擎 SHA256；版本规则见 docs/RUNBOOK.md（YYYYMMDD，同日多次修改加 -vN）；混合题库只展示总体数量和耗时，不包含私有题包标识或逐题、分类数据。模型字段是请求值，服务端实际模型版本若未被观测则保持未知。私有 case 的输入和明细不在本目录。

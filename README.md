@@ -99,4 +99,4 @@ python -m scripts.export_public_token_usage --run .bench-runs/public-run --summa
 
 `scripts/verify_suite_comparison.py` 可检查两份已完成的私有套件收据是否使用相同题包、引擎、驱动、预算和裁判配置；输出仅包含比较状态与请求的模型名称，不导出题目明细。客户端执行文件变化会单独标注，不能当作完全相同的执行环境。
 
-更多说明：[执行与评分合同](docs/CONTRACTS.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。
+更多说明：[执行与评分合同](docs/CONTRACTS.md)、[运行与发布规范](docs/RUNBOOK.md)、[LLM 操作指南](docs/LLM_WORKFLOW.md)、[接口来源](docs/SOURCES.md)。

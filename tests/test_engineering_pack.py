@@ -115,3 +115,24 @@ def test_rank_checker_accepts_prompt_allowed_python_operations(tmp_path, operati
                   {'native-rank-proof': {'answer': 'fixed', 'files': [{'path': 'candidate.py', 'content': code}]}}}]}
     result = run(pack, config, tmp_path / operation)
     assert result['attempts'][0]['outcome'] == 'pass'
+
+
+def test_pack_version_is_recorded_and_validated(tmp_path):
+    import re
+    import shutil
+
+    from llmagentbench.contracts import ContractError, load_pack
+
+    pack = load_pack(ROOT / 'examples/engineering/pack.json')
+    assert isinstance(pack.get('version'), str)
+    assert re.fullmatch(r'\d{8}(-v[1-9]\d*)?', pack['version'])
+    case_dir = tmp_path / 'case'
+    case_dir.mkdir()
+    shutil.copy(ROOT / 'examples/engineering/quality-rate/case.json', case_dir / 'case.json')
+    shutil.copy(ROOT / 'examples/engineering/quality-rate/verify.py', case_dir / 'verify.py')
+    manifest = {'schema_version': 1, 'id': 'version-test', 'version': 'not-a-version',
+                'visibility': 'private', 'synthetic': True, 'purpose': 'smoke', 'cases': ['case/case.json']}
+    bad = tmp_path / 'bad.json'
+    bad.write_text(__import__('json').dumps(manifest), encoding='utf-8')
+    with __import__('pytest').raises(ContractError):
+        load_pack(bad)
