@@ -28,6 +28,7 @@
     "count-perfect-matchings-14/case.json",
     "count-hamiltonian-cycles-14/case.json",
     "count-perfect-matchings-16/case.json",
-    "count-hamiltonian-cycles-16/case.json"
+    "count-hamiltonian-cycles-16/case.json",
+    "crocodile-bike/case.json"
   ]
 }

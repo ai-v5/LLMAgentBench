@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_every_engineering_case_has_positive_and_negative_controls(tmp_path):
     pack = load_pack(ROOT / 'examples/engineering/pack.json')
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
-    assert len(pack['cases']) == 24
+    assert len(pack['cases']) == 25
     topics = [c['definition']['topic'] for c in pack['cases']]
     assert set(topics) == {'coding', 'diagnosis', 'review', 'performance', 'analysis'}
     assert all(topics.count(t) >= 1 for t in ('coding', 'diagnosis', 'review', 'performance', 'analysis'))
