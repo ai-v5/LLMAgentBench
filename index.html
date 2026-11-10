@@ -9,6 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=sort-1">
   <script src="site/app.js?v=kimi-r1" defer></script>
+  <script src="site/gallery.js?v=croc-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#results">跳到评估结果</a>
@@ -69,6 +70,22 @@
         <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。部分题目曾用于模型试跑与调整，并非独立留出集。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
       </div>
       <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
+    </section>
+
+    <section id="drawing" aria-labelledby="drawing-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">SVG DRAWING TASK</p><h2 id="drawing-title">鳄鱼骑自行车</h2></div>
+        <a class="source-link" href="https://github.com/ai-v5/LLMAgentBench/blob/main/examples/engineering/crocodile-bike/case.json">查看任务定义 ↗</a>
+      </div>
+      <p class="run-context">同一 prompt · 每个模型输出完整 HTML · 沙箱 iframe 播放（不执行脚本）</p>
+      <div class="gallery">
+        <div class="gallery-tabs" role="tablist" aria-label="模型输出" data-gallery-tabs></div>
+        <div class="gallery-stage">
+          <iframe class="gallery-frame" title="模型生成的 SVG 动画" sandbox="" data-gallery-frame loading="lazy"></iframe>
+        </div>
+        <p class="gallery-status" data-gallery-status></p>
+      </div>
+      <noscript><p class="alert">请启用 JavaScript 查看模型生成的 SVG 动画。</p></noscript>
     </section>
 
     <section class="disclaimer" id="disclaimer" aria-labelledby="disclaimer-title">
