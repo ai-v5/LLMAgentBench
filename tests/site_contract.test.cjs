@@ -137,17 +137,19 @@ assert.deepEqual(Object.keys(overallProvenance).sort(), [
   'requested_models', 'schema_version',
 ].sort());
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+assert.doesNotMatch(html, /Terra 20261110|Luna 20261110/, 'The homepage should not display dated report headings');
 const table = html.match(/<table class="results-table">([\s\S]*?)<\/table>/);
 assert.ok(table, 'The results must remain a semantic table');
 assert.equal((html.match(/<table\b/g) || []).length, 1);
 assert.equal((table[1].match(/scope="col"/g) || []).length, 4);
-assert.equal((table[1].match(/data-result-row=/g) || []).length, 14);
+assert.equal((table[1].match(/data-result-row=/g) || []).length, 12);
+assert.doesNotMatch(table[1], /data-result-row="(?:0|2)"/);
 assert.match(table[1], /data-result-row="8"[^>]*>[\s\S]*?含历史样本/);
 for (const key of ['label', 'publicFirst', 'overallFirst', 'tokens']) {
   assert.match(table[1], new RegExp('<button[^>]*type="button"[^>]*data-sort-key="' + key + '"'));
 }
 for (const field of ['data-public-first', 'data-public-final', 'data-all-first', 'data-all-final', 'data-token-rate']) {
-  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 14, field);
+  assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, 12, field);
 }
 const result = derive(publicData, overallData, usage);
 const newResult = derive(newPublicData, newOverallData, newUsage);
@@ -254,14 +256,16 @@ const lunaSynthetic = Object.fromEntries(['max', 'high', 'low'].map((effort) => 
   return [effort, entry];
 }));
 
-async function checkLoading(publicResponse, overallResponse, tokenResponse, secondResponses, beforeLoad, revisionResponse, overallProvenanceResponse, publicOnlyOverride, lunaOverride) {
+async function checkLoading(secondResponses, beforeLoad, revisionResponse, overallProvenanceResponse, publicOnlyOverride, lunaOverride) {
   const alerts = { 'data-error': { hidden: true }, 'token-error': { hidden: true } };
   const region = { busy: true, setAttribute(name, value) { if (name === 'aria-busy') this.busy = value !== 'false'; } };
   const nodes = new Map();
-  const rows = Array.from({ length: 14 }, (_, index) => ({
-    hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null,
-  }));
-  const order = rows.slice();
+  const rowIds = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  const rows = [];
+  for (const index of rowIds) {
+    rows[index] = { hidden: true, getAttribute: (name) => name === 'data-result-row' ? String(index) : null };
+  }
+  const order = rows.filter(Boolean);
   const body = {
     querySelectorAll: () => order.slice(),
     appendChild(row) { order.splice(order.indexOf(row), 1); order.push(row); },
@@ -322,7 +326,7 @@ async function checkLoading(publicResponse, overallResponse, tokenResponse, seco
       if (url.includes('comparison.json')) return secondResponses.comparison;
       return url.includes('token-usage') ? secondResponses.tokens : url.includes('engineering-public') ? secondResponses.public : secondResponses.overall;
     }
-    return url.includes('token-usage') ? tokenResponse : url.includes('engineering-public') ? publicResponse : overallResponse;
+    throw new Error('Unexpected fetch: ' + url);
   };
   vm.runInNewContext(code, { document, fetch });
   if (beforeLoad) beforeLoad(buttons);
@@ -337,109 +341,112 @@ const ok = (value) => ({ ok: true, json: async () => value });
     same_budget: true, same_judge_configuration: true, same_judge_executable: false,
     requested_models: ['gpt-6-luna', 'gpt-6.1-sol'] };
   const second = { public: ok(secondPublic), overall: ok(secondOverall), tokens: ok(secondUsage), comparison: ok(comparison) };
-  let page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, undefined,
-    ok({ ...revision, case_revision_verified: false }));
+  let page = await checkLoading(second, undefined, ok({ ...revision, case_revision_verified: false }));
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows.slice(0, 3).every(row => row.hidden), true);
+  assert.equal(page.rows[1].hidden, true);
   assert.equal(page.rows[3].hidden, false);
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, undefined, undefined,
-    ok({ ...overallProvenance, private_details_exported: true }));
+  page = await checkLoading(second, undefined, undefined, ok({ ...overallProvenance, private_details_exported: true }));
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows.slice(0, 3).every(row => row.hidden), true);
+  assert.equal(page.rows[1].hidden, true);
   assert.equal(page.rows[3].hidden, false);
-  page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, second);
+  page = await checkLoading({ ...second, public: { ok: false } });
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows[0].hidden, true);
-  assert.equal(page.rows[2].hidden, false);
-  page = await checkLoading(ok(publicData), ok(overallData), { ok: false }, second);
+  assert.equal(page.rows[1].hidden, true);
+  assert.equal(page.rows[8].hidden, false);
+  page = await checkLoading({ ...second, tokens: { ok: false } });
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, false);
-  assert.equal(page.nodes.get('[data-public-first="0"]').textContent, '100.0%');
-  assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, '未记录');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(wrongScope), second);
+  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, '100.0%');
+  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, '未记录');
+  const wrongSecondScope = structuredClone(secondUsage);
+  wrongSecondScope.case_count += 1;
+  page = await checkLoading({ ...second, tokens: ok(wrongSecondScope) });
   assert.equal(page.alerts['token-error'].hidden, false);
-  assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, '未记录');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second);
+  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, '未记录');
+  page = await checkLoading(second);
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
-  assert.equal(page.nodes.get('[data-token-rate="0"]').textContent, (12448 / 1357.219).toFixed(2));
-  assert.equal(page.nodes.get('[data-pack="0"]').textContent, '题库 未标注');
+  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, (12448 / 1357.219).toFixed(2));
   assert.equal(page.nodes.get('[data-pack="1"]').textContent, '题库 未标注');
-  assert.equal(page.nodes.get('[data-all-first="0"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
+  assert.equal(page.nodes.get('[data-all-first="1"]').textContent, result.rows[0].overallFirst.toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-name="1"]').textContent, 'Codex GPT-6.1 Sol');
   const currentTotal = publicOnlyData.max.overall.candidates[0];
   assert.equal(page.nodes.get('[data-all-first="8"]').textContent, (currentTotal.first_passed / currentTotal.assigned * 100).toFixed(1) + '%');
   assert.equal(page.nodes.get('[data-name="11"]').textContent, 'Codex GPT-6 Luna max');
   assert.equal(page.rows.every(row => !row.hidden), true);
+  const labels = page.order.map(row => page.nodes.get('[data-name="' + row.getAttribute('data-result-row') + '"]').textContent);
+  assert.equal(labels.includes('Codex GPT-6.1 Terra'), false);
+  assert.equal(labels.includes('Codex GPT-6 Luna'), false);
+  for (const effort of ['max', 'high', 'low']) {
+    assert.ok(labels.includes(`Codex GPT-6.1 Terra ${effort}`));
+    assert.ok(labels.includes(`Codex GPT-6 Luna ${effort}`));
+  }
   const wrongLunaModel = structuredClone(lunaSynthetic);
   wrongLunaModel.max.provenance.requested_model = 'gpt-6.1-terra';
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, null, wrongLunaModel);
+  page = await checkLoading(second, null, null, null, null, wrongLunaModel);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[11].hidden, true);
   const badPublicProvenance = structuredClone(publicOnlyData);
   badPublicProvenance.max.provenance.source_receipts_verified = false;
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, badPublicProvenance);
+  page = await checkLoading(second, null, null, null, badPublicProvenance);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[8].hidden, true);
   const wrongCurrentVersion = structuredClone(publicOnlyData);
   wrongCurrentVersion.max.overall.pack_version = '20261110-v2';
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, wrongCurrentVersion);
+  page = await checkLoading(second, null, null, null, wrongCurrentVersion);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[8].hidden, true);
   const badCurrentOverallProvenance = structuredClone(publicOnlyData);
   badCurrentOverallProvenance.max.overallProvenance.private_details_exported = true;
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, badCurrentOverallProvenance);
+  page = await checkLoading(second, null, null, null, badCurrentOverallProvenance);
   assert.equal(page.alerts['data-error'].hidden, false);
   assert.equal(page.rows[8].hidden, true);
   const mismatchedPublicTokens = structuredClone(publicOnlyData);
   mismatchedPublicTokens.max.tokens.source_receipt_sha256 = ['b'.repeat(64)];
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), second, null, null, null, mismatchedPublicTokens);
+  page = await checkLoading(second, null, null, null, mismatchedPublicTokens);
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, false);
   assert.equal(page.rows[8].hidden, false);
   assert.equal(page.nodes.get('[data-token-rate="8"]').textContent, '未记录');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, public: { ok: false } });
+  page = await checkLoading({ ...second, comparison: ok({ ...comparison, same_pack_order: false }) });
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows[0].hidden, false);
-  assert.equal(page.rows[2].hidden, true);
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
-    ...second, comparison: ok({ ...comparison, same_pack_order: false }) });
-  assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows[2].hidden, true);
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
-    public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) });
+  assert.equal(page.rows[1].hidden, true);
+  const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
+  page = await checkLoading(realSecond);
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.alerts['token-error'].hidden, true);
   assert.equal(page.rows.every(row => !row.hidden), true);
   assert.equal(page.nodes.get('[data-public-first="1"]').textContent, newResult.rows[0].publicFirst.toFixed(1) + '%');
-  assert.equal(page.nodes.get('[data-token-rate="2"]').textContent, newResult.rows[1].tokens.rate.toFixed(2));
+  assert.equal(page.nodes.get('[data-token-rate="1"]').textContent, newResult.rows[0].tokens.rate.toFixed(2));
   const swapped = structuredClone(secondUsage);
   swapped.candidates[0].requested_model = 'gpt-6-luna';
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), { ...second, tokens: ok(swapped) });
+  page = await checkLoading({ ...second, tokens: ok(swapped) });
   assert.equal(page.alerts['data-error'].hidden, false);
-  assert.equal(page.rows[2].hidden, true);
+  assert.equal(page.rows[1].hidden, true);
   const withError = structuredClone(secondPublic);
   const overallWithError = structuredClone(secondOverall);
   for (const source of [withError, overallWithError]) {
-    const row = source.candidates[1];
+    const row = source.candidates[0];
     row.passed -= 1;
+    row.first_passed = Math.min(row.first_passed, row.passed);
     row.errors += 1;
     row.effective_passes_per_hour = row.passed * 3600 / row.attempt_seconds;
   }
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), {
-    ...second, public: ok(withError), overall: ok(overallWithError) });
-  const issueRow = overallWithError.candidates[1];
-  assert.ok(page.nodes.get('[data-all-final="2"]').textContent.includes(
+  page = await checkLoading({ ...second, public: ok(withError), overall: ok(overallWithError) });
+  const issueRow = overallWithError.candidates[0];
+  assert.ok(page.nodes.get('[data-all-final="1"]').textContent.includes(
     `未评分/错误/超时 ${issueRow.unscored}/${issueRow.errors}/${issueRow.timeouts}`));
 
-  const realSecond = { public: ok(newPublicData), overall: ok(newOverallData), tokens: ok(newUsage), comparison: ok(newComparison) };
   const indices = (value) => value.order.map(row => Number(row.getAttribute('data-result-row')));
   const effortResults = effortEfforts.map((effort) => derive(effortData[effort].public, effortData[effort].overall, effortData[effort].tokens));
   const publicOnlyRows = ['max', 'high', 'low'].map((effort) => derive(publicOnlyData[effort].summary, publicOnlyData[effort].overall, publicOnlyData[effort].tokens).rows[0]);
   const lunaRows = ['max', 'high', 'low'].map((effort) => derive(lunaSynthetic[effort].summary, lunaSynthetic[effort].overall, lunaSynthetic[effort].tokens).rows[0]);
-  const allRows = [result.rows[0], ...newResult.rows, kimiResult.rows[0], ...effortResults.map((entry) => entry.rows[0]), ...publicOnlyRows, ...lunaRows];
+  const allRows = { 1: newResult.rows[0], 3: kimiResult.rows[0] };
+  effortResults.forEach((entry, index) => { allRows[4 + index] = entry.rows[0]; });
+  publicOnlyRows.forEach((entry, index) => { allRows[8 + index] = entry; });
+  lunaRows.forEach((entry, index) => { allRows[11 + index] = entry; });
   const expectedOrder = (valueOf, direction) => {
-    const items = Array.from({ length: 14 }, (_, index) => ({ index, value: valueOf(index) }));
+    const items = Object.keys(allRows).map(Number).map(index => ({ index, value: valueOf(index) }));
     items.sort((left, right) => {
       const a = left.value, b = right.value;
       if (a == null || b == null) return a == null && b == null ? left.index - right.index : a == null ? 1 : -1;
@@ -449,15 +456,15 @@ const ok = (value) => ({ ok: true, json: async () => value });
     return items.map((item) => item.index);
   };
   const expectedOverall = (direction) => expectedOrder((i) => allRows[i].overallFirst, direction === 1 ? 'ascending' : 'descending');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond);
+  page = await checkLoading(realSecond);
   assert.deepEqual(indices(page), expectedOverall(-1), 'Overall first-pass score defaults to descending');
   assert.equal(page.buttons.overallFirst.header.attributes['aria-sort'], 'descending');
   page.buttons.overallFirst.click();
   assert.deepEqual(indices(page), expectedOverall(1), 'The first click reverses the default order');
   assert.equal(page.buttons.overallFirst.header.attributes['aria-sort'], 'ascending');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.overallFirst.click());
+  page = await checkLoading(realSecond, buttons => buttons.overallFirst.click());
   assert.deepEqual(indices(page), expectedOverall(1), 'An early click overrides the default while data loads');
-  page = await checkLoading(ok(publicData), ok(overallData), ok(usage), realSecond, buttons => buttons.tokens.click());
+  page = await checkLoading(realSecond, buttons => buttons.tokens.click());
   assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].tokens ? allRows[i].tokens.rate : null, 'descending'), 'A sort selected before loading must include all batches');
   assert.equal(page.buttons.tokens.header.attributes['aria-sort'], 'descending');
   page.buttons.tokens.click();
@@ -477,16 +484,15 @@ const ok = (value) => ({ ok: true, json: async () => value });
   assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'ascending'), 'Names default to ascending');
   page.buttons.label.click();
   assert.deepEqual(indices(page), expectedOrder((i) => allRows[i].label, 'descending'));
-  assert.equal(page.nodes.get('[data-public-first="1"]').textContent, '100.0%');
 
-  page = await checkLoading(ok(publicData), ok(overallData), { ok: false }, realSecond);
+  page = await checkLoading({ ...realSecond, tokens: { ok: false } });
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'descending'), 'Missing token rates stay last when descending');
+  assert.deepEqual(indices(page), expectedOrder((i) => i === 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'descending'), 'Missing token rates stay last when descending');
   page.buttons.tokens.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'ascending'), 'Missing token rates stay last when ascending');
-  page = await checkLoading({ ok: false }, ok(overallData), { ok: false }, realSecond);
+  assert.deepEqual(indices(page), expectedOrder((i) => i === 1 ? null : (allRows[i].tokens ? allRows[i].tokens.rate : null), 'ascending'), 'Missing token rates stay last when ascending');
+  page = await checkLoading({ ...realSecond, public: { ok: false } });
   page.buttons.publicFirst.click();
-  assert.deepEqual(indices(page), expectedOrder((i) => i < 1 ? null : allRows[i].publicFirst, 'descending'), 'Hidden rows stay after loaded results');
-  assert.equal(page.rows[0].hidden, true);
+  assert.deepEqual(indices(page), expectedOrder((i) => i === 1 ? null : allRows[i].publicFirst, 'descending'), 'Hidden rows stay after loaded results');
+  assert.equal(page.rows[1].hidden, true);
   console.log('Site aggregate, sorting, and failure handling: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });

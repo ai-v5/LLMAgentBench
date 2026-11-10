@@ -2,19 +2,14 @@
 (function () {
   "use strict";
   const BATCHES = [
-    { public: "results/engineering-public-r3/summary.json", overall: "results/engineering-overall-ale-r1/terra-dsh-summary.json",
-      tokens: "results/engineering-public-r3/token-usage.json", revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
-      revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      exclude: ["DSH V4.1 Flash 1017"],
-      models: { "Codex GPT-6.1 Terra": "gpt-6.1-terra" } },
     { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-ale-r1/sol-luna-summary.json",
       tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
       comparison: "results/engineering-public-luna-sol-r1/comparison.json",
       revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 1,
       revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
       overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol", "Codex GPT-6 Luna": "gpt-6-luna" } },
+      exclude: ["Codex GPT-6 Luna"],
+      models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol" } },
     { public: "results/engineering-kimi-public-r1/summary.json", overall: "results/engineering-kimi-overall-r1/summary.json",
       tokens: "results/engineering-kimi-public-r1/token-usage.json",
       revision: "results/engineering-kimi-overall-r1/provenance.json",
