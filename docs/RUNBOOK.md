@@ -2,6 +2,18 @@
 
 本文件是给"另一台机器/另一个 agent"的契约：按这里跑，按这里更新站点。执行前先读 `docs/CONTRACTS.md`。
 
+## 0. 题库组成（版本 20261111）
+
+| 位置 | 文件 | 内容 |
+|---|---|---|
+| 公开仓 | `pack.json`（`version: 20261111`，13 题） | 公开题索引，用于公开结果与公开绘图展示 |
+| 私仓 | `packs/suite-20261111/pack.json`（91 题） | 全量套件：私仓所有唯一 case + 公开 13 题副本，单次运行覆盖全部题 |
+
+- 全量套件由私仓 `scripts/build_suite.py --version 20261111 --public-pack <公开仓 pack.json>` 生成；新增/删除题后重跑该脚本即可。
+- 套件按 case id 去重：同一 id 出现在多个旧 pack 时，取 `version` 最高的来源。
+- 公开结果来自公开 `pack.json` 的运行；总体结果 = 公开运行 + 套件中非公开部分的运行，合并导出时不得暴露私有 case。
+- 两处 `version` 必须同时变更。
+
 ## 1. 题库版本
 
 - 每个 pack 的 `pack.json` 必须有 `version` 字段：`YYYYMMDD`（当天第一版）或 `YYYYMMDD-vN`（同一天第 N 次修改，N 从 2 开始）。
@@ -26,8 +38,8 @@
 
 | 用途 | 题包 | repeats | repair | timeout |
 |---|---|---:|---:|---:|
-| 公开题 | `pack.json`（13 题，唯一公开索引） | 2 | 1 | 600 s |
-| 私有难题 | 私仓 `packs/hard-20261110/pack.json`（16 题） | 2 | 1 | 600 s |
+| 公开题 | `pack.json`（13 题） | 2 | 1 | 600 s |
+| 全量套件 | 私仓 `packs/suite-20261111/pack.json`（91 题） | 1 | 1 | 600 s |
 | 混合总体 | 公开 13 + 私有 16 + 8 个 admitted ALE（见私仓） | 各 2 / ALE 1 | 1 | 600 / ALE 420 |
 
 - judge：`codex` / `gpt-6.1-sol` / `reasoning_effort: low`（仅含 `llm_rubric` 的题需要）。
