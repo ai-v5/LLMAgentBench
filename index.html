@@ -28,7 +28,7 @@
     <section class="intro" aria-labelledby="intro-title">
       <p class="eyebrow"><span></span> ENGINEERING AGENT EVALUATION</p>
       <h1 id="intro-title">用工程任务，<br><em>看 AI 的实际表现。</em></h1>
-      <p>固定任务、预算和验收规则，在同一张表里看通过率、得分和输出速度。</p>
+      <p>记录题库版本、预算和验收条件，在同一张表里看通过率与输出速度。</p>
     </section>
 
     <section id="results" aria-labelledby="results-title">
@@ -36,7 +36,7 @@
         <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
         <a class="source-link" href="results/engineering-overall-ale-r1/report.md">查看结果说明 <span aria-hidden="true">↗</span></a>
       </div>
-      <p class="run-context">公开合成题与授权总体聚合 <span>·</span> max 推理 <span>·</span> DSH 1017 含 low/high/xhigh/max 分档对照 <span>·</span> Kimi K3.1 Pro 单独列示 <span>·</span> 私有逐题数据不公开</p>
+      <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 按题库版本和推理强度列示 <span>·</span> 私有逐题数据不公开</p>
       <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p>
       <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
       <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p></noscript>
@@ -59,6 +59,9 @@
             <tr data-result-row="5" hidden><th scope="row"><strong data-name="5">—</strong><small>请求模型 · high</small><small data-pack="5">题库 —</small></th><td><strong data-public-first="5">—</strong><small data-public-final="5">含修复 —</small></td><td><strong data-all-first="5">—</strong><small data-all-final="5">含修复 —</small></td><td><strong data-token-rate="5">—</strong><small data-token-detail="5">—</small></td></tr>
             <tr data-result-row="6" hidden><th scope="row"><strong data-name="6">—</strong><small>请求模型 · xhigh</small><small data-pack="6">题库 —</small></th><td><strong data-public-first="6">—</strong><small data-public-final="6">含修复 —</small></td><td><strong data-all-first="6">—</strong><small data-all-final="6">含修复 —</small></td><td><strong data-token-rate="6">—</strong><small data-token-detail="6">—</small></td></tr>
             <tr data-result-row="7" hidden><th scope="row"><strong data-name="7">—</strong><small>请求模型 · max</small><small data-pack="7">题库 —</small></th><td><strong data-public-first="7">—</strong><small data-public-final="7">含修复 —</small></td><td><strong data-all-first="7">—</strong><small data-all-final="7">含修复 —</small></td><td><strong data-token-rate="7">—</strong><small data-token-detail="7">—</small></td></tr>
+            <tr data-result-row="8" hidden><th scope="row"><strong data-name="8">—</strong><small>请求模型 · max · 含历史样本</small><small data-pack="8">题库 —</small></th><td><strong data-public-first="8">—</strong><small data-public-final="8">含修复 —</small></td><td><strong data-all-first="8">—</strong><small data-all-final="8">—</small></td><td><strong data-token-rate="8">—</strong><small data-token-detail="8">—</small></td></tr>
+            <tr data-result-row="9" hidden><th scope="row"><strong data-name="9">—</strong><small>请求模型 · high</small><small data-pack="9">题库 —</small></th><td><strong data-public-first="9">—</strong><small data-public-final="9">含修复 —</small></td><td><strong data-all-first="9">—</strong><small data-all-final="9">—</small></td><td><strong data-token-rate="9">—</strong><small data-token-detail="9">—</small></td></tr>
+            <tr data-result-row="10" hidden><th scope="row"><strong data-name="10">—</strong><small>请求模型 · low</small><small data-pack="10">题库 —</small></th><td><strong data-public-first="10">—</strong><small data-public-final="10">含修复 —</small></td><td><strong data-all-first="10">—</strong><small data-all-final="10">—</small></td><td><strong data-token-rate="10">—</strong><small data-token-detail="10">—</small></td></tr>
           </tbody>
         </table>
       </div>
@@ -67,8 +70,9 @@
         <p><strong>怎么看：</strong>得分就是通过率，首轮与含自动修复分别计算；失败、未评分、错误和超时都计入分母。公开题使用合成任务；全部题目包含公开与未公开任务，页面只展示总体得分。</p>
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；输出 token 可能包含推理 token，各执行器口径和分词器可能不同，这不是服务端纯解码速度。</p>
         <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。部分题目曾用于模型试跑与调整，并非独立留出集。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
+        <p><strong>Terra 20261110：</strong>本批次仅公开 13 道合成题的聚合；max 复用了题目和验收一致的历史样本并补测其余题目。历史单轮超时为 240 秒，新运行是 600 秒；执行器、客户端和 Windows 沙盒条件也不同，不应将三档视为完全相同条件的对照。只读沙盒不代表已验证工作区外文件的读取隔离。</p>
       </div>
-      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
+      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/terra-20261110-standard/report.md">Terra 20261110 说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
 
     <section id="drawing" aria-labelledby="drawing-title">

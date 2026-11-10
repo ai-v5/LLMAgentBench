@@ -431,6 +431,8 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                     "--sandbox", "read-only", "--model", adapter["model"], "--json", "--color", "never",
                     "--config", "project_doc_max_bytes=0", "--output-schema", str(schema),
                     "--output-last-message", str(answer), "--cd", str(workspace)]
+            if os.name == "nt":
+                argv += ["--config", 'windows.sandbox="unelevated"']
             if audit_mode == "cli_items_v1":
                 for feature in ("shell_tool", "unified_exec", "view_image", "apps", "browser_use",
                                 "computer_use", "plugins", "skill_search", "code_mode", "code_mode_host",
@@ -606,6 +608,8 @@ def adapter_identity(adapter: dict) -> dict:
         identity["memory_injection"] = "configured_disabled"
         identity["global_instructions"] = "not_isolated"
         identity["filesystem_read_isolation"] = "not_verified"
+        if os.name == "nt":
+            identity["windows_sandbox"] = "unelevated"
         if adapter.get("local_lookup_audit") == "cli_items_v1":
             identity["local_lookup_audit"] = "codex_exec_reported_items"
             identity["command_tools"] = "configured_disabled"
