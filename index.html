@@ -8,7 +8,7 @@
   <title>LLMAgentBench | 工程任务评估</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=croc-2">
-  <script src="site/app.js?v=luna-20261110-4" defer></script>
+  <script src="site/app.js?v=results-2" defer></script>
   <script src="site/gallery.js?v=croc-2" defer></script>
 </head>
 <body>
@@ -51,9 +51,7 @@
             <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
           </tr></thead>
           <tbody>
-            <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small>请求模型 · max</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
             <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small><small data-pack="1">题库 —</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
-            <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small>请求模型 · max</small><small data-pack="2">题库 —</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
             <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · max</small><small data-pack="3">题库 —</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
             <tr data-result-row="4" hidden><th scope="row"><strong data-name="4">—</strong><small>请求模型 · low</small><small data-pack="4">题库 —</small></th><td><strong data-public-first="4">—</strong><small data-public-final="4">含修复 —</small></td><td><strong data-all-first="4">—</strong><small data-all-final="4">含修复 —</small></td><td><strong data-token-rate="4">—</strong><small data-token-detail="4">—</small></td></tr>
             <tr data-result-row="5" hidden><th scope="row"><strong data-name="5">—</strong><small>请求模型 · high</small><small data-pack="5">题库 —</small></th><td><strong data-public-first="5">—</strong><small data-public-final="5">含修复 —</small></td><td><strong data-all-first="5">—</strong><small data-all-final="5">含修复 —</small></td><td><strong data-token-rate="5">—</strong><small data-token-detail="5">—</small></td></tr>
@@ -73,10 +71,9 @@
         <p><strong>怎么看：</strong>得分就是通过率，首轮与含自动修复分别计算；失败、未评分、错误和超时都计入分母。公开题使用合成任务；全部题目包含公开与未公开任务，页面只展示总体得分。</p>
         <p><strong>输出速度：</strong>公开题的候选输出 token 数 ÷ 候选调用耗时，包含客户端启动、网络、等待与修复；输出 token 可能包含推理 token，各执行器口径和分词器可能不同，这不是服务端纯解码速度。</p>
         <p><strong>结果边界：</strong>Codex 与 DSH 的输出约束不同；当前是有限样本的结构化响应与补丁测试，不构成通用模型排名。部分题目曾用于模型试跑与调整，并非独立留出集。历史 Codex 运行未隔离全局指令，工作区外文件读取隔离也未核实。模型是请求值，服务端身份未独立观测。部分题目使用 Sol 裁判，Sol 候选存在同模型评分偏差的可能。</p>
-        <p><strong>Terra 20261110：</strong>公开题得分和经授权的总体得分分别展示；私有题目内容与逐题结果不公开。max 复用了题目和验收一致的历史样本并补测其余题目。历史单轮超时为 240 秒，新运行是 600 秒；执行器、客户端和 Windows 沙盒条件也不同，不应将三档视为完全相同条件的对照。只读沙盒不代表已验证工作区外文件的读取隔离。</p>
-        <p><strong>Luna 20261110：</strong>max 复用了题目和验收一致的历史公开样本；历史单轮超时为 240 秒，新运行是 600 秒，执行器、客户端和沙盒条件也不同。high、low 的绘图样本使用旋转或 CSS 动画，现有结构检查未识别，保留了原始失败结果；各档条件及边界见结果说明。</p>
+        <p><strong>样本与检查：</strong>部分历史样本与新运行的预算和环境不同；绘图题检查可能漏判某些动画形式，具体条件见结果说明。</p>
       </div>
-      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/terra-20261110-standard/report.md">Terra 20261110 说明 ↗</a><a href="results/luna-20261110-standard/report.md">Luna 20261110 说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
+      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/terra-20261110-standard/report.md">Terra 结果说明 ↗</a><a href="results/luna-20261110-standard/report.md">Luna 结果说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/engineering-1017-efforts/report.md">1017 分档说明 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
 
     <section id="drawing" aria-labelledby="drawing-title">
