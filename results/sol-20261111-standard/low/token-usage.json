@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "274ea627c6120bf59a23453ae2aa33146f825baca7ccfcee176e2f3b4df7d14c",
+    "28adad93e9f108294eb94b20a8c5c2771417776ea865b777a14cadb23ccff5e8",
+    "2bdac271c138590b7096de2a223ab38910e60de07232fa59349a0ddc39241156",
+    "3a761b01cc2bda33234c25c530c26e5d9a7045fbb3119d13421cf79dc2689921",
+    "3b3c974a1ae82c4f1fb2ed4c67eb995a0b8b2c6b15fae2b0711519359df43a93",
+    "3ddb87f7d6759c59c6cf3675c6d9012975e914a6469321ada004513b570ff2a7",
+    "513296e5cc3ba122e1270a6cea1f03ca129227017bb26d09ffc0270420b22f2d",
+    "5d5fd941b01c62d9431c2a1e73d9853e8462bedf45d625dee029ee3f62c2bfbb",
+    "608973cf22a82afada57f58d2ede08a3e506a8ec502128b8df4cc0e92fee6e74",
+    "6422c2f4f50e321abe5bc9e42d3387f73d7cd7ac687ef9faa6f11060c316c107",
+    "6964a715c4fd396b8dc7cbf627fdb03dc72dd6110aa607fff79142aacb9767d6",
+    "6e4684a6789351f69999a25f5efb8571fd3a015e01292aa5ba5268857dd08a95",
+    "755905359a58a5831c94b5b1bdc4616d2f083a56f681f2190765098bdc4e88a9",
+    "9192e08e8ff21fb7837c995e6812dbd0dfc262122e422af64a5e4578633cc9ff",
+    "b7bdfeae3e82b46e32051bc97fbef4209dbce5434dea08db036f0abb520dcabb",
+    "c60f3eb645694dccad685f99dc04bd3a7cce554460d5152be1f7cc7df2eb27ed",
+    "c9de3eb4754032c86eebaff256f3fb834c872fcf0603c8271ef35d5673e291ef",
+    "df7f214638e6a7f7414db16dd2df5f7ce9b65c08a9f9221d3ccb89291b1b015e",
+    "e560ebb9786fadd4d336e6e7c22d76211be1ff33a05bb6b132936b96d5e99cd9",
+    "e829f0e3827c0346d3de185d666b703d79257466646bf0fab6ed790c445ec7bb",
+    "e97fff991096336786ff49be30e7c7437a96ab4173472a335797b83314ff82c8",
+    "ea25ab60cfa6147b6abb5fd418dc14a4d73d805bcb216031b8f69f80f074e3e8",
+    "f6bbd6f698577baeb83b847c2b831f41ac9ab26e6e6b4d99dd6017f1fbfff225",
+    "ffcdd618f775c0a4bed9dc513975b2e73f22845907f44c685d510ffdd406c569"
+  ],
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Sol low",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 26,
+      "candidate_calls": 26,
+      "usage_calls": 26,
+      "output_tokens": 9216,
+      "candidate_call_seconds": 494.143
+    }
+  ]
+}
