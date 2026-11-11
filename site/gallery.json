@@ -58,6 +58,15 @@
       "note": "low · 历史公开题第 1 次样本（复用） · 自动修复后结构检查 fail"
     },
     {
+      "id": "speedup-max",
+      "label": "DSH V4.1 Flash 1017 SpeedUp",
+      "effort": "max",
+      "html": "site/artifacts/crocodile/speedup-max.html",
+      "created": "2026-11-11",
+      "outcome": "fail",
+      "note": "max · 公开题第 1 次样本 · 结构检查 fail"
+    },
+    {
       "id": "flex-low",
       "label": "DSH V4.1 Flash 1017 Flex",
       "effort": "low",

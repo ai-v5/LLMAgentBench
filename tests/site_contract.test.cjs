@@ -7,7 +7,7 @@ const { derive } = require('../site/app.js');
 const root = path.resolve(__dirname, '..');
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 
-const ROWS = 15;
+const ROWS = 16;
 const EXP = [
   ['flex', 'low', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 8],
   ['flex', 'high', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 9],
@@ -15,6 +15,7 @@ const EXP = [
   ['glm', 'low', 'GLM 5.3', 'glm5.3', 11],
   ['glm', 'high', 'GLM 5.3', 'glm5.3', 12],
   ['glm', 'max', 'GLM 5.3', 'glm5.3', 13],
+  ['speedup', 'max', 'DSH V4.1 Flash 1017 SpeedUp', 'speedup10x', 15],
 ];
 
 const hex = (letter) => letter.repeat(64);
@@ -213,7 +214,7 @@ async function load({ overrides = {}, failTokens = false } = {}) {
         provenance: 'provenance', 'overall-provenance': 'overallProvenance' }[solMatch[2]];
       return ok(entry[key]);
     }
-    const expMatch = url.match(/exp-20261111\/(1017|flex|glm)\/(low|high|max)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
+    const expMatch = url.match(/exp-20261111\/(1017|flex|glm|speedup)\/(low|high|max)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
     if (expMatch) {
       const entry = overrides[`${expMatch[1]}-${expMatch[2]}`] || exp[`${expMatch[1]}-${expMatch[2]}`].entry;
       const key = { summary: 'summary', overall: 'overall', 'token-usage': 'tokens',

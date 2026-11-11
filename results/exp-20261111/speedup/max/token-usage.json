@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 1,
+  "source_receipt_sha256": [
+    "ff31d6ffb06a769b2fd3a97ee843490bffe23239d257fdc6027cbbb5c64a0c73"
+  ],
+  "engine_sha256": "fe54f8b45060968ea5f50a4620622ba59e86ca29c0f4ddb3cd4a5a6427de0a70",
+  "config_sha256": "6c5cd8bf70ff931cf013b7e7e02c442f0bf04a748fd4022a267e6b3965fe728d",
+  "candidates": [
+    {
+      "label": "DSH V4.1 Flash 1017 SpeedUp max",
+      "candidate_id": "speedup10x-max",
+      "adapter": "dsh",
+      "requested_model": "speedup10x",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 13,
+      "candidate_calls": 13,
+      "usage_calls": 13,
+      "output_tokens": 97597,
+      "usage_call_seconds": 242.908,
+      "candidate_call_seconds": 242.908
+    }
+  ]
+}

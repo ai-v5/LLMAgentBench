@@ -49,6 +49,13 @@
       public_provenance: `results/exp-20261111/glm/${effort}/provenance.json`, offset: 11 + index,
       effort, model: "glm5.3", models: { [`GLM 5.3 ${effort}`]: "glm5.3" },
     })),
+    { public: "results/exp-20261111/speedup/max/summary.json",
+      overall: "results/exp-20261111/speedup/max/overall.json",
+      overall_provenance: "results/exp-20261111/speedup/max/overall-provenance.json",
+      tokens: "results/exp-20261111/speedup/max/token-usage.json",
+      public_provenance: "results/exp-20261111/speedup/max/provenance.json", offset: 15,
+      effort: "max", model: "speedup10x",
+      models: { "DSH V4.1 Flash 1017 SpeedUp max": "speedup10x" } },
   ];
   const states = ["passed", "failed", "unscored", "errors", "timeouts"];
   const number = (value) => typeof value === "number" && Number.isFinite(value);

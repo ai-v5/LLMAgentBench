@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "authorized_private_overall": true,
+  "private_details_exported": false,
+  "assigned_attempts_verified": true,
+  "denominator": "assigned_attempts",
+  "requested_models": [
+    "speedup10x"
+  ],
+  "private_retry_applied": false
+}
