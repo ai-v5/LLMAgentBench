@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_count": 13,
+  "repeats": 1,
+  "pack_version": "20261111",
+  "candidates": [
+    {
+      "label": "GLM 5.3",
+      "evidence": "MODEL_RUN",
+      "assigned": 13,
+      "first_passed": 7,
+      "passed": 7,
+      "failed": 1,
+      "unscored": 1,
+      "errors": 4,
+      "timeouts": 0,
+      "attempt_seconds": 726.078,
+      "candidate_call_seconds": 714.08,
+      "judge_call_seconds": 0.0,
+      "mean_attempt_seconds": 55.852154,
+      "mean_pass_seconds": 82.404,
+      "effective_passes_per_hour": 34.707015
+    }
+  ]
+}
