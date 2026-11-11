@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_count": 13,
+  "repeats": 1,
+  "pack_version": "20261111",
+  "candidates": [
+    {
+      "label": "DSH V4.1 Flash 1017 SpeedUp max",
+      "evidence": "MODEL_RUN",
+      "assigned": 13,
+      "first_passed": 10,
+      "passed": 10,
+      "failed": 2,
+      "unscored": 1,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 256.313,
+      "candidate_call_seconds": 242.908,
+      "judge_call_seconds": 0.0,
+      "mean_attempt_seconds": 19.716385,
+      "mean_pass_seconds": 10.3797,
+      "effective_passes_per_hour": 140.453274
+    }
+  ]
+}
