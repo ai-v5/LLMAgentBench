@@ -13,14 +13,10 @@ a:focus-visible, .table-wrap:focus-visible { outline: 3px solid #62a778; outline
 .brand-mark { width: 20px; height: 20px; border: 5px solid #347b58; border-radius: 7px 7px 7px 2px; transform: rotate(-8deg); }
 nav { display: flex; align-items: center; gap: 32px; color: #61756a; font-size: 13px; font-weight: 600; }
 nav a:hover, .links a:hover, .source-link:hover, .footer a:hover { color: var(--green); }
-.intro { padding: 73px 0 67px; }
+.intro { padding: 28px 0 24px; }
 .eyebrow { margin: 0; color: #4e8a67; font-size: 11px; font-weight: 750; letter-spacing: .13em; }
-.intro .eyebrow { display: flex; align-items: center; gap: 10px; }
-.intro .eyebrow span { width: 23px; height: 2px; background: #4e8a67; }
 h1, h2, p { margin: 0; }
-h1 { margin-top: 22px; font-size: clamp(36px, 5vw, 58px); line-height: 1.26; font-weight: 740; letter-spacing: -.045em; }
-h1 em { font-style: normal; color: #3b8661; }
-.intro > p:last-child { color: var(--muted); font-size: 15px; line-height: 1.9; margin-top: 19px; max-width: 620px; }
+h1 { font-size: clamp(28px, 3vw, 36px); line-height: 1.26; font-weight: 740; letter-spacing: -.045em; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
 h2 { font-size: 27px; letter-spacing: -.04em; margin-top: 8px; }
 .source-link, .links { color: #397b57; font-size: 13px; font-weight: 650; }
@@ -71,8 +67,7 @@ tbody td:nth-child(2) strong, tbody td:nth-child(3) strong { color: #2d8057; }
   .header-inner { height: 66px; }
   .brand { font-size: 15px; }
   nav { gap: 16px; font-size: 12px; }
-  .intro { padding: 54px 0 49px; }
-  .intro > p:last-child { font-size: 14px; }
+  .intro { padding: 24px 0 22px; }
   .section-heading { align-items: start; }
   h2 { font-size: 24px; }
   .source-link { padding-top: 20px; font-size: 12px; }
