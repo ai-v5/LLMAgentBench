@@ -5,7 +5,7 @@
   "pack_version": "20261111",
   "candidates": [
     {
-      "label": "GLM 5.3",
+      "label": "GLM 5.3 max",
       "evidence": "MODEL_RUN",
       "assigned": 91,
       "first_passed": 63,

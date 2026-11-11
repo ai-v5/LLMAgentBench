@@ -9,7 +9,7 @@
   "config_sha256": "980364661eb4db2a3bd113628ef0f49f36c0b6f3c06ca6b7603e3afce0c7bc1b",
   "candidates": [
     {
-      "label": "DSH V4.1 Flash 1017 Flex",
+      "label": "DSH V4.1 Flash 1017 Flex high",
       "candidate_id": "ds-v4.1-flash-1017-flex-high",
       "adapter": "dsh",
       "requested_model": "ds-v4.1-flash-1017-flex",
