@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_count": 13,
+  "repeats": 2,
+  "pack_version": "20261111",
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Sol low",
+      "evidence": "MODEL_RUN",
+      "assigned": 26,
+      "first_passed": 26,
+      "passed": 26,
+      "failed": 0,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 607.108,
+      "candidate_call_seconds": 494.143,
+      "judge_call_seconds": 68.5,
+      "mean_attempt_seconds": 23.35030769230769,
+      "mean_pass_seconds": 23.35030769230769,
+      "effective_passes_per_hour": 154.17355725834614
+    }
+  ]
+}

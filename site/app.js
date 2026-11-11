@@ -2,14 +2,15 @@
 (function () {
   "use strict";
   const BATCHES = [
-    { public: "results/engineering-public-luna-sol-r1/summary.json", overall: "results/engineering-overall-ale-r1/sol-luna-summary.json",
-      tokens: "results/engineering-public-luna-sol-r1/token-usage.json",
-      comparison: "results/engineering-public-luna-sol-r1/comparison.json",
-      revision: "results/engineering-overall-case-retest-r1/provenance.json", offset: 0,
-      revision_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      overall_models: ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"],
-      exclude: ["Codex GPT-6 Luna"],
-      models: { "Codex GPT-6.1 Sol": "gpt-6.1-sol" } },
+    ...[["max", 0], ["low", 14]].map(([effort, offset]) => ({
+      public: `results/sol-20261111-standard/${effort}/summary.json`,
+      overall: `results/sol-20261111-standard/${effort}/overall.json`,
+      overall_provenance: `results/sol-20261111-standard/${effort}/overall-provenance.json`,
+      tokens: `results/sol-20261111-standard/${effort}/token-usage.json`,
+      public_provenance: `results/sol-20261111-standard/${effort}/provenance.json`, offset,
+      effort, model: "gpt-6.1-sol", require_reverified: true, selection_granularity: "case_repeat",
+      models: { [`Codex GPT-6.1 Sol ${effort}`]: "gpt-6.1-sol" },
+    })),
     { public: "results/engineering-kimi-public-r1/summary.json", overall: "results/engineering-kimi-overall-r1/summary.json",
       tokens: "results/engineering-kimi-public-r1/token-usage.json",
       revision: "results/engineering-kimi-overall-r1/provenance.json",
@@ -137,15 +138,6 @@
     document.querySelectorAll(selector).forEach((node) => { node.textContent = String(value); });
   }
 
-  function validateComparison(value) {
-    const flags = ["same_pack_order", "same_assignment_order", "same_engine", "same_driver", "same_budget", "same_judge_configuration"];
-    if (!value || value.schema_version !== 1 || flags.some((key) => value[key] !== true) ||
-        typeof value.same_judge_executable !== "boolean" || !Array.isArray(value.requested_models) ||
-        value.requested_models.slice().sort().join(",") !== ["gpt-6-luna", "gpt-6.1-sol"].sort().join(",")) {
-      throw new Error("Suite comparison unavailable");
-    }
-  }
-
   function validateRevision(value, expectedModels) {
     const flags = ['historical_receipts_verified', 'retest_receipts_verified', 'case_revision_verified',
       'same_engine', 'same_budget', 'mixed_batches'];
@@ -166,16 +158,30 @@
   }
 
   function validatePublicProvenance(value, data, batch) {
+    const byAssignment = value && value.selection_granularity === "case_repeat";
     if (!value || value.schema_version !== 1 || value.visibility !== "public" || value.synthetic !== true ||
         value.source_receipts_verified !== true || value.case_count !== data.case_count || value.repeats !== data.repeats ||
         value.pack_version !== data.pack_version || value.requested_model !== batch.model ||
         value.reasoning_effort !== batch.effort || typeof value.mixed_conditions !== "boolean" ||
+        (batch.require_reverified && value.source_receipts_reverified_now !== true) ||
+        (batch.selection_granularity && value.selection_granularity !== batch.selection_granularity) ||
+        (Object.hasOwn(value, "selection_granularity") && !byAssignment) ||
         !/^[a-f0-9]{64}$/.test(value.target_pack_sha256) || !Array.isArray(value.sources) || !value.sources.length ||
-        value.sources.some((source) => !Number.isInteger(source.selected_cases) || source.selected_cases < 1 ||
+        value.sources.some((source) => !Number.isInteger(byAssignment ? source.selected_assignments : source.selected_cases) ||
+          (byAssignment ? source.selected_assignments : source.selected_cases) < 1 ||
           !/^[a-f0-9]{64}$/.test(source.receipt_sha256)) ||
-        value.sources.reduce((sum, source) => sum + source.selected_cases, 0) !== data.case_count ||
+        value.sources.reduce((sum, source) => sum + (byAssignment ? source.selected_assignments : source.selected_cases), 0) !==
+          data.case_count * (byAssignment ? data.repeats : 1) ||
         new Set(value.sources.map((source) => source.receipt_sha256)).size !== value.sources.length) {
       throw new Error("Public source provenance unavailable");
+    }
+    if (Object.hasOwn(value, "source_receipts_reverified_now") &&
+        (typeof value.source_receipts_reverified_now !== "boolean" ||
+         (value.source_receipts_reverified_now === false &&
+          (!/^[a-f0-9]{40}$/.test(value.source_publication_commit || "") ||
+           typeof value.source_pack_version !== "string" || !value.source_pack_version ||
+           typeof value.verification_boundary !== "string" || !value.verification_boundary)))) {
+      throw new Error("Public source verification boundary unavailable");
     }
   }
 
@@ -261,20 +267,9 @@
           const overallProvenance = await fetch(batch.overall_provenance || "results/engineering-overall-ale-r1/provenance.json", { cache: "no-cache" });
           if (!overallProvenance.ok) throw new Error("Overall provenance unavailable");
           validateOverallProvenance(await overallProvenance.json(), batch.overall_models || ["gpt-6.1-terra", "ds-v4.1-flash-1017", "gpt-6.1-sol", "gpt-6-luna"]);
-          if (batch.comparison) {
-            const provenance = await fetch(batch.comparison, { cache: "no-cache" });
-            if (!provenance.ok) throw new Error("Suite comparison unavailable");
-            validateComparison(await provenance.json());
-          }
           const responses = await Promise.all([fetch(batch.public, { cache: "no-cache" }), fetch(batch.overall, { cache: "no-cache" })]);
           if (responses.some((response) => !response.ok)) throw new Error("Summary unavailable");
           [publicData, overallData] = await Promise.all(responses.map((response) => response.json()));
-          const excluded = new Set(batch.exclude || []);
-          if (excluded.size) {
-            const keep = (row) => !excluded.has(row.label);
-            publicData = { ...publicData, candidates: publicData.candidates.filter(keep) };
-            overallData = { ...overallData, candidates: overallData.candidates.filter(keep) };
-          }
         }
         if (!Array.isArray(publicData.candidates) || publicData.candidates.length !== Object.keys(batch.models).length ||
             publicData.candidates.some((row) => !Object.hasOwn(batch.models, row.label))) {
@@ -285,10 +280,6 @@
           const response = await fetch(batch.tokens, { cache: "no-cache" });
           if (!response.ok) throw new Error("Token aggregate unavailable");
           usage = await response.json();
-          if (batch.exclude) {
-            const excluded = new Set(batch.exclude);
-            usage = { ...usage, candidates: usage.candidates.filter((row) => !excluded.has(row.label)) };
-          }
         } catch (_) {
           document.getElementById("token-error").hidden = false;
           show(derive(publicData, overallData, null), batch.offset);

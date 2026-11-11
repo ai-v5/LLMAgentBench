@@ -8,7 +8,7 @@
   <title>LLMAgentBench | 工程任务评估</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=compact-1">
-  <script src="site/app.js?v=20261111b" defer></script>
+  <script src="site/app.js?v=20261111-sol-2" defer></script>
   <script src="site/gallery.js?v=20261111" defer></script>
 </head>
 <body>
@@ -34,12 +34,12 @@
     <section id="results" aria-labelledby="results-title">
       <div class="section-heading">
         <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
-        <a class="source-link" href="results/engineering-overall-ale-r1/report.md">查看结果说明 <span aria-hidden="true">↗</span></a>
+        <a class="source-link" href="results/20261111-model-results.md">查看结果说明 <span aria-hidden="true">↗</span></a>
       </div>
       <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 按题库版本和推理强度列示 <span>·</span> 私有逐题数据不公开</p>
-      <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p>
+      <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/20261111-model-results.md">结果说明</a>。</p>
       <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
-      <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/engineering-overall-ale-r1/report.md">结果说明</a>。</p></noscript>
+      <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/20261111-model-results.md">结果说明</a>。</p></noscript>
 
       <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="true" data-data-region>
         <table class="results-table">
@@ -51,7 +51,7 @@
             <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
           </tr></thead>
           <tbody>
-            <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small>请求模型 · max</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
+            <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
             <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small><small data-pack="1">题库 —</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
             <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small>请求模型 · max · 含历史样本</small><small data-pack="2">题库 —</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
             <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · high</small><small data-pack="3">题库 —</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
@@ -65,14 +65,15 @@
             <tr data-result-row="11" hidden><th scope="row"><strong data-name="11">—</strong><small>请求模型 · low</small><small data-pack="11">题库 —</small></th><td><strong data-public-first="11">—</strong><small data-public-final="11">含修复 —</small></td><td><strong data-all-first="11">—</strong><small data-all-final="11">含修复 —</small></td><td><strong data-token-rate="11">—</strong><small data-token-detail="11">—</small></td></tr>
             <tr data-result-row="12" hidden><th scope="row"><strong data-name="12">—</strong><small>请求模型 · high</small><small data-pack="12">题库 —</small></th><td><strong data-public-first="12">—</strong><small data-public-final="12">含修复 —</small></td><td><strong data-all-first="12">—</strong><small data-all-final="12">含修复 —</small></td><td><strong data-token-rate="12">—</strong><small data-token-detail="12">—</small></td></tr>
             <tr data-result-row="13" hidden><th scope="row"><strong data-name="13">—</strong><small>请求模型 · max</small><small data-pack="13">题库 —</small></th><td><strong data-public-first="13">—</strong><small data-public-final="13">含修复 —</small></td><td><strong data-all-first="13">—</strong><small data-all-final="13">含修复 —</small></td><td><strong data-token-rate="13">—</strong><small data-token-detail="13">—</small></td></tr>
+            <tr data-result-row="14" hidden><th scope="row"><strong data-name="14">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · low · 含历史样本</small><small data-pack="14">题库 —</small></th><td><strong data-public-first="14">—</strong><small data-public-final="14">含修复 —</small></td><td><strong data-all-first="14">—</strong><small data-all-final="14">含修复 —</small></td><td><strong data-token-rate="14">—</strong><small data-token-detail="14">—</small></td></tr>
           </tbody>
         </table>
       </div>
       <p class="scroll-hint">左右滑动查看完整表格 →</p>
       <div class="notes">
-        <p><strong>样本与检查：</strong>部分历史样本与新运行的预算和环境不同；绘图题检查可能漏判某些动画形式，具体条件见结果说明。</p>
+        <p><strong>样本与检查：</strong>Sol 的公开题部分复用历史样本，收据已重新核验；部分新增样本与其他评测时段重叠。Terra、Luna 的公开题沿用历史汇总，原始收据目前无法重新核验。部分样本的预算和环境不同；公开题部分检查使用 Sol low 评分，对 Sol 候选为同模型裁判。绘图题检查可能漏判某些动画形式，具体条件见结果说明。</p>
       </div>
-      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/20261111-model-results.md">Terra 结果说明 ↗</a><a href="results/20261111-model-results.md">Luna 结果说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/engineering-public-r3/token-usage.json">Terra / DSH Token ↗</a><a href="results/engineering-public-luna-sol-r1/token-usage.json">Sol / Luna Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/exp-20261111/report.md">20261111 题库结果 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
+      <div class="links"><a href="results/engineering-overall-ale-r1/report.md">总体结果 ↗</a><a href="results/20261111-model-results.md">Terra / Luna / Sol 结果说明 ↗</a><a href="results/engineering-kimi-overall-r1/report.md">Kimi 总体聚合 ↗</a><a href="results/sol-20261111-standard/max/token-usage.json">Sol max Token ↗</a><a href="results/sol-20261111-standard/low/token-usage.json">Sol low Token ↗</a><a href="results/engineering-kimi-public-r1/token-usage.json">Kimi Token ↗</a><a href="results/exp-20261111/report.md">20261111 题库结果 ↗</a><a href="results/engineering-overall-ale-r1/provenance.json">条件核验 ↗</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/docs/CONTRACTS.md">评估合同 ↗</a></div>
     </section>
 
     <section id="drawing" aria-labelledby="drawing-title">
@@ -80,7 +81,7 @@
         <div><p class="eyebrow">SVG DRAWING TASK</p><h2 id="drawing-title">鳄鱼骑自行车</h2></div>
         <a class="source-link" href="https://github.com/ai-v5/LLMAgentBench/blob/main/examples/engineering/crocodile-bike/case.json">查看任务定义 ↗</a>
       </div>
-      <p class="run-context">同一 prompt · 每个思考强度一个 tab · HTML 作品在禁用脚本的沙箱中播放</p>
+      <p class="run-context">同一 prompt · 按模型和思考强度切换 · HTML 作品在禁用脚本的沙箱中播放</p>
       <div class="gallery">
         <div class="gallery-tabs" role="tablist" aria-label="模型输出" data-gallery-tabs></div>
         <div class="gallery-stage">

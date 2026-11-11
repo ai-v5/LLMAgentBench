@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "authorized_private_overall": true,
+  "private_details_exported": false,
+  "assigned_attempts_verified": true,
+  "denominator": "assigned_attempts",
+  "requested_models": [
+    "gpt-6.1-sol"
+  ],
+  "source_receipt_boundary": "public and private receipts rechecked; historical conditions may differ"
+}

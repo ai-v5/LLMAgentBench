@@ -7,7 +7,7 @@ const { derive } = require('../site/app.js');
 const root = path.resolve(__dirname, '..');
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 
-const ROWS = 14;
+const ROWS = 15;
 const EXP = [
   ['flex', 'low', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 8],
   ['flex', 'high', 'DSH V4.1 Flash 1017 Flex', 'ds-v4.1-flash-1017-flex', 9],
@@ -19,20 +19,14 @@ const EXP = [
 
 const hex = (letter) => letter.repeat(64);
 
-const solPublic = read('results/engineering-public-luna-sol-r1/summary.json');
-const solOverall = read('results/engineering-overall-ale-r1/sol-luna-summary.json');
-const solTokens = read('results/engineering-public-luna-sol-r1/token-usage.json');
-const solComparison = read('results/engineering-public-luna-sol-r1/comparison.json');
-const revision = read('results/engineering-overall-case-retest-r1/provenance.json');
-const overallProvenance = read('results/engineering-overall-ale-r1/provenance.json');
 const kimiPublic = read('results/engineering-kimi-public-r1/summary.json');
 const kimiOverall = read('results/engineering-kimi-overall-r1/summary.json');
 const kimiTokens = read('results/engineering-kimi-public-r1/token-usage.json');
 const kimiProvenance = read('results/engineering-kimi-overall-r1/provenance.json');
 
-function effortBatches(directory) {
+function effortBatches(directory, efforts = ['max', 'high', 'low']) {
   const out = {};
-  for (const effort of ['max', 'high', 'low']) {
+  for (const effort of efforts) {
     out[effort] = {
       summary: read(`results/${directory}/${effort}/summary.json`),
       overall: read(`results/${directory}/${effort}/overall.json`),
@@ -46,6 +40,24 @@ function effortBatches(directory) {
 
 const terra = effortBatches('terra-20261111-standard');
 const luna = effortBatches('luna-20261111-standard');
+const sol = effortBatches('sol-20261111-standard', ['max', 'low']);
+
+for (const effort of ['max', 'low']) {
+  const entry = sol[effort];
+  assert.equal(entry.summary.pack_version, '20261111');
+  assert.equal(entry.summary.case_count, 13);
+  assert.equal(entry.summary.repeats, 2);
+  assert.equal(entry.summary.candidates[0].assigned, 26);
+  assert.equal(entry.overall.case_count, 91);
+  assert.equal(entry.overall.candidates[0].assigned, 104);
+  assert.equal(entry.provenance.requested_model, 'gpt-6.1-sol');
+  assert.equal(entry.provenance.reasoning_effort, effort);
+  assert.equal(entry.provenance.source_receipts_reverified_now, true);
+  assert.equal(entry.provenance.selection_granularity, 'case_repeat');
+  assert.equal(entry.provenance.sources.reduce((sum, source) => sum + source.selected_assignments, 0), 26);
+  assert.deepEqual(entry.tokens.source_receipt_sha256.slice().sort(),
+    entry.provenance.sources.map((source) => source.receipt_sha256).sort());
+}
 
 function candidate(label, assigned, first, passed, hours) {
   const attempt = hours * 3600;
@@ -111,13 +123,20 @@ for (const field of ['data-public-first', 'data-public-final', 'data-all-first',
   assert.equal((table[1].match(new RegExp(field + '=', 'g')) || []).length, ROWS, field);
 }
 assert.doesNotMatch(table[1], /engineering-1017-efforts/, 'Old 1017 rows must be gone');
+assert.doesNotMatch(html, /engineering-public-luna-sol-r1/, 'The old Sol result must not be linked');
+const report = fs.readFileSync(path.join(root, 'results/20261111-model-results.md'), 'utf8');
+const oldReport = fs.readFileSync(path.join(root, 'results/engineering-overall-ale-r1/report.md'), 'utf8');
+assert.match(report, /部分 Sol 新增样本与其他模型评测的执行窗口重叠/);
+assert.match(report, /对 Sol 候选而言，评分是同模型的独立调用/);
+assert.doesNotMatch(oldReport, /^\| Codex GPT-6\.1 Sol \|/m, 'The old linked report must not retain the Sol row');
 
 const ok = (value) => ({ ok: true, json: async () => value });
 const fail = () => ({ ok: false, json: async () => ({}) });
 
 function deriveAll(overrides = {}) {
   const rows = {};
-  rows[0] = derive(solPublic, solOverall, solTokens).rows[0];
+  rows[0] = derive(sol.max.summary, sol.max.overall, sol.max.tokens).rows[0];
+  rows[14] = derive(sol.low.summary, sol.low.overall, sol.low.tokens).rows[0];
   rows[1] = derive(kimiPublic, kimiOverall, kimiTokens).rows[0];
   ['max', 'high', 'low'].forEach((effort, index) => {
     rows[2 + index] = derive(terra[effort].summary, terra[effort].overall, terra[effort].tokens).rows[0];
@@ -187,6 +206,13 @@ async function load({ overrides = {}, failTokens = false } = {}) {
     },
   };
   const fetch = async (url) => {
+    const solMatch = url.match(/sol-20261111-standard\/(max|low)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
+    if (solMatch) {
+      const entry = overrides[`sol-${solMatch[1]}`] || sol[solMatch[1]];
+      const key = { summary: 'summary', overall: 'overall', 'token-usage': 'tokens',
+        provenance: 'provenance', 'overall-provenance': 'overallProvenance' }[solMatch[2]];
+      return ok(entry[key]);
+    }
     const expMatch = url.match(/exp-20261111\/(1017|flex|glm)\/(low|high|max)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
     if (expMatch) {
       const entry = overrides[`${expMatch[1]}-${expMatch[2]}`] || exp[`${expMatch[1]}-${expMatch[2]}`].entry;
@@ -200,14 +226,9 @@ async function load({ overrides = {}, failTokens = false } = {}) {
       const source = effortMatch[1] === 'terra' ? terra : luna;
       const key = { summary: 'summary', overall: 'overall', 'token-usage': 'tokens',
         provenance: 'provenance', 'overall-provenance': 'overallProvenance' }[effortMatch[3]];
-      return ok(source[effortMatch[2]][key]);
+      const entry = overrides[`${effortMatch[1]}-${effortMatch[2]}`] || source[effortMatch[2]];
+      return ok(entry[key]);
     }
-    if (url.includes('engineering-public-luna-sol-r1/summary.json')) return ok(solPublic);
-    if (url.includes('sol-luna-summary.json')) return ok(solOverall);
-    if (url.includes('engineering-public-luna-sol-r1/token-usage.json')) return ok(solTokens);
-    if (url.includes('engineering-public-luna-sol-r1/comparison.json')) return ok(solComparison);
-    if (url.includes('engineering-overall-case-retest-r1/provenance.json')) return ok(revision);
-    if (url.includes('engineering-overall-ale-r1/provenance.json')) return ok(overallProvenance);
     if (url.includes('engineering-kimi-public-r1/summary.json')) return ok(kimiPublic);
     if (url.includes('engineering-kimi-overall-r1/summary.json')) return ok(kimiOverall);
     if (url.includes('engineering-kimi-public-r1/token-usage.json')) return ok(kimiTokens);
@@ -236,12 +257,15 @@ async function load({ overrides = {}, failTokens = false } = {}) {
   for (const [, effort, label, , ] of EXP) {
     assert.ok(labels.some((value) => value === `${label} ${effort}`), 'missing label ' + label + ' ' + effort);
   }
-  assert.ok(labels.includes('Codex GPT-6.1 Sol'));
+  assert.ok(labels.includes('Codex GPT-6.1 Sol max'));
+  assert.ok(labels.includes('Codex GPT-6.1 Sol low'));
+  assert.ok(!labels.includes('Codex GPT-6.1 Sol'), 'The old unversioned Sol row must be gone');
   assert.ok(labels.includes('Kimi K3.1 Pro'));
   assert.ok(!labels.includes('DSH V4.1 Flash 1017'), 'The unversioned 1017 row must stay removed');
 
   assert.equal(page.nodes.get('data-pack:8').textContent, '题库 20261111');
-  assert.equal(page.nodes.get('data-pack:0').textContent, '题库 未标注');
+  assert.equal(page.nodes.get('data-pack:0').textContent, '题库 20261111');
+  assert.equal(page.nodes.get('data-pack:14').textContent, '题库 20261111');
 
   assert.deepEqual(page.indices(), expectedOrder(rows, (row) => row.overallFirst, 'descending'));
   page.buttons.publicFirst.click();
@@ -260,6 +284,46 @@ async function load({ overrides = {}, failTokens = false } = {}) {
   assert.equal(page.alerts['data-error'].hidden, false, 'A wrong model in provenance must be rejected');
   assert.equal(page.rows[13].hidden, true);
   assert.equal(page.rows[8].hidden, false);
+
+  const wrongAssignments = structuredClone(sol.max);
+  wrongAssignments.provenance.sources[0].selected_assignments -= 1;
+  page = await load({ overrides: { 'sol-max': wrongAssignments } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Missing Sol assignment must be rejected');
+  assert.equal(page.rows[0].hidden, true);
+  assert.equal(page.rows[14].hidden, false);
+
+  const wrongGranularity = structuredClone(sol.max);
+  wrongGranularity.provenance.selection_granularity = 'unknown';
+  page = await load({ overrides: { 'sol-max': wrongGranularity } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Unknown source granularity must be rejected');
+  assert.equal(page.rows[0].hidden, true);
+
+  const staleSolSource = structuredClone(sol.max);
+  staleSolSource.provenance.source_receipts_reverified_now = false;
+  staleSolSource.provenance.source_publication_commit = 'a'.repeat(40);
+  staleSolSource.provenance.source_pack_version = '20261110';
+  staleSolSource.provenance.verification_boundary = 'historical receipt unavailable';
+  page = await load({ overrides: { 'sol-max': staleSolSource } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Sol must use reverified receipts');
+  assert.equal(page.rows[0].hidden, true);
+
+  const duplicateReceipt = structuredClone(sol.low);
+  duplicateReceipt.provenance.sources[1].receipt_sha256 = duplicateReceipt.provenance.sources[0].receipt_sha256;
+  page = await load({ overrides: { 'sol-low': duplicateReceipt } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Duplicate Sol receipts must be rejected');
+  assert.equal(page.rows[14].hidden, true);
+
+  const wrongSolTokenModel = structuredClone(sol.max);
+  wrongSolTokenModel.tokens.candidates[0].requested_model = 'gpt-6.1-terra';
+  page = await load({ overrides: { 'sol-max': wrongSolTokenModel } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Sol token usage must match the requested model');
+  assert.equal(page.rows[0].hidden, true);
+
+  const brokenHistoricalBoundary = structuredClone(terra.max);
+  delete brokenHistoricalBoundary.provenance.verification_boundary;
+  page = await load({ overrides: { 'terra-max': brokenHistoricalBoundary } });
+  assert.equal(page.alerts['data-error'].hidden, false, 'Unavailable historical receipts require their boundary');
+  assert.equal(page.rows[2].hidden, true);
 
   page = await load({ failTokens: true });
   assert.equal(page.alerts['token-error'].hidden, false, 'Missing token usage must be reported');

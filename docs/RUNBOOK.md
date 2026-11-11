@@ -88,6 +88,8 @@ python -m llmagentbench run --pack .bench-runs/croc-pack.json --config local/<mo
 
 public 与 overall 的 `label` 必须一致，且等于 `"<显示名> <effort>"`（如 `"DSH V4.1 Flash 1017 Flex low"`）；行首另显示 `题库 <pack_version>`，无版本的历史行显示「未标注」。
 
+公开 provenance 按完整 case 复用时，各来源的 `selected_cases` 之和等于公开题数；按 case 与 repeat 分别复用时，使用 `selection_granularity: "case_repeat"`，各来源的 `selected_assignments` 之和必须等于 `case_count * repeats`。每个来源仍须是已完成的公开合成运行，核验题目、检查脚本、模型、强度与收据，并防止重复计数；不得输出私有逐题明细。历史收据无法重新核验时，必须保留来源发布提交和核验边界，不能标记为本次已重新核验。
+
 ### 3.2 页面
 
 1. `site/app.js` 的 `BATCHES` 增加一个批次（public/overall/tokens/revision/overall_provenance/offset/models），offset 为现有行数。
