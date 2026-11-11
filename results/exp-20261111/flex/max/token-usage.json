@@ -19,7 +19,8 @@
       "assigned": 13,
       "candidate_calls": 13,
       "usage_calls": 12,
-      "output_tokens": null,
+      "output_tokens": 27734,
+      "usage_call_seconds": 275.453,
       "candidate_call_seconds": 875.937
     }
   ]

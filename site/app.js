@@ -108,11 +108,19 @@
             row.usage_calls > row.candidate_calls || !number(row.candidate_call_seconds) ||
             Math.abs(row.candidate_call_seconds - item.candidate_call_seconds) > .001 ||
             (row.output_tokens !== null && (!count(row.output_tokens) || row.candidate_calls === 0 ||
-             row.usage_calls !== row.candidate_calls || row.candidate_call_seconds <= 0))) {
+             row.usage_calls < 1 ||
+             (row.usage_calls < row.candidate_calls && !number(row.usage_call_seconds))))) {
           throw new Error("Invalid candidate token aggregate");
         }
         if (row.output_tokens !== null) {
-          tokens = { count: row.output_tokens, seconds: row.candidate_call_seconds, rate: row.output_tokens / row.candidate_call_seconds };
+          // Older aggregates omit usage_call_seconds; those always cover every call.
+          const seconds = number(row.usage_call_seconds) ? row.usage_call_seconds : row.candidate_call_seconds;
+          if (seconds <= 0 || seconds > row.candidate_call_seconds + .01 ||
+              (row.usage_calls === row.candidate_calls && Math.abs(seconds - row.candidate_call_seconds) > .01)) {
+            throw new Error("Invalid candidate token timing");
+          }
+          tokens = { count: row.output_tokens, seconds, rate: row.output_tokens / seconds,
+            calls: row.usage_calls, totalCalls: row.candidate_calls };
         }
       }
       return { label: item.label, packVersion: publicData.pack_version || (overallData && overallData.pack_version) || null,
@@ -203,7 +211,10 @@
       put(attr("data-all-first"), row.overallFirst === null ? "未公开" : row.overallFirst.toFixed(1) + "%");
       put(attr("data-all-final"), row.overallFinal === null ? "仅展示公开题" : finalText(row.overallFinal, row.overallIssues));
       put(attr("data-token-rate"), row.tokens ? row.tokens.rate.toFixed(2) : "未记录");
-      put(attr("data-token-detail"), row.tokens ? row.tokens.count + " tokens / " + row.tokens.seconds.toFixed(2) + " s" : "数据不完整");
+      put(attr("data-token-detail"), row.tokens
+        ? row.tokens.count + " tokens / " + row.tokens.seconds.toFixed(2) + " s" +
+          (row.tokens.calls < row.tokens.totalCalls ? "（" + row.tokens.calls + "/" + row.tokens.totalCalls + " 次有用量）" : "")
+        : "数据不完整");
       sortData.set(index, row);
       document.querySelector(attr("data-result-row")).hidden = false;
     });

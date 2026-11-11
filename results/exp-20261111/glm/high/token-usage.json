@@ -19,6 +19,7 @@
       "candidate_calls": 13,
       "usage_calls": 13,
       "output_tokens": 11035,
+      "usage_call_seconds": 110.593,
       "candidate_call_seconds": 110.593
     }
   ]
