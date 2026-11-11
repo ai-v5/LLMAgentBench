@@ -12,6 +12,7 @@
 - `engineering-overall-case-retest-r1`：经核验的四个组合总体汇总及条件核验信息，不包含私有题身份或逐题、分类数据。
 - `engineering-overall-ale-r1`：经授权的最新总体汇总；按实际分配尝试计算得分，不包含私有题身份、内容或逐题结果。
 - `engineering-kimi-public-r1`：Kimi K3.1 Pro 在公开 synthetic engineering pack 上的公开聚合与候选 output token 汇总；不包含逐题结果。
+- `exp-20261111`：题库版本 `20261111` 的公开题与总体聚合。公开题来自 `pack.json`（13 题），总体包含私仓 78 题（共 91 题）但只发布聚合计数。每个模型 × 档位一个子目录，含 `summary.json`、`overall.json`、`token-usage.json`、`provenance.json`、`overall-provenance.json`；矩阵以最多 6 路并行执行，超时与适配器错误按题串行重跑一次，使用重跑的档位在 provenance 标记 `mixed_conditions` 并列出全部来源收据。
 - `engineering-kimi-overall-r1`：经用户授权的 Kimi 私有题库总体计数与耗时聚合；不包含私有题身份、内容、题包元数据、逐题结果或原始收据。
 - `public-benchmark-v1`（pack）后续修订：`quality-rate` 明确 elapsed 计入所有 status，`wss-proxy-triage` 明确 `UNKNOWN` 的判定规则；新增 `crocodile-bike`（HTML/SVG 绘图）。16 道高难度题位于独立私仓，题名与内容不在本仓公开，只发布其总体计数。上列所有基于旧口径或旧 pack 的结果不可与修订后的 pack 逐位比较。
 

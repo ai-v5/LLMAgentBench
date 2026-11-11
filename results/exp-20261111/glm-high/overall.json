@@ -8,18 +8,18 @@
       "label": "GLM 5.3",
       "evidence": "MODEL_RUN",
       "assigned": 91,
-      "first_passed": 57,
-      "passed": 57,
+      "first_passed": 58,
+      "passed": 58,
       "failed": 8,
       "unscored": 1,
-      "errors": 12,
-      "timeouts": 13,
-      "attempt_seconds": 14050.843,
-      "candidate_call_seconds": 13958.184,
+      "errors": 13,
+      "timeouts": 11,
+      "attempt_seconds": 13776.873,
+      "candidate_call_seconds": 13684.342,
       "judge_call_seconds": 0.0,
-      "mean_attempt_seconds": 154.404868,
-      "mean_pass_seconds": 80.989789,
-      "effective_passes_per_hour": 14.604106
+      "mean_attempt_seconds": 151.394209,
+      "mean_pass_seconds": 85.888121,
+      "effective_passes_per_hour": 15.155834
     }
   ]
 }
