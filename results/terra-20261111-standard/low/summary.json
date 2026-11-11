@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_count": 13,
+  "repeats": 2,
+  "pack_version": "20261111",
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Terra low",
+      "evidence": "MODEL_RUN",
+      "assigned": 26,
+      "first_passed": 26,
+      "passed": 26,
+      "failed": 0,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 336.343,
+      "candidate_call_seconds": 264.001,
+      "judge_call_seconds": 26.125,
+      "mean_attempt_seconds": 12.93626923076923,
+      "mean_pass_seconds": 12.93626923076923,
+      "effective_passes_per_hour": 278.2873435748626
+    }
+  ]
+}

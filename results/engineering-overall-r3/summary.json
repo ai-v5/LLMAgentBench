@@ -4,23 +4,6 @@
   "repeats": 2,
   "candidates": [
     {
-      "label": "Codex GPT-6.1 Terra",
-      "evidence": "MODEL_RUN",
-      "assigned": 46,
-      "first_passed": 45,
-      "passed": 46,
-      "failed": 0,
-      "unscored": 0,
-      "errors": 0,
-      "timeouts": 0,
-      "attempt_seconds": 2899.221,
-      "candidate_call_seconds": 2703.628,
-      "judge_call_seconds": 121.56299999999999,
-      "mean_attempt_seconds": 63.02654347826087,
-      "mean_pass_seconds": 63.02654347826087,
-      "effective_passes_per_hour": 57.11879156504454
-    },
-    {
       "label": "DSH V4.1 Flash 1017",
       "evidence": "MODEL_RUN",
       "assigned": 46,

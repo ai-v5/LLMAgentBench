@@ -18,53 +18,6 @@
   "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
   "candidates": [
     {
-      "candidate_id": "codex-terra-max",
-      "adapter": "codex",
-      "requested_model": "gpt-6.1-terra",
-      "reasoning_effort": "max",
-      "candidate_sha256": "3a5da0b4b5fd673813aa7819f66f868e551f8c80ca6f70f9429cef3a0261d2ab",
-      "evidence_level": "MODEL_RUN",
-      "assigned": 12,
-      "outcomes": {
-        "pass": 12,
-        "fail": 0,
-        "unscored": 0,
-        "error": 0,
-        "timeout": 0
-      },
-      "first_pass_rate": 1.0,
-      "strict_success_rate": 1.0,
-      "mean_repair_rounds": 0,
-      "mean_elapsed_seconds": 73.21233333333333,
-      "max_elapsed_seconds": 120.828,
-      "evaluated_attempt_seconds": 878.548,
-      "candidate_call_seconds": 677.22,
-      "judge_call_seconds": 182.735,
-      "effective_passes_per_hour": 49.17204296179605,
-      "adapter_invocations": 15,
-      "usage_complete": true,
-      "total_cost_usd": null,
-      "human_minutes": null,
-      "human_minutes_status": "NOT_MEASURED",
-      "by_category": {
-        "analysis": {
-          "assigned": 6,
-          "passed": 6,
-          "first_passed": 6
-        },
-        "coding": {
-          "assigned": 3,
-          "passed": 3,
-          "first_passed": 3
-        },
-        "review": {
-          "assigned": 3,
-          "passed": 3,
-          "first_passed": 3
-        }
-      }
-    },
-    {
       "candidate_id": "dsh-flash-max",
       "adapter": "dsh",
       "requested_model": "ds-v4.1-flash-1017",
@@ -112,5 +65,5 @@
       }
     }
   ],
-  "export_sha256": "c9939fa21c32eaaf27cccb2492522430e803402095d79a3d2f19bf977b3c7702"
+  "export_sha256": "7b16fb471fe7fd10d8126e50ad3013ec03b53dcf4f110c1c913cd3fb95b0dd0c"
 }

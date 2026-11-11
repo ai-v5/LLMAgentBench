@@ -44,8 +44,8 @@ function effortBatches(directory) {
   return out;
 }
 
-const terra = effortBatches('terra-20261110-standard');
-const luna = effortBatches('luna-20261110-standard');
+const terra = effortBatches('terra-20261111-standard');
+const luna = effortBatches('luna-20261111-standard');
 
 function candidate(label, assigned, first, passed, hours) {
   const attempt = hours * 3600;
@@ -195,7 +195,7 @@ async function load({ overrides = {}, failTokens = false } = {}) {
       if (key === 'tokens' && failTokens) return fail();
       return ok(entry[key]);
     }
-    const effortMatch = url.match(/(terra|luna)-20261110-standard\/(max|high|low)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
+    const effortMatch = url.match(/(terra|luna)-20261111-standard\/(max|high|low)\/(summary|overall|token-usage|provenance|overall-provenance)\.json/);
     if (effortMatch) {
       const source = effortMatch[1] === 'terra' ? terra : luna;
       const key = { summary: 'summary', overall: 'overall', 'token-usage': 'tokens',

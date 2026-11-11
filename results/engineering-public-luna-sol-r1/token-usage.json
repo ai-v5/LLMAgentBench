@@ -21,19 +21,6 @@
       "usage_calls": 24,
       "output_tokens": 13366,
       "candidate_call_seconds": 1562.61
-    },
-    {
-      "label": "Codex GPT-6 Luna",
-      "candidate_id": "codex-luna-max",
-      "adapter": "codex",
-      "requested_model": "gpt-6-luna",
-      "reasoning_effort": "max",
-      "evidence_level": "MODEL_RUN",
-      "assigned": 24,
-      "candidate_calls": 24,
-      "usage_calls": 24,
-      "output_tokens": 22183,
-      "candidate_call_seconds": 1368.453
     }
   ]
 }
