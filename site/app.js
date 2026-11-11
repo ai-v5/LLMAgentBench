@@ -135,8 +135,8 @@
         publicFirst: item.first_passed / item.assigned * 100,
         publicFinal: item.passed / item.assigned * 100, overallFirst: total ? total.first_passed / total.assigned * 100 : null,
         overallFinal: total ? total.passed / total.assigned * 100 : null,
-        publicIssues: [item.unscored, item.errors, item.timeouts],
-        overallIssues: total ? [total.unscored, total.errors, total.timeouts] : null, tokens };
+        publicIssues: [item.failed, item.unscored, item.errors, item.timeouts],
+        overallIssues: total ? [total.failed, total.unscored, total.errors, total.timeouts] : null, tokens };
     });
     return { rows };
   }
@@ -213,7 +213,7 @@
 
   function show(result, offset) {
     const finalText = (rate, issues) => "含修复 " + rate.toFixed(1) + "%" +
-      (issues.some((value) => value > 0) ? " · 未评分/错误/超时 " + issues.join("/") : "");
+      (issues.some((value) => value > 0) ? " · 失败/未评分/错误/超时 " + issues.join("/") : "");
     result.rows.forEach((row, position) => {
       const index = position + offset;
       const attr = (name) => "[" + name + '="' + index + '"]';

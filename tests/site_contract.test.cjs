@@ -268,6 +268,14 @@ async function load({ overrides = {}, failTokens = false } = {}) {
   assert.equal(page.nodes.get('data-pack:0').textContent, '题库 20261111');
   assert.equal(page.nodes.get('data-pack:14').textContent, '题库 20261111');
 
+  // The issue note must lead with failed so a row cannot look clean while it failed cases.
+  const flexMax = rows[10];
+  const flexMaxPublic = exp['flex-max'].entry.summary.candidates[0];
+  assert.equal(page.nodes.get('data-public-final:10').textContent,
+    `含修复 ${flexMax.publicFinal.toFixed(1)}% · 失败/未评分/错误/超时 ` +
+    `${flexMaxPublic.failed}/${flexMaxPublic.unscored}/${flexMaxPublic.errors}/${flexMaxPublic.timeouts}`);
+  assert.match(page.nodes.get('data-all-final:10').textContent, /失败\/未评分\/错误\/超时 \d+\/\d+\/\d+\/\d+$/);
+
   assert.deepEqual(page.indices(), expectedOrder(rows, (row) => row.overallFirst, 'descending'));
   page.buttons.publicFirst.click();
   assert.deepEqual(page.indices(), expectedOrder(rows, (row) => row.publicFirst, 'descending'));
