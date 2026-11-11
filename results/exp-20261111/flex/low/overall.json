@@ -5,7 +5,7 @@
   "pack_version": "20261111",
   "candidates": [
     {
-      "label": "DSH V4.1 Flash 1017 Flex",
+      "label": "DSH V4.1 Flash 1017 Flex low",
       "evidence": "MODEL_RUN",
       "assigned": 91,
       "first_passed": 76,

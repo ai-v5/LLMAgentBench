@@ -9,7 +9,7 @@
   "config_sha256": "d909fffebe2546492ce2d0917ad60d4dc0b21746d5656e92016e389b8b41faeb",
   "candidates": [
     {
-      "label": "GLM 5.3",
+      "label": "GLM 5.3 max",
       "candidate_id": "glm5.3-max",
       "adapter": "dsh",
       "requested_model": "glm5.3",

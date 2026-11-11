@@ -9,7 +9,7 @@
   "config_sha256": "2bc2906b92454a6e517b49751c04e5ed56c057366b22a1a892852de5aaa274fe",
   "candidates": [
     {
-      "label": "GLM 5.3",
+      "label": "GLM 5.3 low",
       "candidate_id": "glm5.3-low",
       "adapter": "dsh",
       "requested_model": "glm5.3",

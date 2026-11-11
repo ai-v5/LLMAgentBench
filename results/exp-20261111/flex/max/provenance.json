@@ -12,11 +12,11 @@
   "target_pack_sha256": "0d9f0aa05d38aeccaf781fd867e64cd8d30c1f5093b67c9cc9fea929b1172820",
   "sources": [
     {
-      "selected_cases": 13,
+      "selected_cases": 9,
       "receipt_sha256": "32aee82f7d8e6f26dca55c9ea8ae58f80c59ee593729f3afb224935c181d5103"
     },
     {
-      "selected_cases": 0,
+      "selected_cases": 4,
       "receipt_sha256": "e1a6fb2f1d8e7987b5ffdc273d42bce355e8781f6f2105fb3938a3f17be9ef58"
     }
   ]
