@@ -89,7 +89,7 @@ function synthetic(tag, effort, label, model) {
       candidates: [{ label: name, candidate_id: `${tag}-${effort}`, adapter: 'dsh',
         requested_model: model, reasoning_effort: effort, evidence_level: 'MODEL_RUN',
         assigned: 13, candidate_calls: 13, usage_calls: 13, output_tokens: 5200,
-        candidate_call_seconds: 144 }],
+        usage_call_seconds: 144, candidate_call_seconds: 144 }],
     },
     provenance: {
       schema_version: 1, visibility: 'public', synthetic: true, source_receipts_verified: true,
@@ -330,6 +330,25 @@ async function load({ overrides = {}, failTokens = false } = {}) {
   assert.equal(page.alerts['data-error'].hidden, true);
   assert.equal(page.rows.every((row) => !row.hidden), true);
   assert.equal(page.nodes.get('data-token-rate:9').textContent, '未记录');
+
+  const partial = structuredClone(exp['flex-max'].entry);
+  Object.assign(partial.tokens.candidates[0], {
+    usage_calls: 12, candidate_calls: 13, output_tokens: 2400,
+    usage_call_seconds: 100, candidate_call_seconds: 144,
+  });
+  page = await load({ overrides: { 'flex-max': partial } });
+  assert.equal(page.alerts['token-error'].hidden, true, 'Partial token coverage must still be shown');
+  assert.equal(page.nodes.get('data-token-rate:10').textContent, '24.00');
+  assert.match(page.nodes.get('data-token-detail:10').textContent, /12\/13 次有用量/);
+
+  const brokenPartial = structuredClone(exp['flex-max'].entry);
+  Object.assign(brokenPartial.tokens.candidates[0], {
+    usage_calls: 12, candidate_calls: 13, output_tokens: 2400, candidate_call_seconds: 144,
+  });
+  delete brokenPartial.tokens.candidates[0].usage_call_seconds;
+  page = await load({ overrides: { 'flex-max': brokenPartial } });
+  assert.equal(page.alerts['token-error'].hidden, false, 'Partial coverage needs its own timing');
+  assert.equal(page.nodes.get('data-token-rate:10').textContent, '未记录');
 
   console.log('Site aggregate, sorting, and failure handling: passed');
 })().catch((error) => { console.error(error); process.exitCode = 1; });
