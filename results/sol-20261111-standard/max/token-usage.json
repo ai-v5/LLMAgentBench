@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "case_count": 13,
+  "repeats": 2,
+  "source_receipt_sha256": [
+    "0a34350b423d43156560f816e9e66a899c047decf4a175ec9cd0a3991410655e",
+    "1261d142514c409094d0406d8a2d28682b3e49c6c03fc81b8d49f547f2c49fa2",
+    "1b25da8d686b0f3b57d2ab76507cb2897964643038336c551bcfb55a3995924b",
+    "50158b494637b508c57e502c608e6b7bc3c7613392778d0958342b30e175a66a",
+    "75346cc74a5b6e2b3257c18b4707965cd2c6b601ba1669272504523dfed4f2ca",
+    "95d85e62b8fe8cc43518acd512bc8dd2cb712239b44ee9c00590135d18cac68b",
+    "b6f98ef3243a2bc2c7f51b7ccb409934c6c6f43333bd06785562aab12b436080",
+    "fe243938b6861d101ffd3c5c4e6ab5528401de5d9101b41c92b462c18769a094"
+  ],
+  "candidates": [
+    {
+      "label": "Codex GPT-6.1 Sol max",
+      "adapter": "codex",
+      "requested_model": "gpt-6.1-sol",
+      "reasoning_effort": "max",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 26,
+      "candidate_calls": 26,
+      "usage_calls": 26,
+      "output_tokens": 47354,
+      "candidate_call_seconds": 2092.831
+    }
+  ]
+}
