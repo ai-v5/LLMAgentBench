@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "pack_version": "20261111",
+  "case_count": 91,
+  "denominator": "assigned_attempts",
+  "candidates": [
+    {
+      "label": "Codex GPT-6 Luna high",
+      "evidence": "MODEL_RUN",
+      "assigned": 104,
+      "first_passed": 89,
+      "passed": 95,
+      "failed": 9,
+      "unscored": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "attempt_seconds": 3650.3860000000004,
+      "candidate_call_seconds": 3369.924000000001,
+      "judge_call_seconds": 20.531,
+      "mean_attempt_seconds": 35.09986538461539,
+      "mean_pass_seconds": 27.562126315789477,
+      "effective_passes_per_hour": 93.68872223375828
+    }
+  ]
+}

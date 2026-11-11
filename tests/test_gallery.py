@@ -31,6 +31,8 @@ def test_gallery_entries_are_inert_public_drawings():
         if entry.get("html"):
             validate_html(svg)
     assert {entry["id"] for entry in data["entries"]} >= {"terra-max", "terra-high", "terra-low", "luna-max", "luna-high", "luna-low"}
+    reused = {f"{model}-{effort}" for model in ("terra", "luna") for effort in ("max", "high", "low")}
+    assert all("复用" in entry["note"] for entry in data["entries"] if entry["id"] in reused)
 
 
 @pytest.mark.parametrize("unsafe", [

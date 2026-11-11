@@ -41,19 +41,19 @@
       revision_models: ["ds-v4.1-flash-1017"], overall_models: ["ds-v4.1-flash-1017"],
       models: { "DSH V4.1 Flash 1017 · max": "ds-v4.1-flash-1017" } },
     ...["max", "high", "low"].map((effort, index) => ({
-      public: `results/terra-20261110-standard/${effort}/summary.json`,
-      overall: `results/terra-20261110-standard/${effort}/overall.json`,
-      overall_provenance: `results/terra-20261110-standard/${effort}/overall-provenance.json`,
-      tokens: `results/terra-20261110-standard/${effort}/token-usage.json`,
-      public_provenance: `results/terra-20261110-standard/${effort}/provenance.json`, offset: 8 + index,
+      public: `results/terra-20261111-standard/${effort}/summary.json`,
+      overall: `results/terra-20261111-standard/${effort}/overall.json`,
+      overall_provenance: `results/terra-20261111-standard/${effort}/overall-provenance.json`,
+      tokens: `results/terra-20261111-standard/${effort}/token-usage.json`,
+      public_provenance: `results/terra-20261111-standard/${effort}/provenance.json`, offset: 8 + index,
       effort, model: "gpt-6.1-terra", models: { [`Codex GPT-6.1 Terra ${effort}`]: "gpt-6.1-terra" },
     })),
     ...["max", "high", "low"].map((effort, index) => ({
-      public: `results/luna-20261110-standard/${effort}/summary.json`,
-      overall: `results/luna-20261110-standard/${effort}/overall.json`,
-      overall_provenance: `results/luna-20261110-standard/${effort}/overall-provenance.json`,
-      tokens: `results/luna-20261110-standard/${effort}/token-usage.json`,
-      public_provenance: `results/luna-20261110-standard/${effort}/provenance.json`, offset: 11 + index,
+      public: `results/luna-20261111-standard/${effort}/summary.json`,
+      overall: `results/luna-20261111-standard/${effort}/overall.json`,
+      overall_provenance: `results/luna-20261111-standard/${effort}/overall-provenance.json`,
+      tokens: `results/luna-20261111-standard/${effort}/token-usage.json`,
+      public_provenance: `results/luna-20261111-standard/${effort}/provenance.json`, offset: 11 + index,
       effort, model: "gpt-6-luna", models: { [`Codex GPT-6 Luna ${effort}`]: "gpt-6-luna" },
     })),
   ];
@@ -176,6 +176,14 @@
         value.sources.reduce((sum, source) => sum + source.selected_cases, 0) !== data.case_count ||
         new Set(value.sources.map((source) => source.receipt_sha256)).size !== value.sources.length) {
       throw new Error("Public source provenance unavailable");
+    }
+    if (Object.hasOwn(value, "source_receipts_reverified_now") &&
+        (typeof value.source_receipts_reverified_now !== "boolean" ||
+         (value.source_receipts_reverified_now === false &&
+          (!/^[a-f0-9]{40}$/.test(value.source_publication_commit || "") ||
+           typeof value.source_pack_version !== "string" || !value.source_pack_version ||
+           typeof value.verification_boundary !== "string" || !value.verification_boundary)))) {
+      throw new Error("Historical source verification boundary unavailable");
     }
   }
 

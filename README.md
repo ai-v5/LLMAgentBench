@@ -52,7 +52,7 @@ Kimi 使用本机 Daimon 的非交互 prompt 入口。复制 `configs/kimi.examp
 
 ```powershell
 $env:BENCH_KIMI_LAUNCHER = '["powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-File","C:/Tools/kimi-daimon.ps1","--node","C:/Tools/Kimi.exe"]'
-$env:BENCH_KIMI_CONFIG = 'C:/Users/you/.kimi/daimon/config.json'
+$env:BENCH_KIMI_CONFIG = Join-Path $env:USERPROFILE '.kimi/daimon/config.json'
 python -m llmagentbench run --pack pack.json --config local/kimi.json --out .bench-runs/kimi
 ```
 
@@ -74,7 +74,7 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 
 在用户明确授权公开总体数量和耗时时，可用 `export-overall` 合并完整运行：它只输出显式指定的公开候选名称、总体数量和耗时，不输出题目、题号、分类、私有 pack 元数据或原始收据。必须提供 `--allow-private-aggregate` 才能纳入私有运行；发布前仍需审查精确输出内容。
 
-`pack.json` 是公开题库索引（13 道合成题：工程案例 + smoke 案例 + 绘图题，版本 20261111）；私仓维护同版本全量套件（91 题，含全部私有 case），组成与生成方式见 [运行与发布规范](docs/RUNBOOK.md)，覆盖代码修改、问题排查、代码评审、性能分析和绘图。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。
+`pack.json` 是公开题库索引（13 道合成题：工程案例 + smoke 案例 + 绘图题，版本 20261111）；私仓维护同版本全量套件（91 题，含全部私有 case）。总体评测包含固定源码片段，不能视为纯合成评测；组成与生成方式见 [运行与发布规范](docs/RUNBOOK.md)。题目覆盖代码修改、问题排查、代码评审、性能分析和绘图。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。
 
 ## 指标
 
