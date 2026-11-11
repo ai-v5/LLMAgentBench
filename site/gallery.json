@@ -58,40 +58,49 @@
       "note": "low · 历史公开题第 1 次样本（复用） · 自动修复后结构检查 fail"
     },
     {
-      "id": "dsh-v4.1-flash-1017-low",
-      "label": "DSH V4.1 Flash 1017",
+      "id": "flex-low",
+      "label": "DSH V4.1 Flash 1017 Flex",
       "effort": "low",
-      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-low.svg",
-      "created": "2026-11-10",
+      "html": "site/artifacts/crocodile/flex-low.html",
+      "created": "2026-11-11",
       "outcome": "fail",
-      "note": "low · 单次生成 · 结构检查 fail"
+      "note": "low · 公开题第 1 次样本 · 结构检查 fail"
     },
     {
-      "id": "dsh-v4.1-flash-1017-high",
-      "label": "DSH V4.1 Flash 1017",
+      "id": "flex-high",
+      "label": "DSH V4.1 Flash 1017 Flex",
       "effort": "high",
-      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-high.svg",
-      "created": "2026-11-10",
-      "outcome": "pass",
-      "note": "high · 单次生成 · 结构检查 pass"
+      "html": "site/artifacts/crocodile/flex-high.html",
+      "created": "2026-11-11",
+      "outcome": "fail",
+      "note": "high · 公开题第 1 次样本 · 结构检查 fail"
     },
     {
-      "id": "dsh-v4.1-flash-1017-xhigh",
-      "label": "DSH V4.1 Flash 1017",
-      "effort": "xhigh",
-      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-xhigh.svg",
-      "created": "2026-11-10",
+      "id": "glm-low",
+      "label": "GLM 5.3",
+      "effort": "low",
+      "html": "site/artifacts/crocodile/glm-low.html",
+      "created": "2026-11-11",
       "outcome": "pass",
-      "note": "xhigh · 单次生成 · 结构检查 pass"
+      "note": "low · 公开题第 1 次样本 · 结构检查 pass"
     },
     {
-      "id": "dsh-v4.1-flash-1017-max",
-      "label": "DSH V4.1 Flash 1017",
+      "id": "glm-high",
+      "label": "GLM 5.3",
+      "effort": "high",
+      "html": "site/artifacts/crocodile/glm-high.html",
+      "created": "2026-11-11",
+      "outcome": "pass",
+      "note": "high · 公开题第 1 次样本 · 结构检查 pass"
+    },
+    {
+      "id": "glm-max",
+      "label": "GLM 5.3",
       "effort": "max",
-      "svg": "site/artifacts/crocodile/dsh-v4.1-flash-1017-max.svg",
-      "created": "2026-11-10",
+      "html": "site/artifacts/crocodile/glm-max.html",
+      "created": "2026-11-11",
       "outcome": "pass",
-      "note": "max · 单次生成 · 结构检查 pass"
+      "note": "max · 公开题第 1 次样本 · 结构检查 pass"
     }
   ]
 }

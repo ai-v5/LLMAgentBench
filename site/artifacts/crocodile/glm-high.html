@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>鳄鱼骑自行车</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(#bfe6ff 0%, #e8f7ff 70%, #d0f0c0 70%, #a8d878 100%);
+    font-family: sans-serif;
+  }
+  svg { max-width: 90vw; height: auto; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 520" width="800" height="520" xmlns="http://www.w3.org/2000/svg">
+  <!-- 地面 -->
+  <rect x="0" y="440" width="800" height="80" fill="#8bc34a"/>
+  <line x1="0" y1="440" x2="800" y2="440" stroke="#6a9a35" stroke-width="6"/>
+
+  <!-- ================= 自行车 ================= -->
+  <g id="bicycle">
+    <!-- 后轮 -->
+    <g transform="translate(260,400)">
+      <circle r="62" fill="none" stroke="#222" stroke-width="10"/>
+      <circle r="8" fill="#555"/>
+      <!-- 辐条组：连续旋转 -->
+      <g stroke="#777" stroke-width="4">
+        <animateTransform attributeName="transform" type="rotate"
+          from="0" to="360" dur="1s" repeatCount="indefinite"/>
+        <line x1="-55" y1="0" x2="55" y2="0"/>
+        <line x1="0" y1="-55" x2="0" y2="55"/>
+        <line x1="-39" y1="-39" x2="39" y2="39"/>
+        <line x1="-39" y1="39" x2="39" y2="-39"/>
+      </g>
+    </g>
+
+    <!-- 前轮 -->
+    <g transform="translate(560,400)">
+      <circle r="62" fill="none" stroke="#222" stroke-width="10"/>
+      <circle r="8" fill="#555"/>
+      <g stroke="#777" stroke-width="4">
+        <animateTransform attributeName="transform" type="rotate"
+          from="0" to="360" dur="1s" repeatCount="indefinite"/>
+        <line x1="-55" y1="0" x2="55" y2="0"/>
+        <line x1="0" y1="-55" x2="0" y2="55"/>
+        <line x1="-39" y1="-39" x2="39" y2="39"/>
+        <line x1="-39" y1="39" x2="39" y2="-39"/>
+      </g>
+    </g>
+
+    <!-- 车架 -->
+    <g stroke="#e53935" stroke-width="12" stroke-linecap="round" fill="none">
+      <path d="M260,400 L410,300 L560,400"/>
+      <path d="M410,300 L370,400 L260,400"/>
+      <path d="M370,400 L460,400"/>
+      <path d="M560,400 L530,310"/>
+      <path d="M410,300 L440,270 L480,270"/>
+    </g>
+    <!-- 座椅 -->
+    <rect x="360" y="290" width="55" height="12" rx="6" fill="#4e342e"/>
+    <!-- 车把 -->
+    <path d="M530,310 L520,275 L575,265" stroke="#4e342e" stroke-width="10" fill="none" stroke-linecap="round"/>
+
+    <!-- 曲柄与踏板（旋转） -->
+    <g transform="translate(460,400)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="0" to="360" dur="1s" repeatCount="indefinite"/>
+        <line x1="-34" y1="0" x2="34" y2="0" stroke="#444" stroke-width="8"/>
+        <rect x="-46" y="-6" width="24" height="12" rx="4" fill="#1565c0"/>
+        <rect x="22" y="-6" width="24" height="12" rx="4" fill="#1565c0"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 鳄鱼 ================= -->
+  <!-- 身体（含前后摆动） -->
+  <g id="crocodile">
+    <animateTransform attributeName="transform" type="rotate"
+      values="-3 430 300; 3 430 300; -3 430 300"
+      dur="1s" repeatCount="indefinite"/>
+
+    <!-- 尾巴 -->
+    <path d="M360,300 Q280,300 220,330 Q290,340 360,335 Z" fill="#4caf50" stroke="#2e7d32" stroke-width="4"/>
+
+    <!-- 躯干 -->
+    <ellipse cx="420" cy="290" rx="95" ry="52" fill="#4caf50" stroke="#2e7d32" stroke-width="4"/>
+    <!-- 腹部 -->
+    <ellipse cx="420" cy="305" rx="70" ry="30" fill="#c8e6a0"/>
+    <!-- 背刺 -->
+    <g fill="#2e7d32">
+      <path d="M345,255 l14,-18 l14,18 z"/>
+      <path d="M375,248 l14,-18 l14,18 z"/>
+      <path d="M405,244 l14,-18 l14,18 z"/>
+      <path d="M435,248 l14,-18 l14,18 z"/>
+      <path d="M465,255 l14,-18 l14,18 z"/>
+    </g>
+
+    <!-- 后腿（与踏板同相位的踩踏动画） -->
+    <g id="leg-back">
+      <animateTransform attributeName="transform" type="rotate"
+        values="25 445 320; -25 445 320; 25 445 320"
+        dur="1s" repeatCount="indefinite"/>
+      <rect x="440" y="315" width="20" height="70" rx="10" fill="#388e3c"/>
+      <ellipse cx="450" cy="390" rx="18" ry="12" fill="#4caf50" stroke="#2e7d32" stroke-width="3"/>
+    </g>
+
+    <!-- 前腿（反相位踩踏） -->
+    <g id="leg-front">
+      <animateTransform attributeName="transform" type="rotate"
+        values="-25 445 320; 25 445 320; -25 445 320"
+        dur="1s" repeatCount="indefinite"/>
+      <rect x="440" y="315" width="20" height="70" rx="10" fill="#43a047"/>
+      <ellipse cx="450" cy="390" rx="18" ry="12" fill="#66bb6a" stroke="#2e7d32" stroke-width="3"/>
+    </g>
+
+    <!-- 前臂手臂（握车把） -->
+    <path d="M470,270 Q520,255 540,268" stroke="#43a047" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <circle cx="540" cy="268" r="12" fill="#4caf50" stroke="#2e7d32" stroke-width="3"/>
+
+    <!-- 头部（面向右） -->
+    <g id="head">
+      <path d="M490,255 L590,250 Q640,252 660,275 Q640,300 590,300 L500,300 Q480,278 490,255 Z"
+            fill="#4caf50" stroke="#2e7d32" stroke-width="4"/>
+      <!-- 上颚 -->
+      <path d="M590,252 Q655,250 668,268 L590,268 Z" fill="#66bb6a" stroke="#2e7d32" stroke-width="3"/>
+      <!-- 下颚 -->
+      <path d="M590,282 Q650,284 665,275 L590,275 Z" fill="#43a047" stroke="#2e7d32" stroke-width="3"/>
+      <!-- 牙齿 -->
+      <g fill="#fff">
+        <path d="M600,268 l6,8 l6,-8 z"/>
+        <path d="M620,268 l6,8 l6,-8 z"/>
+        <path d="M640,268 l6,8 l6,-8 z"/>
+      </g>
+      <!-- 眼睛 -->
+      <circle cx="545" cy="248" r="14" fill="#fff" stroke="#2e7d32" stroke-width="3"/>
+      <circle cx="549" cy="250" r="6" fill="#000">
+        <animate attributeName="cy" values="250;252;250" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <!-- 鼻孔 -->
+      <circle cx="652" cy="262" r="3" fill="#2e7d32"/>
+    </g>
+  </g>
+</svg>
+</body>
+</html>
