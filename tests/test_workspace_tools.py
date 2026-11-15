@@ -257,7 +257,12 @@ def test_v8_evaluator_rejects_candidate_tampering_with_checks(tmp_path, preamble
     assert record['attempts'][0]['outcome'] == 'fail'
 
 
-def test_v8_evaluator_rejects_forged_checker_completion(tmp_path):
+@pytest.mark.parametrize('setup', [
+    "s = typing.sys\nb = s.modules['builtins']\ng = b.getattr\n",
+    "op = typing.operator\nag = op.attrgetter\ns = ag('sys')(typing)\n"
+    "b = ag('modules')(s)['builtins']\ng = ag('getattr')(b)\n",
+])
+def test_v8_evaluator_rejects_forged_checker_completion(tmp_path, setup):
     root = Path(__file__).resolve().parents[1]
     pack = load_pack(root / 'examples/agent-tools/pack-20261116-v8.json')
     name = 'agent-shape-match'
@@ -265,12 +270,12 @@ def test_v8_evaluator_rejects_forged_checker_completion(tmp_path):
     pack['manifest']['case_families'] = {name: 'code-repair'}
     source = ("import typing\n"
               "def matches(*args):\n    return False\n"
-              "s = typing.sys\nb = s.modules['builtins']\ng = b.getattr\n"
+              + setup +
               "payload = g(g(s, '_getframe')(1), 'f_globals')['payload']\n"
               "rows = [{'value': b.all(k in r['expected'] and k in r['observed'] and "
               "r['expected'][k] == r['observed'][k] for k in ('op', 'shape', 'dtype', 'device')), "
               "'unchanged': True} for r in payload['requests']]\n"
-              "g(s.stdout, 'write')('BENCH_SHAPE_RESULT:' + s.modules['json'].dumps(rows) + b.chr(10))\n"
+              "g(g(s, 'stdout'), 'write')('BENCH_SHAPE_RESULT:' + g(s, 'modules')['json'].dumps(rows) + b.chr(10))\n"
               "g(s, 'exit')(0)\n")
     cfg = config()
     cfg['candidates'][0]['responses'] = {name: {'answer': '', 'files': [
@@ -325,6 +330,23 @@ def test_v8_preserves_case_contracts_and_accepts_equivalent_valid_answers(tmp_pa
                           {'id': 'mixed', 'mixed_status': 'MIXED'}], 'tokens_per_second': 1000}
     (tmp_path / 'window_report.json').write_text(json.dumps(answer), encoding='utf-8')
     result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/performance-window-v3/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize('imports,annotation', [
+    ('from collections.abc import Mapping\n', 'Mapping'),
+    ('from typing import Mapping\n', 'Mapping'),
+    ('import collections.abc\n', 'collections.abc.Mapping'),
+    ('import typing as t\n', 't.Mapping'),
+])
+def test_v8_shape_checker_accepts_common_standard_library_imports(tmp_path, imports, annotation):
+    root = Path(__file__).resolve().parents[1]
+    source = (imports + f'def matches(expected: {annotation}, observed: {annotation}):\n'
+              "    return all(k in expected and k in observed and expected[k] == observed[k] "
+              "for k in ('op', 'shape', 'dtype', 'device'))\n")
+    (tmp_path / 'shape_match.py').write_text(source, encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/shape-match-v5/verify.py'),
                              str(tmp_path)], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
 

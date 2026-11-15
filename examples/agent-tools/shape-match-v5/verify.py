@@ -12,16 +12,17 @@ import builtins
 import copy
 import json
 import sys
+import types
 from pathlib import Path
 
 payload = json.loads(sys.stdin.read())
 tree = ast.parse((Path(sys.argv[1]) / 'shape_match.py').read_text(encoding='utf-8'))
-safe_modules = {'math', 'statistics', 'collections', 'itertools', 'functools', 'typing', '__future__'}
+safe_modules = {'math', 'statistics', 'collections', 'collections.abc', 'itertools', 'functools', 'typing', '__future__'}
 for node in ast.walk(tree):
     if isinstance(node, ast.Import):
-        assert all(alias.name.split('.')[0] in safe_modules for alias in node.names)
+        assert all(alias.name in safe_modules for alias in node.names)
     if isinstance(node, ast.ImportFrom):
-        assert node.level == 0 and node.module and node.module.split('.')[0] in safe_modules
+        assert node.level == 0 and node.module and node.module in safe_modules
         assert all(not alias.name.startswith('_') and alias.name not in {'sys', 'os', 'builtins'}
                    for alias in node.names)
     if isinstance(node, ast.Name):
@@ -30,9 +31,25 @@ for node in ast.walk(tree):
         assert not node.attr.startswith('_')
         assert node.attr not in {'sys', 'os', 'builtins', 'modules', 'stdin', 'stdout', 'stderr'}
 
+proxies = {}
+def public_module(module):
+    if module.__name__ in proxies:
+        return proxies[module.__name__]
+    proxy = types.ModuleType(module.__name__)
+    proxies[module.__name__] = proxy
+    for name, value in vars(module).items():
+        if name.startswith('_') or name in {'sys', 'os', 'builtins', 'modules', 'stdin', 'stdout', 'stderr'}:
+            continue
+        if isinstance(value, types.ModuleType):
+            if value.__name__ in safe_modules:
+                setattr(proxy, name, public_module(value))
+        else:
+            setattr(proxy, name, value)
+    return proxy
+
 def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
-    assert level == 0 and name.split('.')[0] in safe_modules
-    return builtins.__import__(name, globals, locals, fromlist, level)
+    assert level == 0 and name in safe_modules
+    return public_module(builtins.__import__(name, globals, locals, fromlist, level))
 
 names = ('abs', 'all', 'any', 'bool', 'dict', 'enumerate', 'filter', 'float', 'int',
          'isinstance', 'iter', 'len', 'list', 'map', 'max', 'min', 'next', 'range',
