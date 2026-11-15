@@ -43,27 +43,32 @@ namespace['__builtins__'].update({name: getattr(builtins, name) for name in
      'pow', 'divmod', 'bin', 'oct', 'hex', 'ascii', 'callable')})
 namespace['__builtins__']['__import__'] = safe_import
 exec(compile(tree, 'shape_match.py', 'exec'), namespace)
-expected, observed = payload['expected'], payload['observed']
-before = copy.deepcopy((expected, observed))
-if payload['keyword']:
-    value = namespace['matches'](expected=expected, observed=observed)
-else:
-    value = namespace['matches'](expected, observed)
-assert type(value) is bool
-print('BENCH_SHAPE_RESULT:' + json.dumps({'value': value, 'unchanged': (expected, observed) == before}))
+outputs = []
+for request in payload['requests']:
+    expected, observed = request['expected'], request['observed']
+    before = copy.deepcopy((expected, observed))
+    if request['keyword']:
+        value = namespace['matches'](expected=expected, observed=observed)
+    else:
+        value = namespace['matches'](expected, observed)
+    assert type(value) is bool
+    outputs.append({'value': value, 'unchanged': (expected, observed) == before})
+print('BENCH_SHAPE_RESULT:' + json.dumps(outputs))
 '''
 
 
-def matches(expected, observed, *, keyword=False):
+def evaluate(requests):
     result = subprocess.run([sys.executable, '-I', '-B', '-c', CHILD, sys.argv[1]],
-                            input=json.dumps({'expected': expected, 'observed': observed, 'keyword': keyword}),
+                            input=json.dumps({'requests': requests}),
                             text=True, encoding='utf-8', capture_output=True)
     assert result.returncode == 0
     lines = result.stdout.splitlines()
     assert lines and lines[-1].startswith('BENCH_SHAPE_RESULT:')
-    answer = json.loads(lines[-1].removeprefix('BENCH_SHAPE_RESULT:'))
-    assert answer.get('unchanged') is True and type(answer.get('value')) is bool
-    return answer['value']
+    answers = json.loads(lines[-1].removeprefix('BENCH_SHAPE_RESULT:'))
+    assert isinstance(answers, list) and len(answers) == len(requests)
+    assert all(isinstance(answer, dict) and answer.get('unchanged') is True
+               and type(answer.get('value')) is bool for answer in answers)
+    return [answer['value'] for answer in answers]
 
 
 target = {'op': 'matmul', 'shape': [2, 4], 'dtype': 'bf16', 'device': 'npu'}
@@ -71,7 +76,7 @@ checks = [(target, True), ({**target, 'dtype': 'fp32'}, False),
           ({**target, 'device': 'cpu'}, False), ({**target, 'shape': [4, 2]}, False),
           ({**target, 'op': 'attention'}, False), ({'op': 'matmul', 'shape': [2, 4]}, False),
           ({**target, 'extra': 'ignored'}, True)]
-for observed, expected in checks:
-    assert matches(target, observed) is expected
-assert matches(target, target, keyword=True) is True
-assert matches({'op': 'matmul'}, {'op': 'matmul'}) is False
+requests = [{'expected': target, 'observed': observed, 'keyword': False} for observed, _ in checks]
+requests += [{'expected': target, 'observed': target, 'keyword': True},
+             {'expected': {'op': 'matmul'}, 'observed': {'op': 'matmul'}, 'keyword': False}]
+assert evaluate(requests) == [expected for _, expected in checks] + [True, False]

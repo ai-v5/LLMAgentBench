@@ -206,6 +206,21 @@ def test_v8_shape_checker_requires_keyword_compatible_signature(tmp_path):
     assert result.returncode != 0
 
 
+def test_v8_shape_checker_detects_stateful_implementation(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    source = ("calls = 0\n"
+              "def matches(expected, observed):\n"
+              "    global calls\n"
+              "    calls += 1\n"
+              "    if calls > 1:\n        return False\n"
+              "    return all(k in expected and observed.get(k) == expected[k] "
+              "for k in ('op', 'shape', 'dtype', 'device'))\n")
+    (tmp_path / 'shape_match.py').write_text(source, encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/shape-match-v5/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode != 0
+
+
 def test_v7_evaluator_already_rejects_early_success_exit(tmp_path):
     root = Path(__file__).resolve().parents[1]
     pack = load_pack(root / 'examples/agent-tools/pack-20261115-v7.json')
