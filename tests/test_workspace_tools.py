@@ -361,3 +361,25 @@ def test_v6_accepts_standard_exceptions_and_equivalent_window_layout(tmp_path):
     record = runner.run(pack, cfg, tmp_path / 'run')
     assert all(a['outcome'] == ('pass' if a['candidate_id'] == 'good' else 'fail')
                for a in record['attempts'])
+
+
+def test_v7_accepts_standard_sentinels_without_weakening_shape_checks(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    before = load_pack(root / 'examples/agent-tools/pack-20261115-v6.json')
+    pack = load_pack(root / 'examples/agent-tools/pack-20261115-v7.json')
+    name = 'agent-shape-match'
+    old = next(entry for entry in before['cases'] if entry['definition']['id'] == name)
+    new = next(entry for entry in pack['cases'] if entry['definition']['id'] == name)
+    assert old['definition'] == new['definition'] and old['script_hashes'] != new['script_hashes']
+    pack['cases'] = [new]
+    pack['manifest']['case_families'] = {name: 'code-repair'}
+    code = ("def matches(expected, observed):\n"
+            "    return all(k in expected and observed.get(k, NotImplemented) == expected[k] "
+            "for k in ('op', 'shape', 'dtype', 'device'))\n")
+    cfg = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0,
+           'timeout_seconds': 10, 'check_timeout_seconds': 10, 'candidates': [
+               {'id': label, 'adapter': 'fixture', 'responses': {name: {'answer': '', 'files': [
+                   {'path': 'shape_match.py', 'content': source}]}}}
+               for label, source in [('good', code), ('bad', code.replace("'op', 'shape', 'dtype', 'device'", "'op', 'shape'"))]]}
+    record = runner.run(pack, cfg, tmp_path / 'run')
+    assert {a['candidate_id']: a['outcome'] for a in record['attempts']} == {'good': 'pass', 'bad': 'fail'}
