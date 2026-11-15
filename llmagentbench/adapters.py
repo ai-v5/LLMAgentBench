@@ -500,7 +500,8 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                     and not (e["item"].get("type") == "command_execution"
                              and e["item"].get("status") == "failed"
                              and type(e["item"].get("exit_code")) is int
-                             and e["item"]["exit_code"] > 0))
+                             and e["item"]["exit_code"] > 0
+                             and e["item"]["exit_code"] not in {126, 127, 137, 9009}))
             usages = [e["usage"] for e in events if e.get("type") == "turn.completed" and e.get("usage")]
             if usages and isinstance(usages[-1], dict):
                 usage_keys = {"input_tokens", "cached_input_tokens", "cache_write_input_tokens",

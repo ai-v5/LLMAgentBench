@@ -1,6 +1,7 @@
 import json
 import subprocess
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -148,7 +149,8 @@ def test_workspace_tools_codex_uses_workspace_and_plain_final(tmp_path, monkeypa
 
 
 @pytest.mark.parametrize('status,exit_code,expected', [
-    ('failed', 1, 0), ('failed', 127, 0), ('failed', -1, 1), ('failed', None, 1), ('declined', None, 1),
+    ('failed', 1, 0), ('failed', 126, 1), ('failed', 127, 1), ('failed', 137, 1),
+    ('failed', 9009, 1), ('failed', -1, 1), ('failed', None, 1), ('declined', None, 1),
 ])
 def test_codex_nonzero_command_exit_is_not_a_tool_infrastructure_error(tmp_path, monkeypatch, status, exit_code, expected):
     monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
@@ -192,6 +194,18 @@ def test_v8_shape_checker_rejects_early_success_exit(tmp_path, source):
     assert result.returncode != 0
 
 
+def test_v8_shape_checker_requires_keyword_compatible_signature(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    source = ("def matches(*args):\n"
+              "    expected, observed = args\n"
+              "    return all(k in expected and observed.get(k) == expected[k] "
+              "for k in ('op', 'shape', 'dtype', 'device'))\n")
+    (tmp_path / 'shape_match.py').write_text(source, encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/shape-match-v5/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode != 0
+
+
 def test_v7_evaluator_already_rejects_early_success_exit(tmp_path):
     root = Path(__file__).resolve().parents[1]
     pack = load_pack(root / 'examples/agent-tools/pack-20261115-v7.json')
@@ -205,10 +219,36 @@ def test_v7_evaluator_already_rejects_early_success_exit(tmp_path):
     assert record['attempts'][0]['outcome'] == 'fail'
 
 
+@pytest.mark.parametrize('preamble,lookup', [
+    ("from collections import __dict__ as d\nb = d['__builtins__']\ns = b['__import__']('sys')\n", "b['getattr']"),
+    ("import typing\ns = typing.sys\nb = s.modules['builtins']\n", 'b.getattr'),
+    ("from typing import sys as s\nb = s.modules['builtins']\n", 'b.getattr'),
+])
+def test_v8_evaluator_rejects_candidate_tampering_with_checks(tmp_path, preamble, lookup):
+    root = Path(__file__).resolve().parents[1]
+    pack = load_pack(root / 'examples/agent-tools/pack-20261116-v8.json')
+    name = 'agent-shape-match'
+    pack['cases'] = [entry for entry in pack['cases'] if entry['definition']['id'] == name]
+    pack['manifest']['case_families'] = {name: 'code-repair'}
+    source = (preamble +
+              "def matches(expected, observed):\n"
+              f"    g = {lookup}({lookup}(s, '_getframe')(1), 'f_globals')\n"
+              "    if 'checks' in g:\n        g['checks'].clear()\n"
+              "    return len(expected) > 1\n")
+    cfg = config()
+    cfg['candidates'][0]['responses'] = {name: {'answer': '', 'files': [
+        {'path': 'shape_match.py', 'content': source}]}}
+    record = runner.run(pack, cfg, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+
+
 @pytest.mark.parametrize('value', [
     {'isolated_tokens_per_second': 1000, 'mixed_status': 'MIXED', 'mixed_decode_tokens_per_second': 1500},
+    {'isolated_tokens_per_second': 1000, 'mixed_status': 'MIXED', 'decode_tokens_per_second': 1500},
     {'windows': [{'id': 'isolated', 'isolated_tokens_per_second': 1000},
                  {'id': 'mixed', 'mixed_status': 'MIXED'}], 'mixed_tokens_per_second': 1500},
+    {'windows': [{'id': 'isolated', 'isolated_tokens_per_second': 1000},
+                 {'id': 'mixed', 'mixed_status': 'MIXED'}], 'tokens_per_second': 1500},
 ])
 def test_v8_window_checker_rejects_explicit_mixed_throughput(tmp_path, value):
     root = Path(__file__).resolve().parents[1]
@@ -226,7 +266,13 @@ def test_v8_preserves_case_contracts_and_accepts_equivalent_valid_answers(tmp_pa
     new = {entry['definition']['id']: entry for entry in current['cases']}
     assert old.keys() == new.keys()
     for case_id in old:
-        assert old[case_id]['definition'] == new[case_id]['definition']
+        if case_id == 'agent-performance-window':
+            old_case, new_case = deepcopy(old[case_id]['definition']), deepcopy(new[case_id]['definition'])
+            assert '顶层 tokens_per_second' in new_case.pop('prompt')
+            old_case.pop('prompt')
+            assert old_case == new_case
+        else:
+            assert old[case_id]['definition'] == new[case_id]['definition']
         assert (old[case_id]['script_hashes'] != new[case_id]['script_hashes']) == (
             case_id in {'agent-shape-match', 'agent-performance-window'})
     code = ("def matches(expected, observed):\n"

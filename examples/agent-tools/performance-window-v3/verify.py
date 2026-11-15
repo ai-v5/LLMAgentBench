@@ -24,3 +24,8 @@ else:
     assert value.get('mixed_tokens_per_second') is None
 assert type(isolated) in (int, float)
 assert math.isclose(isolated, 1000, abs_tol=1e-6)
+if isinstance(value, dict):
+    for key in ('tokens_per_second', 'decode_tokens_per_second'):
+        extra = value.get(key)
+        if extra is not None:
+            assert type(extra) in (int, float) and math.isclose(extra, isolated, abs_tol=1e-6)
