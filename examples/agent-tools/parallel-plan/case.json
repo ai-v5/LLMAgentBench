@@ -1,0 +1,11 @@
+{
+  "id": "agent-parallel-plan",
+  "category": "analysis",
+  "topic": "performance",
+  "prompt": "为合成训练配置计算每一步的唯一数据量。每条配置 NMB=2×PP；全局序列数=DP×MBS×NMB；唯一 token 数=全局序列数×seq_len。TP 和 CP 会分片或复制计算，不额外乘入唯一数据量。写 plan.json，rows 为数组，每项含 id、nmb、global_sequences、unique_tokens；顺序不限。允许使用工具、编程和查阅资料，不要修改输入。",
+  "inputs": {
+    "configs.json": "[{\"id\":\"a\",\"pp\":3,\"dp\":4,\"mbs\":2,\"seq_len\":2048,\"tp\":4,\"cp\":2},{\"id\":\"b\",\"pp\":2,\"dp\":8,\"mbs\":1,\"seq_len\":4096,\"tp\":2,\"cp\":1}]\n"
+  },
+  "allowed_write_paths": ["plan.json"],
+  "checks": [{"id": "tokens", "type": "python", "script": "verify.py"}]
+}

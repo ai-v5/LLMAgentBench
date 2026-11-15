@@ -20,6 +20,15 @@ def combined(target_path: Path, selection: dict, private_pack_path: Path,
     target = load_pack(target_path)
     pack = load_pack(private_pack_path)
     record = load_run(private_run_path)
+    if len({target["manifest"].get("evaluation_scope"),
+            pack["manifest"].get("evaluation_scope"), record.get("evaluation_scope")}) > 1:
+        raise ContractError("Cannot combine different or unknown evaluation scopes")
+    if len({target["manifest"].get("invocation_mode", "response_patch"),
+            pack["manifest"].get("invocation_mode", "response_patch"),
+            record.get("invocation_mode", "response_patch")}) > 1:
+        raise ContractError("Cannot combine different invocation modes")
+    if record.get("invocation_mode") == "workspace_tools" and record.get("workspace_snapshot_version") != 1:
+        raise ContractError("Workspace snapshot not recorded")
     if (pack["manifest"]["visibility"] != "private" or pack["manifest"]["synthetic"] is not True
             or record["visibility"] != "private" or record["synthetic"] is not True):
         raise ContractError("The additional run must use a private synthetic pack")

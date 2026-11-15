@@ -376,7 +376,15 @@ def prompt_text(payload: dict) -> str:
     return prompt_text_for(payload)
 
 
-def prompt_text_for(payload: dict, *, adapter: str | None = None) -> str:
+def prompt_text_for(payload: dict, *, adapter: str | None = None,
+                    invocation_mode: str = "response_patch") -> str:
+    if invocation_mode == "workspace_tools":
+        return ("Complete the supplied task in the current workspace. You may use available tools "
+                "to inspect and modify files directly, run code and tests, and access the web as needed. "
+                "Keep supplied inputs unchanged unless the task permits editing them. "
+                "Use public web sources read-only; do not perform external mutations. "
+                "Do not seek evaluator files, reference answers, other candidates, credentials, "
+                "local memories or unrelated user files. Finish with a concise answer.\n\n" + canonical(payload))
     format_rule = ""
     if adapter == "kimi":
         format_rule = (
@@ -397,7 +405,8 @@ def prompt_text_for(payload: dict, *, adapter: str | None = None) -> str:
     )
 
 
-def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout: float) -> dict:
+def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout: float, *,
+           invocation_mode: str = "response_patch") -> dict:
     started = time.monotonic()
     kind = adapter["adapter"]
     base = {"status": "error", "response": None, "usage": None, "cost_usd": None,
@@ -425,12 +434,16 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             control.mkdir(parents=True, exist_ok=True)
             schema, answer = control / "response.schema.json", control / "last-message.json"
             write_json(schema, RESPONSE_SCHEMA)
-            argv = [executable, "exec", "--ignore-user-config", "--ephemeral", "--skip-git-repo-check",
+            argv = [executable] + (["--search"] if invocation_mode == "workspace_tools" else [])
+            argv += ["exec", "--ignore-user-config", "--ephemeral", "--skip-git-repo-check",
                     "--disable", "memories", "--config", "memories.use_memories=false",
                     "--config", "memories.generate_memories=false",
-                    "--sandbox", "read-only", "--model", adapter["model"], "--json", "--color", "never",
-                    "--config", "project_doc_max_bytes=0", "--output-schema", str(schema),
-                    "--output-last-message", str(answer), "--cd", str(workspace)]
+                    "--sandbox", "workspace-write" if invocation_mode == "workspace_tools" else "read-only",
+                    "--model", adapter["model"], "--json", "--color", "never",
+                    "--config", "project_doc_max_bytes=0"]
+            if invocation_mode == "response_patch":
+                argv += ["--output-schema", str(schema)]
+            argv += ["--output-last-message", str(answer), "--cd", str(workspace)]
             if os.name == "nt":
                 argv += ["--config", 'windows.sandbox="unelevated"']
             if audit_mode == "cli_items_v1":
@@ -448,7 +461,7 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             if adapter.get("reasoning_effort"):
                 argv += ["--config", "model_reasoning_effort=" + json.dumps(adapter["reasoning_effort"])]
             argv += ["-"]
-            result = execute(argv, cwd=workspace, stdin=prompt_text_for(payload, adapter=kind), timeout=timeout, pass_env=adapter.get("pass_env", []))
+            result = execute(argv, cwd=workspace, stdin=prompt_text_for(payload, adapter=kind, invocation_mode=invocation_mode), timeout=timeout, pass_env=adapter.get("pass_env", []))
             if audit_mode == "cli_items_v1":
                 base["local_lookup_audit"] = audit_codex_items(result["stdout"])
             if result["timed_out"]:
@@ -476,6 +489,19 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                     item_type = item.get("type")
                     reported.add(item_type if isinstance(item_type, str) and item_type in known_item_types else "other")
             base["reported_item_types"] = sorted(reported)
+            if invocation_mode == "workspace_tools":
+                base["tool_error_count"] = sum(
+                    1 for e in events if e.get("type") == "item.completed"
+                    and isinstance(e.get("item"), dict)
+                    and isinstance(e["item"].get("type"), str)
+                    and e["item"].get("type") in {"command_execution", "file_change", "mcp_tool_call", "web_search"}
+                    and isinstance(e["item"].get("status"), str)
+                    and e["item"].get("status") in {"failed", "error", "declined"}
+                    and not (e["item"].get("type") == "command_execution"
+                             and e["item"].get("status") == "failed"
+                             and type(e["item"].get("exit_code")) is int
+                             and e["item"]["exit_code"] > 0
+                             and e["item"]["exit_code"] not in {126, 127, 137, 9009}))
             usages = [e["usage"] for e in events if e.get("type") == "turn.completed" and e.get("usage")]
             if usages and isinstance(usages[-1], dict):
                 usage_keys = {"input_tokens", "cached_input_tokens", "cache_write_input_tokens",
@@ -487,7 +513,7 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                 raise ContractError("Codex failed or produced no final response")
             if audit_mode == "cli_items_v1" and base["local_lookup_audit"]["status"] != "no_tool_events_reported":
                 raise ContractError("Codex tool event audit did not complete cleanly")
-            base["response"] = normalize_response(read_json(answer))
+            base["response"] = normalize_response({"answer": answer.read_text(encoding="utf-8"), "files": []}) if invocation_mode == "workspace_tools" else normalize_response(read_json(answer))
         elif kind == "dsh":
             audit_mode = adapter.get("local_lookup_audit")
             if audit_mode not in (None, "dsh_json_v1"):
@@ -501,16 +527,20 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             # JSON is a YAML subset. This overlay is invocation-local; no profile is edited.
             overlay = [
                 {"id": "agent-default-model", "config": selection},
-                {"id": "sandbox-policy", "config": {"mode": "read-only", "workspaceRoot": str(workspace)}},
+                {"id": "sandbox-policy", "config": {"mode": "workspace-write" if invocation_mode == "workspace_tools" else "read-only", "workspaceRoot": str(workspace)}},
                 {"id": "agent-instructions", "disabled": True},
                 {"id": "hmr", "disabled": True},
             ]
             if audit_mode == "dsh_json_v1":
                 overlay += [{"id": name, "disabled": True} for name in DSH_AUDIT_DISABLED_PLUGINS]
+            elif invocation_mode == "workspace_tools":
+                overlay += [{"id": name, "disabled": True} for name in (
+                    "tool-subagent-control", "tool-subagent-list-agents", "tool-subagent",
+                    "tool-subagent-fork", "tool-workflow", "tool-goal", "tool-plugin-manager", "skill-filesystem")]
             write_json(patch, overlay)
             argv = launcher + ["--profile", adapter.get("profile", "headless"), "--patch", str(patch), "--json", "-"]
             environment = {"ELECTRON_RUN_AS_NODE": "1"} if adapter.get("electron_run_as_node") else {}
-            result = execute(argv, cwd=workspace, stdin=prompt_text_for(payload, adapter=kind), timeout=timeout,
+            result = execute(argv, cwd=workspace, stdin=prompt_text_for(payload, adapter=kind, invocation_mode=invocation_mode), timeout=timeout,
                              pass_env=adapter.get("pass_env", []), extra_env=environment)
             if audit_mode == "dsh_json_v1":
                 base["local_lookup_audit"] = audit_dsh_events(result["stdout"])
@@ -525,6 +555,12 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             known = {"session", "status", "thinking", "text", "tool_call", "tool_result", "final", "error"}
             base["event_types"] = sorted({e.get("type") if isinstance(e.get("type"), str)
                                           and e.get("type") in known else "other" for e in events})
+            if invocation_mode == "workspace_tools":
+                base["tool_call_count"] = sum(e.get("type") == "tool_call" for e in events)
+                base["tool_result_count"] = sum(e.get("type") == "tool_result" for e in events)
+                base["tool_error_count"] = sum(e.get("type") == "tool_result" and
+                                               isinstance(e.get("status"), str) and
+                                               e.get("status") in {"error", "failed", "denied"} for e in events)
             sessions = [e.get("sessionId") for e in events if e.get("type") == "session"]
             base["session_id"] = sessions[0] if sessions else None
             steps = [e for e in events if e.get("type") == "status" and e.get("phase") == "step_end"]
@@ -542,7 +578,9 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                 raise ContractError("DSH did not finish a fresh headless run")
             if audit_mode == "dsh_json_v1" and base["local_lookup_audit"]["status"] != "no_tool_events_reported":
                 raise ContractError("DSH tool event audit did not complete cleanly")
-            base["response"] = normalize_response(parse_json_response(finals[0]["text"]))
+            base["response"] = (normalize_response({"answer": finals[0]["text"], "files": []})
+                                if invocation_mode == "workspace_tools" else
+                                normalize_response(parse_json_response(finals[0]["text"])))
         elif kind == "kimi":
             if adapter.get("local_lookup_audit") != "kimi_wire_v1":
                 raise ContractError("Kimi wire audit is required")
@@ -596,18 +634,23 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
     return base
 
 
-def adapter_identity(adapter: dict) -> dict:
+def adapter_identity(adapter: dict, *, invocation_mode: str = "response_patch") -> dict:
     identity = {"id": adapter.get("id", "judge"), "adapter": adapter["adapter"],
                 "requested_model": adapter.get("model"), "reasoning_effort": adapter.get("reasoning_effort"),
-                "invocation_mode": "response_patch", "config_sha256": hashlib.sha256(canonical(adapter).encode()).hexdigest()}
+                "invocation_mode": invocation_mode, "config_sha256": hashlib.sha256(canonical(adapter).encode()).hexdigest()}
+    if invocation_mode == "workspace_tools" and "NODE_EXTRA_CA_CERTS" in {name.upper() for name in adapter.get("pass_env", [])}:
+        ca_path = os.environ.get("NODE_EXTRA_CA_CERTS")
+        identity["network_ca_sha256"] = file_sha256(Path(ca_path)) if ca_path else None
     if adapter["adapter"] == "codex":
         executable = shutil.which(adapter.get("executable", "codex"))
         identity["executable_sha256"] = hashlib.sha256(Path(executable).read_bytes()).hexdigest() if executable else None
-        identity["sandbox"] = "read-only"
+        identity["sandbox"] = "workspace-write" if invocation_mode == "workspace_tools" else "read-only"
         identity["user_config"] = "ignored"
         identity["memory_injection"] = "configured_disabled"
         identity["global_instructions"] = "not_isolated"
         identity["filesystem_read_isolation"] = "not_verified"
+        if invocation_mode == "workspace_tools":
+            identity["network_access"] = "configured_not_verified"
         if os.name == "nt":
             identity["windows_sandbox"] = "unelevated"
         if adapter.get("local_lookup_audit") == "cli_items_v1":
@@ -618,9 +661,27 @@ def adapter_identity(adapter: dict) -> dict:
     if adapter["adapter"] == "dsh":
         identity["provider"] = adapter["provider"]
         identity["profile"] = adapter.get("profile", "headless")
-        identity["sandbox"] = "read-only"
+        identity["sandbox"] = "workspace-write" if invocation_mode == "workspace_tools" else "read-only"
         launcher = dsh_launcher(adapter)
         identity["launcher_sha256"] = hashlib.sha256(canonical(launcher).encode()).hexdigest()
+        if invocation_mode == "workspace_tools":
+            identity["filesystem_read_isolation"] = "not_verified"
+            identity["network_access"] = "configured_not_verified"
+            identity["executable_sha256"] = file_sha256(Path(launcher[0]))
+            patches = []
+            for index, arg in enumerate(launcher):
+                if arg == "--patch":
+                    if index + 1 >= len(launcher):
+                        raise ContractError("DSH launcher patch path missing")
+                    patches.append(launcher[index + 1])
+                elif arg.startswith("--patch="):
+                    patches.append(arg.removeprefix("--patch="))
+            if any(not Path(path).is_absolute() for path in patches):
+                raise ContractError("DSH launcher patch paths must be absolute")
+            identity["launcher_patch_sha256"] = [file_sha256(Path(path)) for path in patches]
+            bundles = [parent for arg in launcher[1:] for parent in (Path(arg), *Path(arg).parents)
+                       if parent.suffix.lower() == ".asar" and parent.is_file()]
+            identity["bundle_sha256"] = file_sha256(bundles[0]) if bundles else None
         if adapter.get("local_lookup_audit") == "dsh_json_v1":
             identity["local_lookup_audit"] = "dsh_headless_json_events"
             identity["global_instructions"] = "configured_disabled"

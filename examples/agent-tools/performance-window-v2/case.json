@@ -1,0 +1,11 @@
+{
+  "id": "agent-performance-window",
+  "category": "analysis",
+  "topic": "performance",
+  "prompt": "分析合成的性能窗口。对 prefill_overlap 为 false 且输出数、起止时间均已知的 decode 窗口，计算总输出 token 数除以窗口秒数；有 prefill 重叠的窗口标为 MIXED，不给该窗口计算隔离 decode 吞吐。写 window_report.json：isolated_tokens_per_second 为隔离窗口吞吐，mixed_status 为 MIXED。允许使用工具、编程和查阅资料，不要修改输入。",
+  "inputs": {
+    "windows.json": "[{\"id\":\"isolated\",\"decode_start_s\":10,\"decode_end_s\":14,\"output_tokens\":4000,\"prefill_overlap\":false},{\"id\":\"mixed\",\"decode_start_s\":20,\"decode_end_s\":24,\"output_tokens\":6000,\"prefill_overlap\":true}]\n"
+  },
+  "allowed_write_paths": ["window_report.json"],
+  "checks": [{"id": "window", "type": "python", "script": "verify.py"}]
+}

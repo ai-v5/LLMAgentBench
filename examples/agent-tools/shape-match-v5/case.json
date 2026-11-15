@@ -1,0 +1,12 @@
+{
+  "id": "agent-shape-match",
+  "category": "coding",
+  "topic": "coding",
+  "prompt": "修复 shape_match.py 的 matches(expected, observed)。只有 op、shape、dtype、device 四个字段都存在且逐项相等时返回 True；任意字段缺失或不同返回 False，不能修改输入。保持函数签名。被测函数应为纯函数，不读写文件或访问网络；可使用 math、statistics、collections、itertools、functools、typing 标准库。工作区附带 test_shape_match.py，可运行测试。允许使用工具、编程和按需查阅公开资料；不要修改测试文件。",
+  "inputs": {
+    "shape_match.py": "def matches(expected, observed):\n    return expected['op'] == observed['op'] and expected['shape'] == observed['shape']\n",
+    "test_shape_match.py": "import unittest\nfrom shape_match import matches\n\nclass ShapeTests(unittest.TestCase):\n    def test_dtype_is_part_of_identity(self):\n        target = {'op':'matmul','shape':[2,4],'dtype':'bf16','device':'npu'}\n        actual = {'op':'matmul','shape':[2,4],'dtype':'fp32','device':'npu'}\n        self.assertFalse(matches(target, actual))\n\nif __name__ == '__main__':\n    unittest.main()\n"
+  },
+  "allowed_write_paths": ["shape_match.py"],
+  "checks": [{"id": "shape_identity", "type": "python", "script": "verify.py"}]
+}

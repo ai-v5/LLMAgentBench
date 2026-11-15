@@ -1,0 +1,12 @@
+{
+  "id": "agent-runtime-diagnosis",
+  "category": "analysis",
+  "topic": "diagnosis",
+  "prompt": "检查合成运行记录，判断最直接可支持的状态与下一步。host.json 是宿主机检查，container.json 是应用所在容器内检查。不要把宿主机可见设备当成容器可见，也不要断言日志没有证明的驱动故障。写 diagnosis.json：status 从 CONTAINER_DEVICE_UNAVAILABLE、DRIVER_FAILED、READY 中选择；next_check 从 CONTAINER_DEVICE_MAPPING、REPLACE_DRIVER、NONE 中选择。允许使用工具和编程，不要修改输入。",
+  "inputs": {
+    "host.json": "{\"device_count\":8,\"health\":\"ok\"}\n",
+    "container.json": "{\"runtime_import\":\"ok\",\"device_count\":0,\"driver_error\":null}\n"
+  },
+  "allowed_write_paths": ["diagnosis.json"],
+  "checks": [{"id": "diagnosis", "type": "python", "script": "verify.py"}]
+}

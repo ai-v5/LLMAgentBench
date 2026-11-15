@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "agent-tools-smoke",
+  "version": "20261116-v8",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "evaluation_scope": "engineering",
+  "invocation_mode": "workspace_tools",
+  "case_families": {
+    "agent-result-accounting": "result-accounting",
+    "agent-measurement-triage": "measurement-evidence",
+    "agent-shape-match": "code-repair",
+    "agent-review-cache": "code-review",
+    "agent-runtime-diagnosis": "runtime-diagnosis",
+    "agent-performance-window": "performance-window",
+    "agent-parallel-plan": "parallel-planning"
+  },
+  "cases": [
+    "result-accounting/case.json",
+    "measurement-triage/case.json",
+    "shape-match-v5/case.json",
+    "review-cache-v2/case.json",
+    "runtime-diagnosis/case.json",
+    "performance-window-v3/case.json",
+    "parallel-plan-v2/case.json"
+  ]
+}

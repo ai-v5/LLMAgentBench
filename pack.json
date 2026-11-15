@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
   "id": "public-benchmark-v1",
-  "version": "20261111",
+  "version": "20261115",
   "visibility": "public",
   "synthetic": true,
   "purpose": "benchmark",
+  "evaluation_scope": "engineering",
   "cases": [
     "examples/engineering/quality-rate/case.json",
     "examples/engineering/native-rank-proof/case.json",

@@ -18,6 +18,8 @@ from llmagentbench.runner import load_run
 def compose(target_path: Path, selection: dict) -> tuple[dict, dict, dict]:
     target = load_pack(target_path)
     manifest = target["manifest"]
+    if "case_families" in manifest:
+        raise ContractError("Family-aware case reuse is not implemented")
     if manifest["visibility"] != "public" or manifest["synthetic"] is not True:
         raise ContractError("The target must be a public synthetic pack")
     model, effort, label = (selection.get(key) for key in ("model", "effort", "label"))
@@ -36,6 +38,17 @@ def compose(target_path: Path, selection: dict) -> tuple[dict, dict, dict]:
     for source in sources:
         pack = load_pack(Path(source["pack"]))
         record = load_run(Path(source["run"]))
+        if "case_families" in pack["manifest"] or "case_families" in record:
+            raise ContractError("Family-aware case reuse is not implemented")
+        if len({manifest.get("evaluation_scope"), pack["manifest"].get("evaluation_scope"),
+                record.get("evaluation_scope")}) > 1:
+            raise ContractError("Cannot reuse different or unknown evaluation scopes")
+        if len({manifest.get("invocation_mode", "response_patch"),
+                pack["manifest"].get("invocation_mode", "response_patch"),
+                record.get("invocation_mode", "response_patch")}) > 1:
+            raise ContractError("Cannot reuse different invocation modes")
+        if record.get("invocation_mode") == "workspace_tools" and record.get("workspace_snapshot_version") != 1:
+            raise ContractError("Workspace snapshot not recorded")
         if (pack["manifest"]["visibility"] != "public" or pack["manifest"]["synthetic"] is not True
                 or record["visibility"] != "public" or record["synthetic"] is not True):
             raise ContractError("Every source must be a public synthetic run")

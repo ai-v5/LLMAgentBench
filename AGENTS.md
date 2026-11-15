@@ -5,6 +5,7 @@
 - Scope: Codex, DSH headless, and Kimi Daimon prompt adapters. Fixture adapters test this evaluator and must remain labelled `FIXTURE_SMOKE`.
 - The evaluator owns case inputs, grading scripts, budgets, order, receipts and result aggregation. Candidate output must never define its own pass/fail status.
 - Run `python -m pytest` after logical changes. Include negative controls for changes to scoring, isolation, export or receipt integrity.
+- Do not add or enable automatically triggered GitHub test/CI workflows; run the required checks locally. Preserve the existing GitHub Pages deployment.
 - Missing grades are `unscored`; failed, errored and timed-out attempts stay in the denominator. First-attempt success and success after automatic repair are separate metrics.
 - Automated repair effort is a proxy. Never infer measured human minutes, labor savings or a production ranking from synthetic smoke cases.
 - Public export is explicit and aggregate-only. Individual run exports are restricted to completed public synthetic packs. With explicit user authorization, combined overall counts and timings may include private runs; never export private case identity, content, per-case results, pack metadata, or raw receipts.
