@@ -22,10 +22,13 @@ for node in ast.walk(tree):
         assert all(alias.name.split('.')[0] in safe_modules for alias in node.names)
     if isinstance(node, ast.ImportFrom):
         assert node.level == 0 and node.module and node.module.split('.')[0] in safe_modules
+        assert all(not alias.name.startswith('_') and alias.name not in {'sys', 'os', 'builtins'}
+                   for alias in node.names)
     if isinstance(node, ast.Name):
         assert not node.id.startswith('__')
     if isinstance(node, ast.Attribute):
         assert not node.attr.startswith('_')
+        assert node.attr not in {'sys', 'os', 'builtins', 'modules', 'stdin', 'stdout', 'stderr'}
 
 def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
     assert level == 0 and name.split('.')[0] in safe_modules

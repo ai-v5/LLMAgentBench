@@ -257,6 +257,28 @@ def test_v8_evaluator_rejects_candidate_tampering_with_checks(tmp_path, preamble
     assert record['attempts'][0]['outcome'] == 'fail'
 
 
+def test_v8_evaluator_rejects_forged_checker_completion(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    pack = load_pack(root / 'examples/agent-tools/pack-20261116-v8.json')
+    name = 'agent-shape-match'
+    pack['cases'] = [entry for entry in pack['cases'] if entry['definition']['id'] == name]
+    pack['manifest']['case_families'] = {name: 'code-repair'}
+    source = ("import typing\n"
+              "def matches(*args):\n    return False\n"
+              "s = typing.sys\nb = s.modules['builtins']\ng = b.getattr\n"
+              "payload = g(g(s, '_getframe')(1), 'f_globals')['payload']\n"
+              "rows = [{'value': b.all(k in r['expected'] and k in r['observed'] and "
+              "r['expected'][k] == r['observed'][k] for k in ('op', 'shape', 'dtype', 'device')), "
+              "'unchanged': True} for r in payload['requests']]\n"
+              "g(s.stdout, 'write')('BENCH_SHAPE_RESULT:' + s.modules['json'].dumps(rows) + b.chr(10))\n"
+              "g(s, 'exit')(0)\n")
+    cfg = config()
+    cfg['candidates'][0]['responses'] = {name: {'answer': '', 'files': [
+        {'path': 'shape_match.py', 'content': source}]}}
+    record = runner.run(pack, cfg, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+
+
 @pytest.mark.parametrize('value', [
     {'isolated_tokens_per_second': 1000, 'mixed_status': 'MIXED', 'mixed_decode_tokens_per_second': 1500},
     {'isolated_tokens_per_second': 1000, 'mixed_status': 'MIXED', 'decode_tokens_per_second': 1500},
