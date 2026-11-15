@@ -496,7 +496,11 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
                     and isinstance(e["item"].get("type"), str)
                     and e["item"].get("type") in {"command_execution", "file_change", "mcp_tool_call", "web_search"}
                     and isinstance(e["item"].get("status"), str)
-                    and e["item"].get("status") in {"failed", "error", "declined"})
+                    and e["item"].get("status") in {"failed", "error", "declined"}
+                    and not (e["item"].get("type") == "command_execution"
+                             and e["item"].get("status") == "failed"
+                             and type(e["item"].get("exit_code")) is int
+                             and e["item"]["exit_code"] > 0))
             usages = [e["usage"] for e in events if e.get("type") == "turn.completed" and e.get("usage")]
             if usages and isinstance(usages[-1], dict):
                 usage_keys = {"input_tokens", "cached_input_tokens", "cache_write_input_tokens",

@@ -66,6 +66,18 @@ def test_reuse_rejects_different_evaluation_scopes(monkeypatch):
         compose_module.compose(Path('target'), selection)
 
 
+@pytest.mark.parametrize('location', ['source_pack', 'source_run'])
+def test_reuse_rejects_family_mapping_on_source(monkeypatch, location):
+    packs, records, selection = example(monkeypatch)
+    mapping = {'a': 'family-a', 'b': 'family-b'}
+    if location == 'source_pack':
+        packs['source']['manifest']['case_families'] = mapping
+    else:
+        records['run']['case_families'] = mapping
+    with pytest.raises(ContractError, match='Family-aware'):
+        compose_module.compose(Path('target'), selection)
+
+
 def test_mixed_sources_retain_condition_provenance(monkeypatch):
     packs, records, selection = example(monkeypatch)
     packs["second"] = deepcopy(packs["source"])

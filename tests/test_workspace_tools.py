@@ -1,4 +1,5 @@
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -144,6 +145,105 @@ def test_workspace_tools_codex_uses_workspace_and_plain_final(tmp_path, monkeypa
                            {'case_id': 'x', 'round': 0, 'task': 'x', 'input_paths': []},
                            tmp_path, tmp_path / 'control', 10, invocation_mode='workspace_tools')
     assert call['status'] == 'ok' and call['response'] == {'answer': 'Finished.', 'files': []}
+
+
+@pytest.mark.parametrize('status,exit_code,expected', [
+    ('failed', 1, 0), ('failed', 127, 0), ('failed', -1, 1), ('failed', None, 1), ('declined', None, 1),
+])
+def test_codex_nonzero_command_exit_is_not_a_tool_infrastructure_error(tmp_path, monkeypatch, status, exit_code, expected):
+    monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
+
+    def fake_execute(argv, **kwargs):
+        Path(argv[argv.index('--output-last-message') + 1]).write_text('Finished.', encoding='utf-8')
+        event = {'type': 'item.completed', 'item': {'type': 'command_execution', 'status': status,
+                                                    'exit_code': exit_code}}
+        return {'exit_code': 0, 'timed_out': False, 'stdout': json.dumps(event), 'stderr': ''}
+
+    monkeypatch.setattr(adapters, 'execute', fake_execute)
+    call = adapters.invoke({'adapter': 'codex', 'model': 'm'},
+                           {'case_id': 'x', 'round': 0, 'task': 'x', 'input_paths': []},
+                           tmp_path, tmp_path / 'control', 10, invocation_mode='workspace_tools')
+    assert call['status'] == 'ok' and call['tool_error_count'] == expected
+
+
+def test_failed_test_command_does_not_hide_a_failed_grade(tmp_path, monkeypatch):
+    monkeypatch.setattr(adapters.shutil, 'which', lambda _: sys.executable)
+
+    def fake_execute(argv, **kwargs):
+        Path(argv[argv.index('--output-last-message') + 1]).write_text('Wrong answer.', encoding='utf-8')
+        event = {'type': 'item.completed', 'item': {'type': 'command_execution',
+                                                    'status': 'failed', 'exit_code': 1}}
+        return {'exit_code': 0, 'timed_out': False, 'stdout': json.dumps(event), 'stderr': ''}
+
+    monkeypatch.setattr(adapters, 'execute', fake_execute)
+    cfg = config()
+    cfg['candidates'] = [{'id': 'codex', 'adapter': 'codex', 'model': 'm'}]
+    record = runner.run(make_pack(tmp_path / 'pack', 'case'), cfg, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+
+
+@pytest.mark.parametrize('source', ['raise SystemExit(0)\n',
+                                    'def matches(expected, observed):\n    raise SystemExit(0)\n'])
+def test_v8_shape_checker_rejects_early_success_exit(tmp_path, source):
+    root = Path(__file__).resolve().parents[1]
+    (tmp_path / 'shape_match.py').write_text(source, encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/shape-match-v5/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode != 0
+
+
+def test_v7_evaluator_already_rejects_early_success_exit(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    pack = load_pack(root / 'examples/agent-tools/pack-20261115-v7.json')
+    name = 'agent-shape-match'
+    pack['cases'] = [entry for entry in pack['cases'] if entry['definition']['id'] == name]
+    pack['manifest']['case_families'] = {name: 'code-repair'}
+    cfg = config()
+    cfg['candidates'][0]['responses'] = {name: {'answer': '', 'files': [
+        {'path': 'shape_match.py', 'content': 'raise SystemExit(0)\n'}]}}
+    record = runner.run(pack, cfg, tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'fail'
+
+
+@pytest.mark.parametrize('value', [
+    {'isolated_tokens_per_second': 1000, 'mixed_status': 'MIXED', 'mixed_decode_tokens_per_second': 1500},
+    {'windows': [{'id': 'isolated', 'isolated_tokens_per_second': 1000},
+                 {'id': 'mixed', 'mixed_status': 'MIXED'}], 'mixed_tokens_per_second': 1500},
+])
+def test_v8_window_checker_rejects_explicit_mixed_throughput(tmp_path, value):
+    root = Path(__file__).resolve().parents[1]
+    (tmp_path / 'window_report.json').write_text(json.dumps(value), encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/performance-window-v3/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode != 0
+
+
+def test_v8_preserves_case_contracts_and_accepts_equivalent_valid_answers(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    previous = load_pack(root / 'examples/agent-tools/pack-20261115-v7.json')
+    current = load_pack(root / 'examples/agent-tools/pack-20261116-v8.json')
+    old = {entry['definition']['id']: entry for entry in previous['cases']}
+    new = {entry['definition']['id']: entry for entry in current['cases']}
+    assert old.keys() == new.keys()
+    for case_id in old:
+        assert old[case_id]['definition'] == new[case_id]['definition']
+        assert (old[case_id]['script_hashes'] != new[case_id]['script_hashes']) == (
+            case_id in {'agent-shape-match', 'agent-performance-window'})
+    code = ("def matches(expected, observed):\n"
+            "    try:\n"
+            "        return all(observed.get(k, NotImplemented) == expected[k] "
+            "for k in ('op', 'shape', 'dtype', 'device'))\n"
+            "    except (KeyError, IndexError):\n        return False\n")
+    (tmp_path / 'shape_match.py').write_text(code, encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/shape-match-v5/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    answer = {'windows': [{'id': 'isolated', 'isolated_tokens_per_second': 1000},
+                          {'id': 'mixed', 'mixed_status': 'MIXED'}], 'tokens_per_second': 1000}
+    (tmp_path / 'window_report.json').write_text(json.dumps(answer), encoding='utf-8')
+    result = subprocess.run([sys.executable, str(root / 'examples/agent-tools/performance-window-v3/verify.py'),
+                             str(tmp_path)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 def test_workspace_tools_identity_freezes_ca_file_without_recording_path(tmp_path, monkeypatch):

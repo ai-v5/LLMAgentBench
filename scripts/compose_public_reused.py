@@ -38,6 +38,8 @@ def compose(target_path: Path, selection: dict) -> tuple[dict, dict, dict]:
     for source in sources:
         pack = load_pack(Path(source["pack"]))
         record = load_run(Path(source["run"]))
+        if "case_families" in pack["manifest"] or "case_families" in record:
+            raise ContractError("Family-aware case reuse is not implemented")
         if len({manifest.get("evaluation_scope"), pack["manifest"].get("evaluation_scope"),
                 record.get("evaluation_scope")}) > 1:
             raise ContractError("Cannot reuse different or unknown evaluation scopes")
