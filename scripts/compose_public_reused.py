@@ -36,6 +36,9 @@ def compose(target_path: Path, selection: dict) -> tuple[dict, dict, dict]:
     for source in sources:
         pack = load_pack(Path(source["pack"]))
         record = load_run(Path(source["run"]))
+        if len({manifest.get("evaluation_scope"), pack["manifest"].get("evaluation_scope"),
+                record.get("evaluation_scope")}) > 1:
+            raise ContractError("Cannot reuse different or unknown evaluation scopes")
         if (pack["manifest"]["visibility"] != "public" or pack["manifest"]["synthetic"] is not True
                 or record["visibility"] != "public" or record["synthetic"] is not True):
             raise ContractError("Every source must be a public synthetic run")

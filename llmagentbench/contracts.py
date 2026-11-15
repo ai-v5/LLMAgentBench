@@ -55,6 +55,11 @@ def identifier(value: Any) -> str:
     return value
 
 
+def validate_evaluation_scope(value: Any) -> None:
+    if not isinstance(value, str) or value not in {"engineering", "hash", "diagnostic"}:
+        raise ContractError("Unknown evaluation scope")
+
+
 def positive(value: Any, field: str, *, allow_zero: bool = False) -> None:
     try:
         valid = (not isinstance(value, bool) and isinstance(value, (int, float))
@@ -114,6 +119,8 @@ def load_pack(path: Path) -> dict:
     if manifest.get("schema_version") != 1 or manifest.get("visibility") not in {"public", "private"}:
         raise ContractError("Unsupported pack contract")
     identifier(manifest["id"])
+    if "evaluation_scope" in manifest:
+        validate_evaluation_scope(manifest["evaluation_scope"])
     version = manifest.get("version")
     if version is not None and (not isinstance(version, str) or not re.fullmatch(r"\d{8}(-v[1-9]\d*)?", version)):
         raise ContractError("Pack version must be YYYYMMDD or YYYYMMDD-vN")

@@ -8,6 +8,48 @@ from llmagentbench.runner import run
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize('hidden_kind', ['comment', 'template', 'hidden_parent'])
+def test_crocodile_checker_rejects_inert_svg(tmp_path, hidden_kind):
+    pack = load_pack(ROOT / 'pack.json')
+    pack['cases'] = [entry for entry in pack['cases']
+                     if entry['definition']['id'] == 'crocodile-bike']
+    svg = '''crocodile <svg>
+    <circle></circle><circle></circle><path></path><path></path><path></path>
+    <animateTransform type="rotate"></animateTransform>
+    <animateTransform type="rotate"></animateTransform><animate></animate>
+    </svg>'''
+    wrappers = {'comment': '<!-- {} -->', 'template': '<template>{}</template>',
+                'hidden_parent': '<div hidden>{}</div>'}
+    html = '<html><body>' + wrappers[hidden_kind].format(svg) + '</body></html>'
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0,
+              'timeout_seconds': 20, 'check_timeout_seconds': 10, 'candidates': [
+                  {'id': 'comment-only', 'adapter': 'fixture', 'responses': {
+                      'crocodile-bike': {'answer': '', 'files': [
+                          {'path': 'crocodile.html', 'content': html}]}}}]}
+    result = run(pack, config, tmp_path / 'comment-only')
+    assert result['attempts'][0]['outcome'] == 'fail'
+
+
+@pytest.mark.parametrize('closing_tag,insertion', [
+    ('</head>', '<link rel="stylesheet" href="https://example.test/style.css">'),
+    ('</body>', '<img hidden src="https://example.test/pixel.png">'),
+])
+def test_crocodile_checker_rejects_hidden_external_resources(tmp_path, closing_tag, insertion):
+    pack = load_pack(ROOT / 'pack.json')
+    pack['cases'] = [entry for entry in pack['cases']
+                     if entry['definition']['id'] == 'crocodile-bike']
+    controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))
+    html = controls['crocodile-bike']['good']['files'][0]['content']
+    html = html.replace(closing_tag, insertion + closing_tag)
+    config = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0,
+              'timeout_seconds': 20, 'check_timeout_seconds': 10, 'candidates': [
+                  {'id': 'external', 'adapter': 'fixture', 'responses': {
+                      'crocodile-bike': {'answer': '', 'files': [
+                          {'path': 'crocodile.html', 'content': html}]}}}]}
+    result = run(pack, config, tmp_path / 'external')
+    assert result['attempts'][0]['outcome'] == 'fail'
+
+
 def test_every_engineering_case_has_positive_and_negative_controls(tmp_path):
     pack = load_pack(ROOT / 'pack.json')
     controls = json.loads((ROOT / 'tests/engineering_controls.json').read_text(encoding='utf-8'))

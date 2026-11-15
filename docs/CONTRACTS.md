@@ -6,7 +6,9 @@
 
 ## Case pack
 
-pack.json 使用 schema_version: 1，要求唯一 id、visibility（public/private）、显式 synthetic 布尔值、非空 cases 相对路径列表。purpose 标注 smoke 或 benchmark。
+pack.json 使用 schema_version: 1，要求唯一 id、visibility（public/private）、显式 synthetic 布尔值、非空 cases 相对路径列表。purpose 标注 candidate、smoke 或 benchmark；candidate 不代表题目已通过独立质量验证。
+
+新题包可用 `evaluation_scope` 标记 `engineering`、`hash` 或 `diagnostic`，该字段进入题包指纹、运行收据和本地汇总。历史收据没有该字段时保持未知。总体导出和按题复用拒绝混合不同范围，或将范围已知与未知的收据混合；两个都未标注的历史来源仍按原合同处理。
 
 每个 case 有唯一 id、category、prompt、字符串文件映射 inputs、允许修改的精确相对路径列表 allowed_write_paths、非空 checks。相对路径使用 `/`，拒绝绝对路径、上级跳转、盘符、`.git`、符号链接和 junction。输入逐字写入新的工作目录，候选之间不共享目录。
 

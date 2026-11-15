@@ -44,7 +44,7 @@ def summarize(record: dict) -> dict:
             "human_minutes": None, "human_minutes_status": "NOT_MEASURED",
             "by_category": {category: stats([a for a in attempts if a["category"] == category]) for category in sorted({a["category"] for a in attempts})},
         })
-    return {
+    summary = {
         "schema_version": 1, "run_id": record["run_id"], "state": record["state"],
         "visibility": record["visibility"], "synthetic": record["synthetic"],
         "purpose": record.get("purpose", "benchmark"),
@@ -57,12 +57,16 @@ def summarize(record: dict) -> dict:
         "check_timeout_seconds": record["check_timeout_seconds"],
         "metric_boundary": record["metric_boundary"], "candidates": rows,
     }
+    if "evaluation_scope" in record:
+        summary["evaluation_scope"] = record["evaluation_scope"]
+    return summary
 
 
 def markdown(summary: dict) -> str:
     data_scope = "合成输入" if summary["synthetic"] else "非合成输入"
+    scope = f"；评测范围：`{summary['evaluation_scope']}`" if "evaluation_scope" in summary else ""
     lines = ["# 评估结果", "", f"Run: `{summary['run_id']}` · state: `{summary['state']}`", "",
-             f"数据：{data_scope}；用途：`{summary['purpose']}`；可见性：`{summary['visibility']}`。", "",
+             f"数据：{data_scope}；用途：`{summary['purpose']}`；可见性：`{summary['visibility']}`{scope}。", "",
              "自动验收与修复指标；人工核验时间未测量。小样本不能作为模型排名。", "",
              "| 候选 | 证据 | 样本 | 首次通过率 | 预算内通过率 | 失败/未知/错误/超时 | 平均耗时(s) | 候选调用总耗时(s) | 有效吞吐(通过题/小时) |",
              "|---|---|---:|---:|---:|---|---:|---:|---:|"]
@@ -100,6 +104,8 @@ def export_overall(run_paths: list[Path], output: Path, labels: dict[str, str], 
     if not run_paths or output.exists():
         raise ContractError("Overall export requires runs and a new destination")
     records = [load_run(path) for path in run_paths]
+    if len({record.get("evaluation_scope") for record in records}) > 1:
+        raise ContractError("Cannot combine different or unknown evaluation scopes")
     if any(r["visibility"] == "private" or not r["synthetic"] for r in records) and not allow_private:
         raise ContractError("Private overall totals require explicit authorization")
     if len({r["receipt_sha256"] for r in records}) != len(records) or len({r["pack_sha256"] for r in records}) != len(records):

@@ -10,7 +10,7 @@ from scripts import export_combined_overall as exporter
 
 
 def example(monkeypatch):
-    target = {"version": "20261110"}
+    target = {"version": "20261110", "manifest": {}}
     private_pack = {"version": "20261110", "sha256": "private-hash",
                     "manifest": {"visibility": "private", "synthetic": True},
                     "cases": [{"definition": {"id": "private-a"}}, {"definition": {"id": "private-b"}}]}
@@ -66,6 +66,15 @@ def test_authorization_is_checked_before_reading_private_data(monkeypatch):
     monkeypatch.setattr(exporter, 'load_run', lambda _: pytest.fail('must not read a run'))
     with pytest.raises(ContractError, match='authorization'):
         run(selection, allow_private=False)
+
+
+def test_combined_export_rejects_different_evaluation_scopes(monkeypatch):
+    packs, records, selection = example(monkeypatch)
+    packs['target']['manifest']['evaluation_scope'] = 'engineering'
+    packs['private-pack']['manifest']['evaluation_scope'] = 'hash'
+    records['private-run']['evaluation_scope'] = 'hash'
+    with pytest.raises(ContractError, match='scope'):
+        run(selection)
 
 
 @pytest.mark.parametrize('mutation', ['visibility', 'synthetic', 'pack', 'version', 'candidate', 'budget',

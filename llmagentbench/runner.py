@@ -12,7 +12,8 @@ from pathlib import Path
 
 from . import __version__
 from .adapters import adapter_identity, invoke
-from .contracts import ContractError, canonical, digest, read_json, safe_path, write_json
+from .contracts import (ContractError, canonical, digest, read_json, safe_path,
+                        validate_evaluation_scope, write_json)
 from .graders import grade, outcome
 
 
@@ -86,6 +87,8 @@ def run(pack: dict, config: dict, output: Path) -> dict:
         "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
         "state": "running", "attempts": [],
     }
+    if "evaluation_scope" in manifest:
+        record["evaluation_scope"] = manifest["evaluation_scope"]
     write_json(output / "manifest.json", record)
     def verify_frozen_identity() -> None:
         if record["state"] == "invalidated":
@@ -189,6 +192,8 @@ def load_run(root: Path) -> dict:
     record = read_json(root / "manifest.json")
     if record["state"] != "completed":
         raise ContractError("Run is incomplete")
+    if "evaluation_scope" in record:
+        validate_evaluation_scope(record["evaluation_scope"])
     expected = Counter((c["id"], case_id, repeat) for c in record["candidates"] for case_id in record["case_ids"] for repeat in range(record["repeats"]))
     actual = Counter((a["candidate_id"], a["case_id"], a["repeat"]) for a in record["attempts"])
     if expected != actual or len(record["attempts"]) != record["expected_attempts"]:
