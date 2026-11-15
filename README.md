@@ -76,7 +76,7 @@ python -m llmagentbench run --pack ../private-cases/packs/example/pack.json --co
 
 `pack.json` 是公开题库索引（13 道合成题，版本 20261115）。绘图题的静态检查已修正；旧版 20261111 的运行与修订后的题包不是同一题包，不能逐位复用评分。静态检查不证明绘图的视觉效果或动作质量。题目覆盖代码修改、问题排查、代码评审、性能分析和绘图。代码题限制在提示中列明的无导入 Python 子集，验收前检查语法树；这些案例仍不是完整终端 Agent 任务。历史评测口径见 [运行与发布规范](docs/RUNBOOK.md)。
 
-`examples/agent-tools/pack-20261115-v5.json` 是 7 道公开合成的工具模式 smoke，覆盖结果统计、实测证据、代码修复与评审、运行环境排障、性能窗口和并行配置；它不是经校准的代表性题库，也不构成模型排名。运行时使用不带 `local_lookup_audit` 的 Codex 或 DSH 配置，另建输出目录。`workspace_tools` 仅接受 `candidate` 或 `smoke` 用途，不与 `response_patch` 结果合并。联网任务应记录来源与访问情况；外部页面变化和工具故障不能当作模型逻辑错误。
+`examples/agent-tools/pack-20261115-v6.json` 是 7 道公开合成的工具模式 smoke，覆盖结果统计、实测证据、代码修复与评审、运行环境排障、性能窗口和并行配置；它不是经校准的代表性题库，也不构成模型排名。运行时使用不带 `local_lookup_audit` 的 Codex 或 DSH 配置，另建输出目录。`workspace_tools` 仅接受 `candidate` 或 `smoke` 用途，不与 `response_patch` 结果合并。联网任务应记录来源与访问情况；外部页面变化和工具故障不能当作模型逻辑错误。
 
 需要企业 CA 时，可通过候选配置的 `pass_env` 传入已有 `NODE_EXTRA_CA_CERTS` 环境变量；工具模式收据记录 CA 文件摘要，不记录本机路径。不要为通过联网检查关闭证书校验。
 

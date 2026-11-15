@@ -329,3 +329,35 @@ def test_v5_graders_accept_equivalent_valid_implementations_and_formats(tmp_path
     record = runner.run(pack, cfg, tmp_path / 'run')
     assert all(a['outcome'] == ('pass' if a['candidate_id'] == 'good' else 'fail')
                for a in record['attempts'])
+
+
+def test_v6_accepts_standard_exceptions_and_equivalent_window_layout(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    before = load_pack(root / 'examples/agent-tools/pack-20261115-v5.json')
+    pack = load_pack(root / 'examples/agent-tools/pack-20261115-v6.json')
+    ids = {'agent-shape-match', 'agent-performance-window'}
+    old = {entry['definition']['id']: entry for entry in before['cases']}
+    new = {entry['definition']['id']: entry for entry in pack['cases']}
+    for name in ids:
+        assert old[name]['definition'] == new[name]['definition']
+        assert old[name]['script_hashes'] != new[name]['script_hashes']
+    pack['cases'] = [entry for entry in pack['cases'] if entry['definition']['id'] in ids]
+    pack['manifest']['case_families'] = {case_id: pack['manifest']['case_families'][case_id] for case_id in ids}
+    code = ("def matches(expected, observed):\n    try:\n"
+            "        return all(expected[k] == observed[k] for k in ('op', 'shape', 'dtype', 'device'))\n"
+            "    except (KeyError, IndexError):\n        return False\n")
+    rows = [{'id': 'isolated', 'isolated_tokens_per_second': 1000},
+            {'id': 'mixed', 'mixed_status': 'MIXED'}]
+    def responses(source, windows):
+        return {'agent-shape-match': {'answer': '', 'files': [{'path': 'shape_match.py', 'content': source}]},
+                'agent-performance-window': {'answer': '', 'files': [{'path': 'window_report.json',
+                    'content': json.dumps({'windows': windows})}]}}
+    cfg = {'schema_version': 1, 'repeats': 1, 'max_repair_rounds': 0,
+           'timeout_seconds': 10, 'check_timeout_seconds': 10, 'candidates': [
+               {'id': 'good', 'adapter': 'fixture', 'responses': responses(code, rows)},
+               {'id': 'bad', 'adapter': 'fixture', 'responses': responses(
+                   code.replace("'op', 'shape', 'dtype', 'device'", "'op', 'shape'"),
+                   [rows[0], {**rows[1], 'tokens_per_second': 1500}])}]}
+    record = runner.run(pack, cfg, tmp_path / 'run')
+    assert all(a['outcome'] == ('pass' if a['candidate_id'] == 'good' else 'fail')
+               for a in record['attempts'])
