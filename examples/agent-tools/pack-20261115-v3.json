@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "agent-tools-smoke",
+  "version": "20261115-v3",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "evaluation_scope": "engineering",
+  "invocation_mode": "workspace_tools",
+  "case_families": {
+    "agent-result-accounting": "result-accounting",
+    "agent-measurement-triage": "measurement-evidence",
+    "agent-fix-metrics": "code-repair",
+    "agent-review-export": "code-review",
+    "agent-runtime-diagnosis": "runtime-diagnosis"
+  },
+  "cases": [
+    "result-accounting/case.json",
+    "measurement-triage/case.json",
+    "fix-metrics/case.json",
+    "review-export/case.json",
+    "runtime-diagnosis/case.json"
+  ]
+}

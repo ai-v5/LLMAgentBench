@@ -1,0 +1,12 @@
+{
+  "id": "agent-measurement-triage",
+  "category": "analysis",
+  "topic": "performance",
+  "prompt": "根据 target.json 和 measurements.json 核验目标配置的性能证据。只把 shape 和 runtime 都匹配、kind 为 MEASURED 且 latency_ms 为数值的记录纳入平均值。匹配且标为 MEASURED 但 latency_ms 缺失的记录单独列为 missing，不要当成失败或实测值；其他记录排除。把 decision.json 写入工作区：eligible 与 missing 为记录 id 数组，mean_ms 是合格延迟的算术平均。数组顺序不限。可以使用工具和编程；不要修改输入文件。",
+  "inputs": {
+    "target.json": "{\"shape\":128,\"runtime\":\"r2\"}\n",
+    "measurements.json": "[{\"id\":\"m1\",\"shape\":128,\"runtime\":\"r2\",\"kind\":\"MEASURED\",\"latency_ms\":2.5},{\"id\":\"m2\",\"shape\":64,\"runtime\":\"r2\",\"kind\":\"MEASURED\",\"latency_ms\":2.0},{\"id\":\"m3\",\"shape\":128,\"runtime\":\"r1\",\"kind\":\"MEASURED\",\"latency_ms\":1.8},{\"id\":\"m4\",\"shape\":128,\"runtime\":\"r2\",\"kind\":\"PROXY\",\"latency_ms\":2.1},{\"id\":\"m5\",\"shape\":128,\"runtime\":\"r2\",\"kind\":\"MEASURED\",\"latency_ms\":null},{\"id\":\"m6\",\"shape\":128,\"runtime\":\"r2\",\"kind\":\"MEASURED\",\"latency_ms\":3.5}]\n"
+  },
+  "allowed_write_paths": ["decision.json"],
+  "checks": [{"id": "evidence", "type": "python", "script": "verify.py"}]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "agent-tools-smoke",
+  "version": "20261115",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "smoke",
+  "evaluation_scope": "engineering",
+  "invocation_mode": "workspace_tools",
+  "cases": ["result-accounting/case.json", "measurement-triage/case.json"]
+}

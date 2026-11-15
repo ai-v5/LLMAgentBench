@@ -24,7 +24,7 @@ def summarize(record: dict) -> dict:
         def stats(group):
             return {"assigned": len(group), "passed": sum(a["outcome"] == "pass" for a in group),
                     "first_passed": sum(a["first_pass"] for a in group)}
-        rows.append({
+        row = {
             "candidate_id": candidate["id"], "adapter": candidate["adapter"],
             "requested_model": candidate["requested_model"], "reasoning_effort": candidate["reasoning_effort"],
             "candidate_sha256": candidate["config_sha256"], "evidence_level": evidence,
@@ -43,7 +43,26 @@ def summarize(record: dict) -> dict:
             "total_cost_usd": sum(c["cost_usd"] for c in calls) if all(c.get("cost_usd") is not None for c in calls) else None,
             "human_minutes": None, "human_minutes_status": "NOT_MEASURED",
             "by_category": {category: stats([a for a in attempts if a["category"] == category]) for category in sorted({a["category"] for a in attempts})},
-        })
+        }
+        if "case_families" in record:
+            families = sorted(set(record["case_families"].values()))
+            row["by_family"] = {}
+            for family in families:
+                group = [a for a in attempts if a.get("family") == family]
+                if not group:
+                    raise ContractError("Assigned case family has no attempts")
+                row["by_family"][family] = {**stats(group), "outcomes": {
+                    state: sum(a["outcome"] == state for a in group)
+                    for state in ("pass", "fail", "unscored", "error", "timeout")}}
+                data = row["by_family"][family]
+                scored = data["outcomes"]["pass"] + data["outcomes"]["fail"]
+                data["scored_accuracy"] = data["passed"] / scored if scored else None
+            row["family_macro_success_rate"] = statistics.mean(
+                item["passed"] / item["assigned"] for item in row["by_family"].values())
+            accuracies = [item["scored_accuracy"] for item in row["by_family"].values()]
+            row["family_macro_scored_accuracy"] = (statistics.mean(accuracies)
+                                                     if all(value is not None for value in accuracies) else None)
+        rows.append(row)
     summary = {
         "schema_version": 1, "run_id": record["run_id"], "state": record["state"],
         "visibility": record["visibility"], "synthetic": record["synthetic"],
@@ -59,12 +78,20 @@ def summarize(record: dict) -> dict:
     }
     if "evaluation_scope" in record:
         summary["evaluation_scope"] = record["evaluation_scope"]
+    if "invocation_mode" in record:
+        summary["invocation_mode"] = record["invocation_mode"]
+    if record.get("invocation_mode") == "workspace_tools":
+        summary["workspace_snapshot"] = "recorded" if record.get("workspace_snapshot_version") == 1 else "not_recorded"
     return summary
 
 
 def markdown(summary: dict) -> str:
     data_scope = "合成输入" if summary["synthetic"] else "非合成输入"
     scope = f"；评测范围：`{summary['evaluation_scope']}`" if "evaluation_scope" in summary else ""
+    if "invocation_mode" in summary:
+        scope += f"；执行方式：`{summary['invocation_mode']}`"
+    if "workspace_snapshot" in summary:
+        scope += f"；工作区快照：`{summary['workspace_snapshot']}`"
     lines = ["# 评估结果", "", f"Run: `{summary['run_id']}` · state: `{summary['state']}`", "",
              f"数据：{data_scope}；用途：`{summary['purpose']}`；可见性：`{summary['visibility']}`{scope}。", "",
              "自动验收与修复指标；人工核验时间未测量。小样本不能作为模型排名。", "",
@@ -74,6 +101,18 @@ def markdown(summary: dict) -> str:
         outcomes = row["outcomes"]
         throughput = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
         lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} | {row['candidate_call_seconds']:.3f} | {throughput} |")
+    if any("by_family" in row for row in summary["candidates"]):
+        lines += ["", "题族等权通过率将每个题族的通过率等权平均；它不是实际使用频率，也不证明样本具有区分度。可评分正确率只计算通过和有评分的失败；若有题族没有可评分样本，题族等权可评分正确率为未知。", "",
+                  "| 候选 | 题族 | 首次通过 | 预算内通过 | 可评分正确率 | 失败/未评分/错误/超时 |", "|---|---|---:|---:|---:|---|"]
+        for row in summary["candidates"]:
+            for family, data in row.get("by_family", {}).items():
+                o = data["outcomes"]
+                accuracy = f"{data['scored_accuracy']:.1%}" if data['scored_accuracy'] is not None else "未知"
+                lines.append(f"| {row['candidate_id']} | {family} | {data['first_passed']}/{data['assigned']} | {data['passed']}/{data['assigned']} | {accuracy} | {o['fail']}/{o['unscored']}/{o['error']}/{o['timeout']} |")
+            if "family_macro_success_rate" in row:
+                accuracy = row["family_macro_scored_accuracy"]
+                accuracy_text = f"{accuracy:.1%}" if accuracy is not None else "未知"
+                lines.append(f"| {row['candidate_id']} | 题族等权 | - | {row['family_macro_success_rate']:.1%} | {accuracy_text} | - |")
     lines += ["", f"题库版本: `{summary.get('pack_version') or '未标注'}`", "",
               f"Pack SHA256: `{summary['pack_sha256']}`", "", f"Engine SHA256: `{summary['engine_sha256']}`", "",
               "成本未知时为 null；费用不由模型猜测。通过率包含全部分配样本；修复轮次不是独立样本。", "",
@@ -87,6 +126,8 @@ def export_public(record: dict, output: Path) -> dict:
         raise ContractError("Cannot export an incomplete run")
     if record["visibility"] != "public" or record["synthetic"] is not True:
         raise ContractError("Private or non-synthetic runs cannot be exported by this command")
+    if record.get("invocation_mode") == "workspace_tools" and record.get("workspace_snapshot_version") != 1:
+        raise ContractError("Workspace snapshot not recorded")
     if output.exists():
         raise ContractError("Export destination already exists")
     summary = summarize(record)
@@ -106,6 +147,10 @@ def export_overall(run_paths: list[Path], output: Path, labels: dict[str, str], 
     records = [load_run(path) for path in run_paths]
     if len({record.get("evaluation_scope") for record in records}) > 1:
         raise ContractError("Cannot combine different or unknown evaluation scopes")
+    if len({record.get("invocation_mode", "response_patch") for record in records}) > 1:
+        raise ContractError("Cannot combine different invocation modes")
+    if any(r.get("invocation_mode") == "workspace_tools" and r.get("workspace_snapshot_version") != 1 for r in records):
+        raise ContractError("Workspace snapshot not recorded")
     if any(r["visibility"] == "private" or not r["synthetic"] for r in records) and not allow_private:
         raise ContractError("Private overall totals require explicit authorization")
     if len({r["receipt_sha256"] for r in records}) != len(records) or len({r["pack_sha256"] for r in records}) != len(records):
@@ -142,10 +187,18 @@ def export_overall(run_paths: list[Path], output: Path, labels: dict[str, str], 
     result = {"schema_version": 1, "case_count": sum(len(r["case_ids"]) for r in records),
               "repeats": records[0]["repeats"], "pack_versions": versions,
               "pack_version": versions[0] if len(versions) == 1 else None, "candidates": rows}
+    if "invocation_mode" in records[0]:
+        result["invocation_mode"] = records[0]["invocation_mode"]
+    if any("case_families" in record for record in records):
+        result["overall_weighting"] = "per_case"
     lines = ["# 总体评估汇总", "", "仅发布总体数量与耗时；通过率和吞吐不代表人工核验时间。", "",
              f"总题数：{result['case_count']}；每题重复：{result['repeats']}。", "",
              "| 候选 | 首次通过 | 预算内通过 | 失败/未评分/错误/超时 | 平均尝试耗时(s) | 有效吞吐(题/小时) |",
              "|---|---:|---:|---|---:|---:|"]
+    if "invocation_mode" in result:
+        lines[2] += f" 执行方式：`{result['invocation_mode']}`。"
+    if "overall_weighting" in result:
+        lines[2] += " 总体结果按题计数，题族数量不均时不代表题族等权。"
     for row in rows:
         speed = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
         lines.append(f"| {row['label']} | {row['first_passed']}/{row['assigned']} | {row['passed']}/{row['assigned']} | {row['failed']}/{row['unscored']}/{row['errors']}/{row['timeouts']} | {row['mean_attempt_seconds']:.2f} | {speed} |")

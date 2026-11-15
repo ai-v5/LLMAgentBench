@@ -1,0 +1,11 @@
+{
+  "id": "agent-review-cache",
+  "category": "review",
+  "topic": "review",
+  "prompt": "审查合成代码 cache.py。合同要求缓存必须区分完整的 op、shape、dtype、runtime 配置；缺失的实测延迟不能变成数值或标为有效。把 review.json 写入工作区，issues 数组使用问题编号 CACHE_IDENTITY_INCOMPLETE、MISSING_TREATED_AS_ZERO；只有确实存在的问题才列出，顺序不限。可以使用工具、编程和查阅公开资料，不要修改输入。",
+  "inputs": {
+    "cache.py": "def lookup(cache, target, receipt):\n    key = target['op']\n    if key in cache:\n        return cache[key]\n    result = {'eligible': True, 'latency_ms': receipt.get('latency_ms') or 0}\n    cache[key] = result\n    return result\n"
+  },
+  "allowed_write_paths": ["review.json"],
+  "checks": [{"id": "issues", "type": "python", "script": "verify.py"}]
+}

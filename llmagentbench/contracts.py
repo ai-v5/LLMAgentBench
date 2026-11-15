@@ -60,6 +60,21 @@ def validate_evaluation_scope(value: Any) -> None:
         raise ContractError("Unknown evaluation scope")
 
 
+def validate_invocation_mode(value: Any) -> None:
+    if not isinstance(value, str) or value not in {"response_patch", "workspace_tools"}:
+        raise ContractError("Unknown invocation mode")
+
+
+def validate_case_families(value: Any, case_ids: list[str]) -> None:
+    if not isinstance(value, dict) or set(value) != set(case_ids):
+        raise ContractError("Case families must cover exactly the pack cases")
+    try:
+        for family in value.values():
+            identifier(family)
+    except ContractError as error:
+        raise ContractError("Invalid case family") from error
+
+
 def positive(value: Any, field: str, *, allow_zero: bool = False) -> None:
     try:
         valid = (not isinstance(value, bool) and isinstance(value, (int, float))
@@ -121,6 +136,10 @@ def load_pack(path: Path) -> dict:
     identifier(manifest["id"])
     if "evaluation_scope" in manifest:
         validate_evaluation_scope(manifest["evaluation_scope"])
+    if "invocation_mode" in manifest:
+        validate_invocation_mode(manifest["invocation_mode"])
+        if manifest["invocation_mode"] == "workspace_tools" and manifest.get("purpose") not in {"candidate", "smoke"}:
+            raise ContractError("Workspace tools require a candidate or smoke purpose")
     version = manifest.get("version")
     if version is not None and (not isinstance(version, str) or not re.fullmatch(r"\d{8}(-v[1-9]\d*)?", version)):
         raise ContractError("Pack version must be YYYYMMDD or YYYYMMDD-vN")
@@ -145,6 +164,8 @@ def load_pack(path: Path) -> dict:
                 files[relative + ":" + check["script"]] = content.decode("utf-8")
                 script_hashes[check["script"]] = hashlib.sha256(content).hexdigest()
         cases.append({"definition": case, "root": case_path.parent, "script_hashes": script_hashes})
+    if "case_families" in manifest:
+        validate_case_families(manifest["case_families"], [entry["definition"]["id"] for entry in cases])
     return {"path": path, "manifest": manifest, "version": version, "cases": cases,
             "sha256": digest({"manifest": manifest, "files": files})}
 

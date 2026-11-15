@@ -1,0 +1,11 @@
+{
+  "id": "agent-review-export",
+  "category": "review",
+  "topic": "review",
+  "prompt": "审查工作区中的合成补丁。目标是按全部 assignments 统计成功率，公开汇总只含总量，不能包含逐题记录。请在 review.json 中给出 issues 数组；本题使用两个可复核的问题编号：missing_assignment_denominator、private_case_details_exported。只有代码确实存在该问题时才列出，顺序不限。允许使用工具、运行代码和查阅资料，不要修改输入。",
+  "inputs": {
+    "patch.py": "def summarize(assignments, attempts):\n    passed = sum(a['status'] == 'pass' for a in attempts)\n    return {'assigned': len(attempts), 'passed': passed, 'pass_rate': passed / len(attempts) if attempts else None}\n\ndef public_export(summary, attempts):\n    return {'assigned': summary['assigned'], 'passed': summary['passed'], 'case_details': attempts}\n"
+  },
+  "allowed_write_paths": ["review.json"],
+  "checks": [{"id": "issues", "type": "python", "script": "verify.py"}]
+}

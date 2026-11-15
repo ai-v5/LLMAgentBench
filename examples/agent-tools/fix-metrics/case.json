@@ -1,0 +1,12 @@
+{
+  "id": "agent-fix-metrics",
+  "category": "coding",
+  "topic": "coding",
+  "prompt": "修复 metrics.py 中的 summarize(rows)：passed 是 status 为 pass 的数量；elapsed_seconds 必须累计每条尝试的 seconds，包括 fail、error、timeout 和 unscored；passes_per_hour 是 passed × 3600 / elapsed_seconds，耗时为 0 时为 None。保留函数签名和三个返回字段。被测函数应为纯函数，不能读写文件或访问网络；可使用 math、statistics、collections、itertools、functools、typing 标准库。工作区附带 test_metrics.py，可运行它检查修改。允许使用工具、运行代码及按需查阅公开资料；不要修改测试文件。",
+  "inputs": {
+    "metrics.py": "def summarize(rows):\n    passed = sum(1 for row in rows if row['status'] == 'pass')\n    elapsed = sum(row['seconds'] for row in rows if row['status'] == 'pass')\n    return {'passed': passed, 'elapsed_seconds': elapsed, 'passes_per_hour': passed * 3600 / elapsed if elapsed else None}\n",
+    "test_metrics.py": "import unittest\nfrom metrics import summarize\n\nclass MetricsTests(unittest.TestCase):\n    def test_all_attempts_contribute_time(self):\n        result = summarize([{'status': 'pass', 'seconds': 10}, {'status': 'error', 'seconds': 20}])\n        self.assertEqual(result['elapsed_seconds'], 30)\n        self.assertEqual(result['passes_per_hour'], 120)\n\n    def test_no_elapsed(self):\n        self.assertIsNone(summarize([])['passes_per_hour'])\n\nif __name__ == '__main__':\n    unittest.main()\n"
+  },
+  "allowed_write_paths": ["metrics.py"],
+  "checks": [{"id": "behavior", "type": "python", "script": "verify.py"}]
+}

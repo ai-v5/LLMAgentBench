@@ -1,0 +1,12 @@
+{
+  "id": "agent-result-accounting",
+  "category": "analysis",
+  "topic": "analysis",
+  "prompt": "在工作区中整理这批合成评测的结果。assignments.json 给出全部派题，attempts.json 只记录已返回的尝试；每题最多一条。把 summary.json 写入工作区：assigned、passed、failed、errors、timeouts、unscored、missing 为各自题数；elapsed_seconds 为已返回尝试的 seconds 之和；passes_per_hour 为 passed × 3600 / elapsed_seconds。未返回的派题计入 assigned 和 missing，不要当作失败。可使用工具和编程处理；不要修改输入文件。",
+  "inputs": {
+    "assignments.json": "[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"]\n",
+    "attempts.json": "[{\"case\":\"a\",\"status\":\"pass\",\"seconds\":10},{\"case\":\"b\",\"status\":\"fail\",\"seconds\":20},{\"case\":\"c\",\"status\":\"error\",\"seconds\":30},{\"case\":\"d\",\"status\":\"timeout\",\"seconds\":40},{\"case\":\"e\",\"status\":\"unscored\",\"seconds\":0}]\n"
+  },
+  "allowed_write_paths": ["summary.json"],
+  "checks": [{"id": "summary", "type": "python", "script": "verify.py"}]
+}
