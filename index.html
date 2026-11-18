@@ -3,89 +3,117 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LLMAgentBench：通过工程任务评估大模型智能，展示公开题与全部题的总体结果。">
+  <meta name="description" content="LLMAgentBench：通过工程任务评估大模型智能。">
   <meta name="theme-color" content="#f5f6f1">
   <title>LLMAgentBench | 评估大模型智能</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
-  <link rel="stylesheet" href="site/styles.css?v=compact-3">
-  <script src="site/app.js?v=20261111-fails-1" defer></script>
-  <script src="site/gallery.js?v=20261111" defer></script>
+  <link rel="stylesheet" href="site/styles.css?v=20261118">
+  <script src="site/app.js?v=20261118" defer></script>
+  <script src="site/gallery.js?v=20261118" defer></script>
+  <style>
+    .tabs{display:flex;gap:8px;margin-top:10px}
+    .tab{border:1px solid #c9ccc2;background:transparent;color:inherit;padding:6px 14px;border-radius:999px;font:inherit;cursor:pointer}
+    .tab[aria-selected="true"]{background:#2f3a2c;color:#fff;border-color:#2f3a2c}
+    .tab-panel[hidden]{display:none}
+  </style>
 </head>
 <body>
-  <a class="skip-link" href="#results">跳到评估结果</a>
   <header class="header">
     <div class="shell header-inner">
       <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>LLMAgentBench</a>
-      <nav aria-label="主要导航">
-        <a href="#results">评估结果</a>
-        <a href="#disclaimer">免责声明</a>
-        <a href="https://github.com/ai-v5/LLMAgentBench">GitHub <span aria-hidden="true">↗</span></a>
-      </nav>
+      <div class="tabs" role="tablist" aria-label="页面分区">
+        <button class="tab" role="tab" id="tab-btn-results" aria-controls="tab-results" aria-selected="true" type="button">评估结果</button>
+        <button class="tab" role="tab" id="tab-btn-gallery" aria-controls="tab-gallery" aria-selected="false" type="button">鳄鱼骑车</button>
+      </div>
     </div>
   </header>
 
   <main class="shell" id="top">
-    <section class="intro" aria-labelledby="intro-title">
-      <h1 id="intro-title">评估大模型智能</h1>
-    </section>
+    <section class="tab-panel" id="tab-results" role="tabpanel" aria-labelledby="tab-btn-results">
+      <section class="intro" aria-labelledby="intro-title">
+        <h1 id="intro-title">评估大模型智能</h1>
+      </section>
 
-    <section id="results" aria-labelledby="results-title">
-      <div class="section-heading">
-        <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
-        <a class="source-link" href="results/20261111-model-results.md">查看结果说明 <span aria-hidden="true">↗</span></a>
-      </div>
-      <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 全部题包含非公开的 Agent Last Exam 题库，用于区分大模型在相关任务上的智能表现 <span>·</span> 各行题库及测试条件可能不同 <span>·</span> 私有逐题数据不公开</p>
-      <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载，请查看<a href="results/20261111-model-results.md">结果说明</a>。</p>
-      <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
-      <noscript><p class="alert">请启用 JavaScript 查看结果表，或直接打开<a href="results/20261111-model-results.md">结果说明</a>。</p></noscript>
-
-      <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="true" data-data-region>
-        <table class="results-table">
-          <caption class="sr-only">公开题目与全部题目的模型和执行器总体结果</caption>
-          <thead><tr>
-            <th scope="col"><button class="sort-button" type="button" data-sort-key="label">模型 / 执行器 <span class="sort-icon" aria-hidden="true"></span><small>模型为请求值</small></button></th>
-            <th scope="col"><button class="sort-button" type="button" data-sort-key="publicFirst">公开题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
-            <th scope="col"><button class="sort-button" type="button" data-sort-key="overallFirst">全部题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
-            <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
-          </tr></thead>
-          <tbody>
-            <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
-            <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small><small data-pack="1">题库 —</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
-            <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="2">题库 —</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
-            <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · high</small><small data-pack="3">题库 —</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
-            <tr data-result-row="4" hidden><th scope="row"><strong data-name="4">—</strong><small>请求模型 · low</small><small data-pack="4">题库 —</small></th><td><strong data-public-first="4">—</strong><small data-public-final="4">含修复 —</small></td><td><strong data-all-first="4">—</strong><small data-all-final="4">含修复 —</small></td><td><strong data-token-rate="4">—</strong><small data-token-detail="4">—</small></td></tr>
-            <tr data-result-row="5" hidden><th scope="row"><strong data-name="5">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="5">题库 —</small></th><td><strong data-public-first="5">—</strong><small data-public-final="5">含修复 —</small></td><td><strong data-all-first="5">—</strong><small data-all-final="5">含修复 —</small></td><td><strong data-token-rate="5">—</strong><small data-token-detail="5">—</small></td></tr>
-            <tr data-result-row="6" hidden><th scope="row"><strong data-name="6">—</strong><small>请求模型 · high</small><small data-pack="6">题库 —</small></th><td><strong data-public-first="6">—</strong><small data-public-final="6">含修复 —</small></td><td><strong data-all-first="6">—</strong><small data-all-final="6">含修复 —</small></td><td><strong data-token-rate="6">—</strong><small data-token-detail="6">—</small></td></tr>
-            <tr data-result-row="7" hidden><th scope="row"><strong data-name="7">—</strong><small>请求模型 · low</small><small data-pack="7">题库 —</small></th><td><strong data-public-first="7">—</strong><small data-public-final="7">含修复 —</small></td><td><strong data-all-first="7">—</strong><small data-all-final="7">含修复 —</small></td><td><strong data-token-rate="7">—</strong><small data-token-detail="7">—</small></td></tr>
-            <tr data-result-row="8" hidden><th scope="row"><strong data-name="8">—</strong><small>请求模型 · low</small><small data-pack="8">题库 —</small></th><td><strong data-public-first="8">—</strong><small data-public-final="8">含修复 —</small></td><td><strong data-all-first="8">—</strong><small data-all-final="8">含修复 —</small></td><td><strong data-token-rate="8">—</strong><small data-token-detail="8">—</small></td></tr>
-            <tr data-result-row="9" hidden><th scope="row"><strong data-name="9">—</strong><small>请求模型 · high</small><small data-pack="9">题库 —</small></th><td><strong data-public-first="9">—</strong><small data-public-final="9">含修复 —</small></td><td><strong data-all-first="9">—</strong><small data-all-final="9">含修复 —</small></td><td><strong data-token-rate="9">—</strong><small data-token-detail="9">—</small></td></tr>
-            <tr data-result-row="10" hidden><th scope="row"><strong data-name="10">—</strong><small>请求模型 · max</small><small data-pack="10">题库 —</small></th><td><strong data-public-first="10">—</strong><small data-public-final="10">含修复 —</small></td><td><strong data-all-first="10">—</strong><small data-all-final="10">含修复 —</small></td><td><strong data-token-rate="10">—</strong><small data-token-detail="10">—</small></td></tr>
-            <tr data-result-row="11" hidden><th scope="row"><strong data-name="11">—</strong><small>请求模型 · low</small><small data-pack="11">题库 —</small></th><td><strong data-public-first="11">—</strong><small data-public-final="11">含修复 —</small></td><td><strong data-all-first="11">—</strong><small data-all-final="11">含修复 —</small></td><td><strong data-token-rate="11">—</strong><small data-token-detail="11">—</small></td></tr>
-            <tr data-result-row="12" hidden><th scope="row"><strong data-name="12">—</strong><small>请求模型 · high</small><small data-pack="12">题库 —</small></th><td><strong data-public-first="12">—</strong><small data-public-final="12">含修复 —</small></td><td><strong data-all-first="12">—</strong><small data-all-final="12">含修复 —</small></td><td><strong data-token-rate="12">—</strong><small data-token-detail="12">—</small></td></tr>
-            <tr data-result-row="13" hidden><th scope="row"><strong data-name="13">—</strong><small>请求模型 · max</small><small data-pack="13">题库 —</small></th><td><strong data-public-first="13">—</strong><small data-public-final="13">含修复 —</small></td><td><strong data-all-first="13">—</strong><small data-all-final="13">含修复 —</small></td><td><strong data-token-rate="13">—</strong><small data-token-detail="13">—</small></td></tr>
-            <tr data-result-row="14" hidden><th scope="row"><strong data-name="14">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · low · 含历史样本</small><small data-pack="14">题库 —</small></th><td><strong data-public-first="14">—</strong><small data-public-final="14">含修复 —</small></td><td><strong data-all-first="14">—</strong><small data-all-final="14">含修复 —</small></td><td><strong data-token-rate="14">—</strong><small data-token-detail="14">—</small></td></tr>
-            <tr data-result-row="15" hidden><th scope="row"><strong data-name="15">—</strong><small>请求模型 · max</small><small data-pack="15">题库 —</small></th><td><strong data-public-first="15">—</strong><small data-public-final="15">含修复 —</small></td><td><strong data-all-first="15">—</strong><small data-all-final="15">含修复 —</small></td><td><strong data-token-rate="15">—</strong><small data-token-detail="15">—</small></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="scroll-hint">左右滑动查看完整表格 →</p>
-    </section>
-
-    <section id="drawing" aria-labelledby="drawing-title">
-      <div class="section-heading">
-        <div><p class="eyebrow">SVG DRAWING TASK</p><h2 id="drawing-title">鳄鱼骑自行车</h2></div>
-        <a class="source-link" href="https://github.com/ai-v5/LLMAgentBench/blob/main/examples/engineering/crocodile-bike/case.json">查看任务定义 ↗</a>
-      </div>
-      <p class="run-context">同一 prompt · 按模型和思考强度切换 · HTML 作品在禁用脚本的沙箱中播放</p>
-      <div class="gallery">
-        <div class="gallery-tabs" role="tablist" aria-label="模型输出" data-gallery-tabs></div>
-        <div class="gallery-stage">
-          <div class="gallery-canvas" data-gallery-canvas aria-label="模型生成的动画"></div>
+      <section id="results" aria-labelledby="results-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
         </div>
-        <p class="gallery-status" data-gallery-status></p>
-        <a data-gallery-html hidden target="_blank" rel="noopener noreferrer">查看原始 HTML ↗</a>
-      </div>
-      <noscript><p class="alert">请启用 JavaScript 查看模型生成的 SVG 动画。</p></noscript>
+        <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 全部题包含非公开的 Agent Last Exam 题库 <span>·</span> 各行题库及测试条件可能不同 <span>·</span> 私有逐题数据不公开</p>
+        <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载。</p>
+        <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
+        <noscript><p class="alert">请启用 JavaScript 查看结果表。</p></noscript>
+
+        <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="true" data-data-region>
+          <table class="results-table">
+            <caption class="sr-only">公开题目与全部题目的模型和执行器总体结果</caption>
+            <thead><tr>
+              <th scope="col"><button class="sort-button" type="button" data-sort-key="label">模型 / 执行器 <span class="sort-icon" aria-hidden="true"></span><small>模型为请求值</small></button></th>
+              <th scope="col"><button class="sort-button" type="button" data-sort-key="publicFirst">公开题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
+              <th scope="col"><button class="sort-button" type="button" data-sort-key="overallFirst">全部题目得分 <span class="sort-icon" aria-hidden="true"></span><small>按首轮排序 · 含自动修复</small></button></th>
+              <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
+            </tr></thead>
+            <tbody>
+              <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
+              <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small><small data-pack="1">题库 —</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
+              <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="2">题库 —</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
+              <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · high</small><small data-pack="3">题库 —</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
+              <tr data-result-row="4" hidden><th scope="row"><strong data-name="4">—</strong><small>请求模型 · low</small><small data-pack="4">题库 —</small></th><td><strong data-public-first="4">—</strong><small data-public-final="4">含修复 —</small></td><td><strong data-all-first="4">—</strong><small data-all-final="4">含修复 —</small></td><td><strong data-token-rate="4">—</strong><small data-token-detail="4">—</small></td></tr>
+              <tr data-result-row="5" hidden><th scope="row"><strong data-name="5">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="5">题库 —</small></th><td><strong data-public-first="5">—</strong><small data-public-final="5">含修复 —</small></td><td><strong data-all-first="5">—</strong><small data-all-final="5">含修复 —</small></td><td><strong data-token-rate="5">—</strong><small data-token-detail="5">—</small></td></tr>
+              <tr data-result-row="6" hidden><th scope="row"><strong data-name="6">—</strong><small>请求模型 · high</small><small data-pack="6">题库 —</small></th><td><strong data-public-first="6">—</strong><small data-public-final="6">含修复 —</small></td><td><strong data-all-first="6">—</strong><small data-all-final="6">含修复 —</small></td><td><strong data-token-rate="6">—</strong><small data-token-detail="6">—</small></td></tr>
+              <tr data-result-row="7" hidden><th scope="row"><strong data-name="7">—</strong><small>请求模型 · low</small><small data-pack="7">题库 —</small></th><td><strong data-public-first="7">—</strong><small data-public-final="7">含修复 —</small></td><td><strong data-all-first="7">—</strong><small data-all-final="7">含修复 —</small></td><td><strong data-token-rate="7">—</strong><small data-token-detail="7">—</small></td></tr>
+              <tr data-result-row="8" hidden><th scope="row"><strong data-name="8">—</strong><small>请求模型 · low</small><small data-pack="8">题库 —</small></th><td><strong data-public-first="8">—</strong><small data-public-final="8">含修复 —</small></td><td><strong data-all-first="8">—</strong><small data-all-final="8">含修复 —</small></td><td><strong data-token-rate="8">—</strong><small data-token-detail="8">—</small></td></tr>
+              <tr data-result-row="9" hidden><th scope="row"><strong data-name="9">—</strong><small>请求模型 · high</small><small data-pack="9">题库 —</small></th><td><strong data-public-first="9">—</strong><small data-public-final="9">—</small></td><td><strong data-all-first="9">—</strong><small data-all-final="9">含修复 —</small></td><td><strong data-token-rate="9">—</strong><small data-token-detail="9">—</small></td></tr>
+              <tr data-result-row="10" hidden><th scope="row"><strong data-name="10">—</strong><small>请求模型 · max</small><small data-pack="10">题库 —</small></th><td><strong data-public-first="10">—</strong><small data-public-final="10">含修复 —</small></td><td><strong data-all-first="10">—</strong><small data-all-final="10">含修复 —</small></td><td><strong data-token-rate="10">—</strong><small data-token-detail="10">—</small></td></tr>
+              <tr data-result-row="11" hidden><th scope="row"><strong data-name="11">—</strong><small>请求模型 · low</small><small data-pack="11">题库 —</small></th><td><strong data-public-first="11">—</strong><small data-public-final="11">含修复 —</small></td><td><strong data-all-first="11">—</strong><small data-all-final="11">含修复 —</small></td><td><strong data-token-rate="11">—</strong><small data-token-detail="11">—</small></td></tr>
+              <tr data-result-row="12" hidden><th scope="row"><strong data-name="12">—</strong><small>请求模型 · high</small><small data-pack="12">题库 —</small></th><td><strong data-public-first="12">—</strong><small data-public-final="12">含修复 —</small></td><td><strong data-all-first="12">—</strong><small data-all-final="12">含修复 —</small></td><td><strong data-token-rate="12">—</strong><small data-token-detail="12">—</small></td></tr>
+              <tr data-result-row="13" hidden><th scope="row"><strong data-name="13">—</strong><small>请求模型 · max</small><small data-pack="13">题库 —</small></th><td><strong data-public-first="13">—</strong><small data-public-final="13">含修复 —</small></td><td><strong data-all-first="13">—</strong><small data-all-final="13">含修复 —</small></td><td><strong data-token-rate="13">—</strong><small data-token-detail="13">—</small></td></tr>
+              <tr data-result-row="14" hidden><th scope="row"><strong data-name="14">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · low · 含历史样本</small><small data-pack="14">题库 —</small></th><td><strong data-public-first="14">—</strong><small data-public-final="14">含修复 —</small></td><td><strong data-all-first="14">—</strong><small data-all-final="14">含修复 —</small></td><td><strong data-token-rate="14">—</strong><small data-token-detail="14">—</small></td></tr>
+              <tr data-result-row="15" hidden><th scope="row"><strong data-name="15">—</strong><small>请求模型 · max</small><small data-pack="15">题库 —</small></th><td><strong data-public-first="15">—</strong><small data-public-final="15">含修复 —</small></td><td><strong data-all-first="15">—</strong><small data-all-final="15">含修复 —</small></td><td><strong data-token-rate="15">—</strong><small data-token-detail="15">—</small></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="scroll-hint">左右滑动查看完整表格 →</p>
+
+        <h3>deepseek-v4.1-flash-1017 · 20261118 公开题</h3>
+        <p class="run-context">13 道公开题 × 3 重复；未判定包含工具错误与未完成评分的尝试。</p>
+        <div class="table-wrap">
+          <table class="results-table">
+            <caption class="sr-only">deepseek-v4.1-flash-1017 公开题三档结果</caption>
+            <thead><tr>
+              <th scope="col">档位</th>
+              <th scope="col">尝试</th>
+              <th scope="col">通过</th>
+              <th scope="col">失败</th>
+              <th scope="col">未判定</th>
+              <th scope="col">通过率</th>
+            </tr></thead>
+            <tbody>
+              <tr><th scope="row">max</th><td>39</td><td>27</td><td>3</td><td>9</td><td>69.2%</td></tr>
+              <tr><th scope="row">high</th><td>39</td><td>26</td><td>5</td><td>8</td><td>66.7%</td></tr>
+              <tr><th scope="row">low</th><td>39</td><td>30</td><td>4</td><td>5</td><td>76.9%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <noscript></noscript>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="tab-gallery" role="tabpanel" aria-labelledby="tab-btn-gallery" hidden>
+      <section id="drawing" aria-labelledby="drawing-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">SVG DRAWING TASK</p><h2 id="drawing-title">鳄鱼骑自行车</h2></div>
+        </div>
+        <p class="run-context">同一 prompt · 按模型和思考强度切换 · HTML 作品在禁用脚本的沙箱中播放</p>
+        <div class="gallery">
+          <div class="gallery-tabs" role="tablist" aria-label="模型输出" data-gallery-tabs></div>
+          <div class="gallery-stage">
+            <div class="gallery-canvas" data-gallery-canvas aria-label="模型生成的动画"></div>
+          </div>
+          <p class="gallery-status" data-gallery-status></p>
+          <a data-gallery-html hidden target="_blank" rel="noopener noreferrer">查看原始 HTML ↗</a>
+        </div>
+        <noscript><p class="alert">请启用 JavaScript 查看模型生成的 SVG 动画。</p></noscript>
+      </section>
     </section>
 
     <section class="disclaimer" id="disclaimer" aria-labelledby="disclaimer-title">
@@ -94,11 +122,28 @@
         <p>本项目是实验性评估。结果仅描述所记录的任务、模型与执行器组合及运行环境，不保证其他场景下的表现或生产可用性，也不应作为重要决策的唯一依据。</p>
         <p>自动检查和 LLM 裁判可能误判，重要结果请结合实际任务独立核验。评估器会执行候选代码，使用不可信代码时应隔离整个运行环境；提交任务前请确认数据使用权限。</p>
         <p>项目按 MIT 许可证提供，适用其中的无担保与责任限制条款。产品名称仅用于识别，不表示相关方参与或背书。</p>
-        <a href="https://github.com/ai-v5/LLMAgentBench/blob/main/DISCLAIMER.md">阅读完整免责声明 ↗</a>
       </div>
     </section>
   </main>
 
-  <footer class="footer"><div class="shell footer-inner"><span>LLMAgentBench <span class="footer-muted">/ 工程任务评估</span></span><div><a href="#disclaimer">免责声明</a><a href="https://github.com/ai-v5/LLMAgentBench/blob/main/LICENSE">MIT License</a></div></div></footer>
+  <footer class="footer"><div class="shell footer-inner"><span>LLMAgentBench <span class="footer-muted">/ 工程任务评估</span></span></div></footer>
+
+  <script>
+    (function () {
+      const buttons = [
+        [document.getElementById('tab-btn-results'), document.getElementById('tab-results')],
+        [document.getElementById('tab-btn-gallery'), document.getElementById('tab-gallery')]
+      ];
+      function select(index) {
+        buttons.forEach(function (pair, i) {
+          pair[0].setAttribute('aria-selected', i === index ? 'true' : 'false');
+          pair[1].hidden = i !== index;
+        });
+      }
+      buttons.forEach(function (pair, i) {
+        pair[0].addEventListener('click', function () { select(i); });
+      });
+    }());
+  </script>
 </body>
 </html>

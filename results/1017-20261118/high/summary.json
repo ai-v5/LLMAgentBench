@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "1017-high-r2",
+  "state": "completed",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "benchmark",
+  "source_receipt_sha256": "72d520298c93c29f3e071164d83b2ef1ca87df402585b73832df45b07c29bc2f",
+  "pack_id": "public-benchmark-v1",
+  "pack_version": "20261118",
+  "pack_sha256": "157029737f91f5d6c07dad7f52670d652b5d5a66d84b95e22e52365f46a05e7d",
+  "engine_version": "0.1.0",
+  "engine_sha256": "c2f3b06a9b98a351706dd58ea0a9f6c2861d7d5aea592353ee8f22e82c995df1",
+  "config_sha256": "b4167521f99fd4c28d04fa467545085333e254cf01b963a2e529643212d09f99",
+  "repeats": 3,
+  "max_repair_rounds": 0,
+  "timeout_seconds": 1200,
+  "check_timeout_seconds": 60,
+  "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
+  "candidates": [
+    {
+      "candidate_id": "dsh-1017-high",
+      "adapter": "dsh",
+      "requested_model": "speedup10x",
+      "reasoning_effort": "high",
+      "candidate_sha256": "ace33eb160c19a39206fdeed55439b10b4ae78bec43d560af8c6d2d849be41fd",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 39,
+      "outcomes": {
+        "pass": 26,
+        "fail": 5,
+        "unscored": 3,
+        "error": 5,
+        "timeout": 0
+      },
+      "first_pass_rate": 0.6666666666666666,
+      "strict_success_rate": 0.6666666666666666,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 58.96005128205128,
+      "max_elapsed_seconds": 479.422,
+      "evaluated_attempt_seconds": 2299.442,
+      "candidate_call_seconds": 2297.8,
+      "judge_call_seconds": 0,
+      "effective_passes_per_hour": 40.70552768889148,
+      "adapter_invocations": 39,
+      "usage_complete": true,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 18,
+          "passed": 8,
+          "first_passed": 8
+        },
+        "coding": {
+          "assigned": 12,
+          "passed": 10,
+          "first_passed": 10
+        },
+        "review": {
+          "assigned": 9,
+          "passed": 8,
+          "first_passed": 8
+        }
+      }
+    }
+  ],
+  "evaluation_scope": "engineering"
+}
