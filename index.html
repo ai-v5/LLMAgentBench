@@ -8,7 +8,6 @@
   <title>LLMAgentBench | 评估大模型智能</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=20261118">
-  <script src="site/app.js?v=20261118" defer></script>
   <script src="site/gallery.js?v=20261118" defer></script>
   <style>
     .tabs{display:flex;gap:8px;margin-top:10px}
@@ -39,11 +38,9 @@
           <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
         </div>
         <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 全部题包含非公开的 Agent Last Exam 题库 <span>·</span> 各行题库及测试条件可能不同 <span>·</span> 私有逐题数据不公开</p>
-        <p class="alert" id="data-error" role="alert" hidden>部分结果暂时无法加载。</p>
-        <p class="alert" id="token-error" role="status" hidden>输出 token 统计暂不可用，通过率仍来自原始汇总。</p>
-        <noscript><p class="alert">请启用 JavaScript 查看结果表。</p></noscript>
+            <noscript><p class="alert">请启用 JavaScript 查看结果表。</p></noscript>
 
-        <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="true" data-data-region>
+        <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="false" data-data-region>
           <table class="results-table">
             <caption class="sr-only">公开题目与全部题目的模型和执行器总体结果</caption>
             <thead><tr>
@@ -53,48 +50,14 @@
               <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
             </tr></thead>
             <tbody>
-              <tr data-result-row="0" hidden><th scope="row"><strong data-name="0">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="0">题库 —</small></th><td><strong data-public-first="0">—</strong><small data-public-final="0">含修复 —</small></td><td><strong data-all-first="0">—</strong><small data-all-final="0">含修复 —</small></td><td><strong data-token-rate="0">—</strong><small data-token-detail="0">—</small></td></tr>
-              <tr data-result-row="1" hidden><th scope="row"><strong data-name="1">—</strong><small>请求模型 · max</small><small data-pack="1">题库 —</small></th><td><strong data-public-first="1">—</strong><small data-public-final="1">含修复 —</small></td><td><strong data-all-first="1">—</strong><small data-all-final="1">含修复 —</small></td><td><strong data-token-rate="1">—</strong><small data-token-detail="1">—</small></td></tr>
-              <tr data-result-row="2" hidden><th scope="row"><strong data-name="2">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="2">题库 —</small></th><td><strong data-public-first="2">—</strong><small data-public-final="2">含修复 —</small></td><td><strong data-all-first="2">—</strong><small data-all-final="2">含修复 —</small></td><td><strong data-token-rate="2">—</strong><small data-token-detail="2">—</small></td></tr>
-              <tr data-result-row="3" hidden><th scope="row"><strong data-name="3">—</strong><small>请求模型 · high</small><small data-pack="3">题库 —</small></th><td><strong data-public-first="3">—</strong><small data-public-final="3">含修复 —</small></td><td><strong data-all-first="3">—</strong><small data-all-final="3">含修复 —</small></td><td><strong data-token-rate="3">—</strong><small data-token-detail="3">—</small></td></tr>
-              <tr data-result-row="4" hidden><th scope="row"><strong data-name="4">—</strong><small>请求模型 · low</small><small data-pack="4">题库 —</small></th><td><strong data-public-first="4">—</strong><small data-public-final="4">含修复 —</small></td><td><strong data-all-first="4">—</strong><small data-all-final="4">含修复 —</small></td><td><strong data-token-rate="4">—</strong><small data-token-detail="4">—</small></td></tr>
-              <tr data-result-row="5" hidden><th scope="row"><strong data-name="5">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · max · 含历史样本</small><small data-pack="5">题库 —</small></th><td><strong data-public-first="5">—</strong><small data-public-final="5">含修复 —</small></td><td><strong data-all-first="5">—</strong><small data-all-final="5">含修复 —</small></td><td><strong data-token-rate="5">—</strong><small data-token-detail="5">—</small></td></tr>
-              <tr data-result-row="6" hidden><th scope="row"><strong data-name="6">—</strong><small>请求模型 · high</small><small data-pack="6">题库 —</small></th><td><strong data-public-first="6">—</strong><small data-public-final="6">含修复 —</small></td><td><strong data-all-first="6">—</strong><small data-all-final="6">含修复 —</small></td><td><strong data-token-rate="6">—</strong><small data-token-detail="6">—</small></td></tr>
-              <tr data-result-row="7" hidden><th scope="row"><strong data-name="7">—</strong><small>请求模型 · low</small><small data-pack="7">题库 —</small></th><td><strong data-public-first="7">—</strong><small data-public-final="7">含修复 —</small></td><td><strong data-all-first="7">—</strong><small data-all-final="7">含修复 —</small></td><td><strong data-token-rate="7">—</strong><small data-token-detail="7">—</small></td></tr>
-              <tr data-result-row="8" hidden><th scope="row"><strong data-name="8">—</strong><small>请求模型 · low</small><small data-pack="8">题库 —</small></th><td><strong data-public-first="8">—</strong><small data-public-final="8">含修复 —</small></td><td><strong data-all-first="8">—</strong><small data-all-final="8">含修复 —</small></td><td><strong data-token-rate="8">—</strong><small data-token-detail="8">—</small></td></tr>
-              <tr data-result-row="9" hidden><th scope="row"><strong data-name="9">—</strong><small>请求模型 · high</small><small data-pack="9">题库 —</small></th><td><strong data-public-first="9">—</strong><small data-public-final="9">—</small></td><td><strong data-all-first="9">—</strong><small data-all-final="9">含修复 —</small></td><td><strong data-token-rate="9">—</strong><small data-token-detail="9">—</small></td></tr>
-              <tr data-result-row="10" hidden><th scope="row"><strong data-name="10">—</strong><small>请求模型 · max</small><small data-pack="10">题库 —</small></th><td><strong data-public-first="10">—</strong><small data-public-final="10">含修复 —</small></td><td><strong data-all-first="10">—</strong><small data-all-final="10">含修复 —</small></td><td><strong data-token-rate="10">—</strong><small data-token-detail="10">—</small></td></tr>
-              <tr data-result-row="11" hidden><th scope="row"><strong data-name="11">—</strong><small>请求模型 · low</small><small data-pack="11">题库 —</small></th><td><strong data-public-first="11">—</strong><small data-public-final="11">含修复 —</small></td><td><strong data-all-first="11">—</strong><small data-all-final="11">含修复 —</small></td><td><strong data-token-rate="11">—</strong><small data-token-detail="11">—</small></td></tr>
-              <tr data-result-row="12" hidden><th scope="row"><strong data-name="12">—</strong><small>请求模型 · high</small><small data-pack="12">题库 —</small></th><td><strong data-public-first="12">—</strong><small data-public-final="12">含修复 —</small></td><td><strong data-all-first="12">—</strong><small data-all-final="12">含修复 —</small></td><td><strong data-token-rate="12">—</strong><small data-token-detail="12">—</small></td></tr>
-              <tr data-result-row="13" hidden><th scope="row"><strong data-name="13">—</strong><small>请求模型 · max</small><small data-pack="13">题库 —</small></th><td><strong data-public-first="13">—</strong><small data-public-final="13">含修复 —</small></td><td><strong data-all-first="13">—</strong><small data-all-final="13">含修复 —</small></td><td><strong data-token-rate="13">—</strong><small data-token-detail="13">—</small></td></tr>
-              <tr data-result-row="14" hidden><th scope="row"><strong data-name="14">—</strong><small title="公开题部分复用历史样本，收据已重新核验">请求模型 · low · 含历史样本</small><small data-pack="14">题库 —</small></th><td><strong data-public-first="14">—</strong><small data-public-final="14">含修复 —</small></td><td><strong data-all-first="14">—</strong><small data-all-final="14">含修复 —</small></td><td><strong data-token-rate="14">—</strong><small data-token-detail="14">—</small></td></tr>
-              <tr data-result-row="15" hidden><th scope="row"><strong data-name="15">—</strong><small>请求模型 · max</small><small data-pack="15">题库 —</small></th><td><strong data-public-first="15">—</strong><small data-public-final="15">含修复 —</small></td><td><strong data-all-first="15">—</strong><small data-all-final="15">含修复 —</small></td><td><strong data-token-rate="15">—</strong><small data-token-detail="15">—</small></td></tr>
-            </tbody>
+            <tr><th scope="row"><strong>deepseek-v4.1-flash-1017</strong><small>请求模型 · max</small><small>题库 20261118</small></th><td><strong>83.8%</strong><small>公开题 · 37 次有效尝试</small></td><td><strong>88.5%</strong><small>150 题 · 427 次尝试</small></td><td><strong>未记录</strong><small>—</small></td></tr>
+            <tr><th scope="row"><strong>deepseek-v4.1-flash-1017</strong><small>请求模型 · high</small><small>题库 20261118</small></th><td><strong>81.1%</strong><small>公开题 · 37 次有效尝试</small></td><td><strong>86.5%</strong><small>150 题 · 446 次尝试</small></td><td><strong>未记录</strong><small>—</small></td></tr>
+            <tr><th scope="row"><strong>deepseek-v4.1-flash-1017</strong><small>请求模型 · low</small><small>题库 20261118</small></th><td><strong>88.9%</strong><small>公开题 · 36 次有效尝试</small></td><td><strong>88.3%</strong><small>150 题 · 446 次尝试</small></td><td><strong>未记录</strong><small>—</small></td></tr>
+          </tbody>
           </table>
         </div>
         <p class="scroll-hint">左右滑动查看完整表格 →</p>
 
-        <h3>deepseek-v4.1-flash-1017 · 20261118 公开题</h3>
-        <p class="run-context">13 道公开题 × 3 重复；对基础设施错误做过一次定向重试，表中为有效样本；未判定包含重试后仍失败的尝试。</p>
-        <div class="table-wrap">
-          <table class="results-table">
-            <caption class="sr-only">deepseek-v4.1-flash-1017 公开题三档结果</caption>
-            <thead><tr>
-              <th scope="col">档位</th>
-              <th scope="col">尝试</th>
-              <th scope="col">通过</th>
-              <th scope="col">失败</th>
-              <th scope="col">未判定</th>
-              <th scope="col">通过率</th>
-            </tr></thead>
-            <tbody>
-              <tr><th scope="row">max</th><td>37</td><td>31</td><td>3</td><td>3</td><td>83.8%</td></tr>
-              <tr><th scope="row">high</th><td>37</td><td>30</td><td>5</td><td>2</td><td>81.1%</td></tr>
-              <tr><th scope="row">low</th><td>36</td><td>32</td><td>4</td><td>0</td><td>88.9%</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <noscript></noscript>
       </section>
     </section>
 
