@@ -158,7 +158,7 @@ def run(pack: dict, config: dict, output: Path) -> dict:
         for name, text in case.get("inputs", {}).items():
             target = safe_path(workspace, name)
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(text, encoding="utf-8")
+            target.write_bytes(text.encode("utf-8"))
         baseline = workspace_snapshot(workspace)
         attempt = {"id": attempt_id, "candidate_id": candidate["id"], "case_id": case["id"], "category": case["category"], "repeat": repeat,
                    "rounds": [], "outcome": "error", "first_pass": False, "repair_rounds": 0}
@@ -197,7 +197,7 @@ def run(pack: dict, config: dict, output: Path) -> dict:
                             raise ContractError("Unlisted output file")
                         target = safe_path(workspace, change["path"])
                         target.parent.mkdir(parents=True, exist_ok=True)
-                        target.write_text(change["content"], encoding="utf-8")
+                        target.write_bytes(change["content"].encode("utf-8"))
                     if invocation_mode == "workspace_tools":
                         workspace_files = capture_workspace(workspace, round_root)
                     check = workspace_check(baseline, workspace, case.get("allowed_write_paths", []), protected_only=invocation_mode == "workspace_tools")

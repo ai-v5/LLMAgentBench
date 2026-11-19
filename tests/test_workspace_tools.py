@@ -33,6 +33,22 @@ def config():
             'candidates': [{'id': 'fixture', 'adapter': 'fixture', 'responses': {}}]}
 
 
+def test_runner_preserves_input_and_output_newline_bytes(tmp_path, monkeypatch):
+    pack = make_pack(tmp_path / 'pack', 'case')
+    content = 'first\r\nsecond\nthird\rlast'
+    pack['cases'][0]['definition']['inputs']['policy.txt'] = content
+    def fake_invoke(candidate, payload, workspace, control, timeout, *, invocation_mode):
+        assert (workspace / 'policy.txt').read_bytes() == content.encode('utf-8')
+        return {'status': 'ok', 'response': {'answer': {'value': 1}, 'files': [
+                    {'path': 'result.txt', 'content': content}]},
+                'evidence_level': 'FIXTURE_SMOKE', 'elapsed_seconds': 0}
+    monkeypatch.setattr(runner, 'invoke', fake_invoke)
+    record = runner.run(pack, config(), tmp_path / 'run')
+    assert record['attempts'][0]['outcome'] == 'pass'
+    snapshot = next((tmp_path / 'run' / 'attempts').glob('*/round-0/workspace_snapshot'))
+    assert (snapshot / 'result.txt').read_bytes() == content.encode('utf-8')
+
+
 @pytest.mark.parametrize('break_protected', [False, True])
 def test_workspace_tools_grades_direct_edits_and_protects_inputs(tmp_path, monkeypatch, break_protected):
     pack = make_pack(tmp_path / 'pack', 'case')

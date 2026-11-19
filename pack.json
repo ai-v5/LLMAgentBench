@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "public-benchmark-v1",
-  "version": "20261119",
+  "version": "20261119-v2",
   "visibility": "public",
   "synthetic": true,
   "purpose": "candidate",
