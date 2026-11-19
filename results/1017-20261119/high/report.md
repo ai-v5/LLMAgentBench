@@ -1,18 +1,18 @@
 # 评估结果
 
-Run: `1017-low-r2` · state: `completed`
+Run: `ws-public-high-r1` · state: `completed`
 
-数据：合成输入；用途：`benchmark`；可见性：`public`；评测范围：`engineering`。
+数据：合成输入；用途：`candidate`；可见性：`public`；评测范围：`engineering`；执行方式：`workspace_tools`；工作区快照：`recorded`。
 
 自动验收与修复指标；人工核验时间未测量。小样本不能作为模型排名。
 
 | 候选 | 证据 | 样本 | 首次通过率 | 预算内通过率 | 失败/未知/错误/超时 | 平均耗时(s) | 候选调用总耗时(s) | 有效吞吐(通过题/小时) |
 |---|---|---:|---:|---:|---|---:|---:|---:|
-| dsh-1017-low | MODEL_RUN | 39 | 76.9% | 76.9% | 4/3/2/0 | 50.395 | 1963.783 | 54.95 |
+| dsh-1017-high | MODEL_RUN | 13 | 69.2% | 69.2% | 2/1/0/1 | 170.844 | 2193.280 | 14.59 |
 
 题库版本: `20261118`
 
-Pack SHA256: `157029737f91f5d6c07dad7f52670d652b5d5a66d84b95e22e52365f46a05e7d`
+Pack SHA256: `99c87abf52831ff8c7dff372655dbcc41781c0e19eb29b44d9a3fd3bf986128f`
 
 Engine SHA256: `c2f3b06a9b98a351706dd58ea0a9f6c2861d7d5aea592353ee8f22e82c995df1`
 

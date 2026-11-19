@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "id": "public-benchmark-v1",
-  "version": "20261118",
+  "version": "20261119",
   "visibility": "public",
   "synthetic": true,
-  "purpose": "benchmark",
+  "purpose": "candidate",
   "evaluation_scope": "engineering",
   "cases": [
     "examples/engineering/quality-rate/case.json",
@@ -20,5 +20,6 @@
     "examples/public/unknown/case.json",
     "examples/public/patch/case.json",
     "examples/public/explanation/case.json"
-  ]
+  ],
+  "invocation_mode": "workspace_tools"
 }

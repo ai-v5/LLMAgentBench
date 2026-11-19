@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_id": "ws-glm53-public-r1",
+  "state": "completed",
+  "visibility": "public",
+  "synthetic": true,
+  "purpose": "candidate",
+  "source_receipt_sha256": "255f3e442d11c50548d6d6ee366a87e4c3245db5726ba938ee611155fd861ed8",
+  "pack_id": "public-benchmark-v1",
+  "pack_version": "20261118",
+  "pack_sha256": "99c87abf52831ff8c7dff372655dbcc41781c0e19eb29b44d9a3fd3bf986128f",
+  "engine_version": "0.1.0",
+  "engine_sha256": "c2f3b06a9b98a351706dd58ea0a9f6c2861d7d5aea592353ee8f22e82c995df1",
+  "config_sha256": "37151b956ee25c97e1422c57d14a0fd4bf89f9d79f50576d284ac39374903838",
+  "repeats": 1,
+  "max_repair_rounds": 0,
+  "timeout_seconds": 1200,
+  "check_timeout_seconds": 60,
+  "metric_boundary": "Automated task outcomes and repair effort are proxies, not measured human labor savings.",
+  "candidates": [
+    {
+      "candidate_id": "dsh-glm53-max",
+      "adapter": "dsh",
+      "requested_model": "glm5.3",
+      "reasoning_effort": "max",
+      "candidate_sha256": "dabdf807deecb96675590af075c7a160850e89a2ccf1e3d2d736ccb4f472b3d1",
+      "evidence_level": "MODEL_RUN",
+      "assigned": 13,
+      "outcomes": {
+        "pass": 8,
+        "fail": 1,
+        "unscored": 0,
+        "error": 4,
+        "timeout": 0
+      },
+      "first_pass_rate": 0.6153846153846154,
+      "strict_success_rate": 0.6153846153846154,
+      "mean_repair_rounds": 0,
+      "mean_elapsed_seconds": 258.2753846153846,
+      "max_elapsed_seconds": 466.922,
+      "evaluated_attempt_seconds": 3357.58,
+      "candidate_call_seconds": 3281.7799999999997,
+      "judge_call_seconds": 55.984,
+      "effective_passes_per_hour": 8.577606490388911,
+      "adapter_invocations": 14,
+      "usage_complete": true,
+      "total_cost_usd": null,
+      "human_minutes": null,
+      "human_minutes_status": "NOT_MEASURED",
+      "by_category": {
+        "analysis": {
+          "assigned": 6,
+          "passed": 4,
+          "first_passed": 4
+        },
+        "coding": {
+          "assigned": 4,
+          "passed": 2,
+          "first_passed": 2
+        },
+        "review": {
+          "assigned": 3,
+          "passed": 2,
+          "first_passed": 2
+        }
+      }
+    }
+  ],
+  "evaluation_scope": "engineering",
+  "invocation_mode": "workspace_tools",
+  "workspace_snapshot": "recorded"
+}

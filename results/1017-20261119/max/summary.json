@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "run_id": "1017-max-r2",
+  "run_id": "ws-public-max-r1",
   "state": "completed",
   "visibility": "public",
   "synthetic": true,
-  "purpose": "benchmark",
-  "source_receipt_sha256": "8f1d460223122df3ed36c55dd75053312bbbb50c6043f14b0e9f01f6680c8b9f",
+  "purpose": "candidate",
+  "source_receipt_sha256": "c6880da681dd94d32e0a26838bde3cf7853253bc7d5a7ca119adfb0464e91ccd",
   "pack_id": "public-benchmark-v1",
   "pack_version": "20261118",
-  "pack_sha256": "157029737f91f5d6c07dad7f52670d652b5d5a66d84b95e22e52365f46a05e7d",
+  "pack_sha256": "99c87abf52831ff8c7dff372655dbcc41781c0e19eb29b44d9a3fd3bf986128f",
   "engine_version": "0.1.0",
   "engine_sha256": "c2f3b06a9b98a351706dd58ea0a9f6c2861d7d5aea592353ee8f22e82c995df1",
-  "config_sha256": "bbecb159c1fb29ec8e0a0d2b4033b17cb3c0b4297da265d4d92787e55d773215",
-  "repeats": 3,
+  "config_sha256": "f77d955acacd71b319c49f226f295ed272d11773da1a5b82c7b6586a76f4211d",
+  "repeats": 1,
   "max_repair_rounds": 0,
   "timeout_seconds": 1200,
   "check_timeout_seconds": 60,
@@ -25,46 +25,48 @@
       "reasoning_effort": "max",
       "candidate_sha256": "496e20043107148c91cb1822cff5e700016a302691136b6857aba8cdc596465f",
       "evidence_level": "MODEL_RUN",
-      "assigned": 39,
+      "assigned": 13,
       "outcomes": {
-        "pass": 27,
-        "fail": 3,
-        "unscored": 3,
-        "error": 6,
-        "timeout": 0
+        "pass": 9,
+        "fail": 1,
+        "unscored": 2,
+        "error": 0,
+        "timeout": 1
       },
       "first_pass_rate": 0.6923076923076923,
       "strict_success_rate": 0.6923076923076923,
       "mean_repair_rounds": 0,
-      "mean_elapsed_seconds": 73.93958974358975,
-      "max_elapsed_seconds": 770.719,
-      "evaluated_attempt_seconds": 2883.644,
-      "candidate_call_seconds": 2882.029,
+      "mean_elapsed_seconds": 196.24269230769232,
+      "max_elapsed_seconds": 1201.797,
+      "evaluated_attempt_seconds": 2551.155,
+      "candidate_call_seconds": 2529.829,
       "judge_call_seconds": 0,
-      "effective_passes_per_hour": 33.707350838036874,
-      "adapter_invocations": 39,
+      "effective_passes_per_hour": 12.700129941144304,
+      "adapter_invocations": 13,
       "usage_complete": true,
       "total_cost_usd": null,
       "human_minutes": null,
       "human_minutes_status": "NOT_MEASURED",
       "by_category": {
         "analysis": {
-          "assigned": 18,
-          "passed": 10,
-          "first_passed": 10
+          "assigned": 6,
+          "passed": 4,
+          "first_passed": 4
         },
         "coding": {
-          "assigned": 12,
-          "passed": 11,
-          "first_passed": 11
+          "assigned": 4,
+          "passed": 3,
+          "first_passed": 3
         },
         "review": {
-          "assigned": 9,
-          "passed": 6,
-          "first_passed": 6
+          "assigned": 3,
+          "passed": 2,
+          "first_passed": 2
         }
       }
     }
   ],
-  "evaluation_scope": "engineering"
+  "evaluation_scope": "engineering",
+  "invocation_mode": "workspace_tools",
+  "workspace_snapshot": "recorded"
 }

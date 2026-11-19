@@ -1,13 +1,33 @@
 {
   "id": "roofline",
   "category": "analysis",
-  "prompt": "以下数据全部为合成样例。使用 inputs 中的规格计算 compute_seconds、memory_seconds 和 lower_bound_seconds（两者最大值），输出 JSON 对象。evidence 字段的值必须严格等于 ANALYTICAL_ESTIMATE；不能声称已实测。",
-  "inputs": {"spec.json": "{\"operations\":1000000000000,\"peak_operations_per_second\":100000000000000,\"bytes\":80000000000,\"bandwidth_bytes_per_second\":2000000000000}"},
-  "allowed_write_paths": [],
+  "prompt": "以下数据全部为合成样例。使用 inputs 中的规格计算 compute_seconds、memory_seconds 和 lower_bound_seconds（两者最大值），输出 JSON 对象。evidence 字段的值必须严格等于 ANALYTICAL_ESTIMATE；不能声称已实测。\n\n把结果写入工作区文件 answer.json。直接在工作区修改文件，完成后简要说明。",
+  "inputs": {
+    "spec.json": "{\"operations\":1000000000000,\"peak_operations_per_second\":100000000000000,\"bytes\":80000000000,\"bandwidth_bytes_per_second\":2000000000000}"
+  },
+  "allowed_write_paths": [
+    "answer.json"
+  ],
   "checks": [
-    {"id": "compute", "type": "number", "path": ["compute_seconds"], "expected": 0.01, "atol": 1e-10},
-    {"id": "memory", "type": "number", "path": ["memory_seconds"], "expected": 0.04, "atol": 1e-10},
-    {"id": "lower-bound", "type": "number", "path": ["lower_bound_seconds"], "expected": 0.04, "atol": 1e-10},
-    {"id": "evidence", "type": "json_equal", "path": ["evidence"], "expected": "ANALYTICAL_ESTIMATE"}
+    {
+      "id": "compute",
+      "type": "python",
+      "script": "verify_compute.py"
+    },
+    {
+      "id": "memory",
+      "type": "python",
+      "script": "verify_memory.py"
+    },
+    {
+      "id": "lower-bound",
+      "type": "python",
+      "script": "verify_lower-bound.py"
+    },
+    {
+      "id": "evidence",
+      "type": "python",
+      "script": "verify_evidence.py"
+    }
   ]
 }
