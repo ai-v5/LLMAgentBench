@@ -4,6 +4,24 @@
   "prompt_note": "同一个 SVG 动画题；完整 HTML 作品使用禁用脚本的沙箱展示。",
   "entries": [
     {
+      "id": "astra-62-high",
+      "label": "Codex GPT-6.2 Astra",
+      "effort": "high",
+      "html": "site/artifacts/crocodile/astra-62-high.html",
+      "created": "2026-11-20",
+      "outcome": "pass",
+      "note": "high · 公开题第 1 次样本 · 结构检查 pass"
+    },
+    {
+      "id": "sol-62-high",
+      "label": "Codex GPT-6.2 Sol",
+      "effort": "high",
+      "html": "site/artifacts/crocodile/sol-62-high.html",
+      "created": "2026-11-20",
+      "outcome": "fail",
+      "note": "high · 首次结构检查未通过 · 展示副本已移除脚本及按钮"
+    },
+    {
       "id": "terra-max",
       "label": "Codex GPT-6.1 Terra",
       "effort": "max",

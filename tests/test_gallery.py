@@ -46,6 +46,12 @@ def test_gallery_entries_are_inert_public_drawings():
     '<rect style="fill:u&#114;l(/probe)"/>',
     '<filter><feImage href="https://example.org/x"/></filter>',
     '<animate attributeName="href" values="#a;https://example.org"/>',
+    '<pattern href="https://example.org/pattern"/>',
+    '<clipPath onload="alert(1)"/>',
+    '<animateMotion href="https://example.org/path"/>',
+    '<animateMotion onbegin="alert(1)"/>',
+    '<pattern id="p"><animate attributeName="href" values="#p;https://example.org"/></pattern>',
+    '<feTurbulence onload="alert(1)"/>',
     '<meta http-equiv="refresh" content="0;url=https://example.org"/>',
 ])
 def test_gallery_html_rejects_active_or_external_content(unsafe):
@@ -54,8 +60,12 @@ def test_gallery_html_rejects_active_or_external_content(unsafe):
 
 
 def test_gallery_html_keeps_internal_references():
-    validate_html('<html><body><svg><defs><linearGradient id="g"/></defs>'
-                  '<rect fill="url(#g)"/><use href="#g"/></svg></body></html>')
+    validate_html('<html><body><svg><defs><linearGradient id="g"/>'
+                  '<clipPath id="clip"><rect width="1" height="1"/></clipPath>'
+                  '<pattern id="p" width="2" height="2"><rect width="1" height="1"/></pattern>'
+                  '<filter id="f"><feTurbulence/><feColorMatrix type="saturate" values="0"/></filter></defs>'
+                  '<rect fill="url(#g)" clip-path="url(#clip)"><animateMotion path="M0 0L1 1"/></rect>'
+                  '<use href="#g"/></svg></body></html>')
 
 
 @pytest.mark.parametrize("invalid", [None, "private_pack", "private_run", "nonsynthetic_pack", "nonsynthetic_run",
