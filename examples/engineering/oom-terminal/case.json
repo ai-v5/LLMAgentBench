@@ -2,7 +2,7 @@
   "id": "oom-terminal",
   "category": "analysis",
   "topic": "diagnosis",
-  "prompt": "根据日志给出 JSON：terminal_state、target_tpot_ms、next_action、previous_point_role。不得把失败容量点当作测量或未经授权继续重试。 输出字段约束：terminal_state: 枚举 TIMEOUT/OOM/MEASURED/UNKNOWN；target_tpot_ms: 数值或 null；next_action: 枚举 STOP_AND_PRESERVE/RETRY/REPORT_MEASURED；previous_point_role: 枚举 TARGET_MEASURED/OTHER_SHAPE_MEASURED/PROXY/UNKNOWN。\n\n把结果写入工作区文件 answer.json。直接在工作区修改文件，完成后简要说明。",
+  "prompt": "根据日志给出 JSON：terminal_state、target_tpot_ms、next_action、previous_point_role。不得把失败容量点当作测量或未经授权继续重试。 输出字段约束：terminal_state: 枚举 TIMEOUT/OOM/MEASURED/UNKNOWN；target_tpot_ms: 数值或 null；next_action: 枚举 STOP_AND_PRESERVE/RETRY/REPORT_MEASURED；previous_point_role: 枚举 TARGET_MEASURED/OTHER_SHAPE_MEASURED/PROXY/UNKNOWN。\n\n目标配置为 BS128；日志中的 BS64 是另一个形状的测量。\n\n把结果写入工作区文件 answer.json。直接在工作区修改文件，完成后简要说明。",
   "inputs": {
     "log.txt": "合成日志：BS64 在目标长度完成，TPOT=36 ms；BS128 graph warmup OOM，未生成有效计时；负责人说 OOM 的 BS 不再测试。\n"
   },
