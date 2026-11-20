@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Croc Cycle Club · 鳄鱼骑行俱乐部</title>
+  <style>
+    * { box-sizing: border-box }
+    body { margin: 0; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; background: #e7e5d7; color: #233e35 }
+    main { width: min(1120px, 96vw); margin: 2.5vw auto; padding: clamp(7px,1.1vw,16px); background: #fbf4de; border: 1px solid #a7ac95; box-shadow: 0 12px 34px #263b3020 }
+    svg { width: 100%; height: auto; display: block }
+    text { fill: #233e35; font-family: Arial, sans-serif }
+    .caption { font: bold 11px 'Courier New', monospace; letter-spacing: 2px }
+  </style>
+</head>
+<body>
+<main aria-label="鳄鱼骑行俱乐部动画海报">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" role="img" aria-labelledby="title desc">
+    <title id="title">Croc Cycle Club · 鳄鱼骑行俱乐部</title>
+    <desc id="desc">戴橘色骑行帽的绿鳄鱼骑着公路自行车穿过沼泽，双脚交替踩踏，身体轻轻前倾后仰。</desc>
+    <defs>
+      <clipPath id="scene"><rect x="2" y="60" width="996" height="517" rx="2"/></clipPath>
+      <pattern id="screen" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#915f30" opacity=".28"/></pattern>
+      <path id="spoke" d="M-3 -6 8 -77" fill="none" stroke="#506551" stroke-width="2"/>
+      <g id="wheel">
+        <g>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/>
+          <circle r="83" fill="none" stroke="#233e35" stroke-width="14"/>
+          <circle r="79" fill="none" stroke="#f9deac" stroke-width="5"/>
+          <use href="#spoke" transform="rotate(0)"/>
+          <use href="#spoke" transform="rotate(22.5)"/>
+          <use href="#spoke" transform="rotate(45)"/>
+          <use href="#spoke" transform="rotate(67.5)"/>
+          <use href="#spoke" transform="rotate(90)"/>
+          <use href="#spoke" transform="rotate(112.5)"/>
+          <use href="#spoke" transform="rotate(135)"/>
+          <use href="#spoke" transform="rotate(157.5)"/>
+          <use href="#spoke" transform="rotate(180)"/>
+          <use href="#spoke" transform="rotate(202.5)"/>
+          <use href="#spoke" transform="rotate(225)"/>
+          <use href="#spoke" transform="rotate(247.5)"/>
+          <use href="#spoke" transform="rotate(270)"/>
+          <use href="#spoke" transform="rotate(292.5)"/>
+          <use href="#spoke" transform="rotate(315)"/>
+          <use href="#spoke" transform="rotate(337.5)"/>
+          <path d="M0 -84 A84 84 0 0 1 21 -81" fill="none" stroke="#8c9c7e" stroke-width="3"/>
+          <circle r="8" fill="#d9cf9f" stroke="#233e35" stroke-width="3"/>
+        </g>
+      </g>
+      <g id="reeds" fill="#617f66"><path d="M0 0 Q-4 -34 -25 -61 Q-5 -52 4 -16 Q3 -64 17 -93 Q12 -55 10 -16 Q24 -48 41 -59 Q21 -31 16 0Z"/></g>
+    </defs>
+
+    <!-- The printed masthead and footer frame the animated landscape. -->
+    <rect width="1000" height="640" fill="#fbf4de"/>
+    <g transform="translate(22 29)" fill="none" stroke="#233e35" stroke-width="3.5">
+      <circle cx="0" cy="0" r="11"/><circle cx="27" cy="0" r="11"/>
+      <path d="m0 0 8 -15 9 15H0m17 0 8 -13 2 13"/>
+    </g>
+    <text x="72" y="36" font-size="19" font-weight="900" letter-spacing="1">CROC CYCLE CLUB</text>
+    <text x="979" y="34" text-anchor="end" class="caption">SWAMP CYCLING SERIES</text>
+    <g clip-path="url(#scene)">
+      <rect x="2" y="60" width="996" height="517" fill="#e2ead2"/>
+      <circle cx="741" cy="237" r="130" fill="#f7bc72"/>
+      <circle cx="741" cy="237" r="130" fill="url(#screen)"/>
+      <text x="34" y="112" class="caption">FIELD RIDE / 01</text>
+      <text x="30" y="172" style="font:italic bold 65px Georgia,serif;letter-spacing:-4px">Swamp</text>
+      <text x="30" y="227" style="font:italic bold 65px Georgia,serif;letter-spacing:-4px">Cruiser</text>
+      <g fill="none" stroke="#718975" stroke-width="2.5" stroke-linecap="round">
+        <path d="M824 169q9 -3 14 2 5 -9 13 -10m17 21q6 -2 10 2 3 -6 9 -7"/>
+      </g>
+      <path d="M0 402Q90 353 174 370T361 373Q461 328 576 355T791 311Q880 270 1000 317V555H0Z" fill="#bbcead"/>
+      <path d="M0 433Q122 386 247 414T505 405Q612 372 740 385T1000 347V555H0Z" fill="#99b497"/>
+      <path d="M0 460Q142 428 267 447T565 438Q759 398 1000 420V554H0Z" fill="#c2d7b7"/>
+      <g stroke="#8daa92" stroke-width="2" stroke-linecap="round"><path d="M65 469h88m34 -13h40m561 -19h63m30 9h39m-108 13h32M36 487h40"/></g>
+      <use href="#reeds" transform="translate(21 506) scale(1.05)"/><use href="#reeds" transform="translate(976 498) scale(-1.15 1.15)"/>
+      <path d="M0 506Q124 493 263 507T567 505Q826 475 1000 495V577H0Z" fill="#e4cda3"/>
+      <ellipse cx="514" cy="550" rx="221" ry="8" fill="#baa980"/>
+
+      <!-- Wheels, rear leg and bicycle frame, from back to front. -->
+      <use href="#wheel" x="355" y="466"/><use href="#wheel" x="683" y="466"/>
+      <g id="far-leg" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M438 329 L506.94 382.07 L453 445" fill="none" stroke="#203b34" stroke-width="29">
+          <animate attributeName="d" dur="1.8s" repeatCount="indefinite" values="M438 329 L506.94 382.07 L453 445;M438 329 L512.91 373.24 L455.28 433.52;M438 329 L518.24 362.63 L461.79 423.79;M438 329 L521.89 352.05 L471.52 417.28;M438 329 L523.59 344.61 L483 415;M438 329 L523.9 342.78 L494.48 417.28;M438 329 L523.14 346.91 L504.21 423.79;M438 329 L520.81 355.67 L510.72 433.52;M438 329 L516.25 367.02 L513 445;M438 329 L509.4 378.71 L510.72 456.48;M438 329 L501.41 388.56 L504.21 466.21;M438 329 L494.87 394.84 L494.48 472.72;M438 329 L492.14 397.1 L483 475;M438 329 L493.12 396.31 L471.52 472.72;M438 329 L496.46 393.43 L461.79 466.21;M438 329 L501.25 388.73 L455.28 456.48;M438 329 L506.94 382.07 L453 445"/>
+        </path>
+        <path d="M438 329 L506.94 382.07 L453 445" fill="none" stroke="#609650" stroke-width="22">
+          <animate attributeName="d" dur="1.8s" repeatCount="indefinite" values="M438 329 L506.94 382.07 L453 445;M438 329 L512.91 373.24 L455.28 433.52;M438 329 L518.24 362.63 L461.79 423.79;M438 329 L521.89 352.05 L471.52 417.28;M438 329 L523.59 344.61 L483 415;M438 329 L523.9 342.78 L494.48 417.28;M438 329 L523.14 346.91 L504.21 423.79;M438 329 L520.81 355.67 L510.72 433.52;M438 329 L516.25 367.02 L513 445;M438 329 L509.4 378.71 L510.72 456.48;M438 329 L501.41 388.56 L504.21 466.21;M438 329 L494.87 394.84 L494.48 472.72;M438 329 L492.14 397.1 L483 475;M438 329 L493.12 396.31 L471.52 472.72;M438 329 L496.46 393.43 L461.79 466.21;M438 329 L501.25 388.73 L455.28 456.48;M438 329 L506.94 382.07 L453 445"/>
+        </path>
+        <g transform="translate(458 454)">
+          <animateTransform attributeName="transform" type="translate" values="458 454;460.28 442.52;466.79 432.79;476.52 426.28;488 424;499.48 426.28;509.21 432.79;515.72 442.52;518 454;515.72 465.48;509.21 475.21;499.48 481.72;488 484;476.52 481.72;466.79 475.21;460.28 465.48;458 454" dur="1.8s" repeatCount="indefinite"/>
+          <rect x="-16" y="-1" width="32" height="7" rx="3" fill="#203b34"/>
+          <path d="M-15 -15 Q-10 -12 -3 -16 L3 -11 Q19 -10 19 -3 Q13 1 -14 -2 Q-18 -6 -15 -15Z" fill="#d6d4a6" stroke="#203b34" stroke-width="3"/>
+          <path d="m1 -12 -3 5 m9 -4 -3 5" fill="none" stroke="#cd613c" stroke-width="2.3"/>
+        </g>
+      </g>
+      <g stroke-linejoin="round" stroke-linecap="round" fill="none">
+        <path id="tubes" d="M355 466 438 358 488 454 355 466 M438 358 619 345 488 454 M610 321 683 466"
+              stroke="#233e35" stroke-width="13"/>
+        <path d="M355 466 438 358 488 454 355 466 M438 358 619 345 488 454 M610 321 683 466" stroke="#eb8551" stroke-width="7"/>
+        <path d="m438 358 -9 -27m181 -10 -5 -17 32 -4" stroke="#233e35" stroke-width="8"/>
+        <path d="M615 305Q693 309 649 388" stroke="#364f42" stroke-width="2"/>
+        <path d="M402 329Q419 321 453 326L455 331Q430 340 407 337Z" fill="#573f32" stroke="#233e35" stroke-width="4"/>
+        <circle cx="488" cy="454" r="18" fill="#d0b58c" stroke="#233e35" stroke-width="4"/>
+        <g transform="translate(488 454)"><g>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.8s" repeatCount="indefinite"/>
+          <path d="M-30 0H30" stroke="#30493d" stroke-width="7"/><circle r="4" fill="#ffdfaa"/>
+        </g></g>
+      </g>
+
+      <!-- Tail, torso, head, cap and reaching arms rock about the saddle. -->
+      <g id="rider" stroke="#233e35" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" values="-1 443 326;1 443 326;-1 443 326" dur="1.8s" repeatCount="indefinite"/>
+        <path d="M453 327Q404 351 344 337Q277 323 211 288Q193 279 169 277Q232 270 301 294Q366 316 405 277Z" fill="#8ab859"/>
+        <path d="m235 283 11 -7 7 11 16 -8 7 14 17 -9 9 13 17 -9 9 14 15 -11 11 14 17 -16 9 11" fill="#4e8250" stroke-width="3"/>
+        <path d="M404 328Q383 307 402 272Q423 237 483 222L513 211Q544 214 543 248Q539 274 496 298Q472 332 446 336Z" fill="#94c969"/>
+        <path d="M406 325Q446 331 467 310Q484 286 511 277Q483 328 455 335Q423 344 406 325Z" fill="#d5db8d" stroke="none"/>
+        <path d="m406 265 -4 -16 17 4 2 -19 17 7 6 -17 16 7 11 -17 12 8" fill="#548653" stroke-width="3"/>
+        <g fill="#689c55" stroke="none"><ellipse cx="431" cy="270" rx="8" ry="5" transform="rotate(-33 431 270)"/><circle cx="446" cy="259" r="4"/><circle cx="420" cy="285" r="4"/><circle cx="454" cy="268" r="3"/></g>
+        <path d="M487 233Q484 206 503 195Q500 163 521 158Q537 154 548 174Q558 164 571 184L624 178Q656 170 666 183Q677 202 655 213L558 235Q534 260 508 251Z" fill="#9dce68"/>
+        <path d="M535 219Q573 224 663 197Q659 217 620 226L558 242Q541 243 535 219Z" fill="#e1e6a2"/>
+        <path d="m572 218 7 10 5 -13m22 -3 7 9 4 -12m18 -4 6 7 4 -10" fill="#fff7db" stroke-width="2"/>
+        <ellipse cx="533" cy="183" rx="11" ry="14" fill="#fff4d6" stroke-width="3"/><ellipse cx="537" cy="184" rx="4" ry="7" fill="#233e35" stroke="none"/>
+        <path d="m645 184 6 -1m-137 36 5 -1" fill="none"/>
+        <path d="M499 180Q486 143 510 137Q537 128 554 155L567 157Q567 164 551 166Z" fill="#e87d49"/>
+        <path d="M508 139Q523 141 530 162m-31 14 52 -16" fill="none" stroke-width="3"/>
+        <path d="M502 237Q487 257 501 269L522 262 509 247Z" fill="#ed8653"/>
+        <path d="M518 250Q529 249 539 262L555 280 594 288Q610 287 619 294L632 296Q638 298 633 304L620 304Q614 310 605 304L596 301 550 298Q540 297 531 287L510 267" fill="#90c464"/>
+        <path d="m618 297 9 3m-14 1 8 3" stroke-width="2.3" fill="none"/>
+      </g>
+      <g id="near-leg" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M446 329 L524.16 367.22 L513 445" fill="none" stroke="#203b34" stroke-width="29">
+          <animate attributeName="d" dur="1.8s" repeatCount="indefinite" values="M446 329 L524.16 367.22 L513 445;M446 329 L517.55 378.5 L510.72 456.48;M446 329 L509.74 388.21 L504.21 466.21;M446 329 L502.93 394.78 L494.48 472.72;M446 329 L499.33 397.74 L483 475;M446 329 L499.31 397.75 L471.52 472.72;M446 329 L501.94 395.63 L461.79 466.21;M446 329 L506.34 391.67 L455.28 456.48;M446 329 L511.95 385.75 L453 445;M446 329 L518.18 377.58 L455.28 433.52;M446 329 L524.1 367.33 L461.79 423.79;M446 329 L528.53 356.54 L471.52 417.28;M446 329 L530.84 348.28 L483 415;M446 329 L531.45 345.37 L494.48 417.28;M446 329 L530.79 348.5 L504.21 423.79;M446 329 L528.55 356.47 L510.72 433.52;M446 329 L524.16 367.22 L513 445"/>
+        </path>
+        <path d="M446 329 L524.16 367.22 L513 445" fill="none" stroke="#92c85d" stroke-width="22">
+          <animate attributeName="d" dur="1.8s" repeatCount="indefinite" values="M446 329 L524.16 367.22 L513 445;M446 329 L517.55 378.5 L510.72 456.48;M446 329 L509.74 388.21 L504.21 466.21;M446 329 L502.93 394.78 L494.48 472.72;M446 329 L499.33 397.74 L483 475;M446 329 L499.31 397.75 L471.52 472.72;M446 329 L501.94 395.63 L461.79 466.21;M446 329 L506.34 391.67 L455.28 456.48;M446 329 L511.95 385.75 L453 445;M446 329 L518.18 377.58 L455.28 433.52;M446 329 L524.1 367.33 L461.79 423.79;M446 329 L528.53 356.54 L471.52 417.28;M446 329 L530.84 348.28 L483 415;M446 329 L531.45 345.37 L494.48 417.28;M446 329 L530.79 348.5 L504.21 423.79;M446 329 L528.55 356.47 L510.72 433.52;M446 329 L524.16 367.22 L513 445"/>
+        </path>
+        <g transform="translate(518 454)">
+          <animateTransform attributeName="transform" type="translate" values="518 454;515.72 465.48;509.21 475.21;499.48 481.72;488 484;476.52 481.72;466.79 475.21;460.28 465.48;458 454;460.28 442.52;466.79 432.79;476.52 426.28;488 424;499.48 426.28;509.21 432.79;515.72 442.52;518 454" dur="1.8s" repeatCount="indefinite"/>
+          <rect x="-16" y="-1" width="32" height="7" rx="3" fill="#203b34"/>
+          <path d="M-15 -15 Q-10 -12 -3 -16 L3 -11 Q19 -10 19 -3 Q13 1 -14 -2 Q-18 -6 -15 -15Z" fill="#fff2cc" stroke="#203b34" stroke-width="3"/>
+          <path d="m1 -12 -3 5 m9 -4 -3 5" fill="none" stroke="#cd613c" stroke-width="2.3"/>
+        </g>
+      </g>
+    </g>
+    <rect x="2" y="60" width="996" height="517" fill="none" stroke="#233e35" stroke-width="2"/>
+    <text x="18" y="614" class="caption">FIG. 01</text>
+    <path d="M102 609H813" stroke="#929981"/>
+    <text x="981" y="615" text-anchor="end" font-size="15" letter-spacing="3">鳄鱼骑行俱乐部</text>
+  </svg>
+</main>
+</body>
+</html>

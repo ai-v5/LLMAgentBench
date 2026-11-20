@@ -16,7 +16,7 @@ TAGS = {"html", "head", "meta", "title", "style", "body", "main", "div", "sectio
         "header", "footer", "h1", "h2", "h3", "p",
         "svg", "desc", "defs", "lineargradient", "radialgradient", "stop", "g", "circle", "path", "rect",
         "text", "ellipse", "line", "polyline", "polygon", "animatetransform", "animate", "use",
-        "filter", "fegaussianblur"}
+        "filter", "fegaussianblur", "clippath", "pattern", "feturbulence", "fecolormatrix", "animatemotion"}
 REFERENCE_ATTRIBUTES = {"href", "xlink:href"}
 
 
