@@ -44,6 +44,10 @@ def summarize(record: dict) -> dict:
             "human_minutes": None, "human_minutes_status": "NOT_MEASURED",
             "by_category": {category: stats([a for a in attempts if a["category"] == category]) for category in sorted({a["category"] for a in attempts})},
         }
+        exhausted = sum(r["call"].get("error") == "DSHTokenBudgetExhausted"
+                        for attempt in attempts for r in attempt["rounds"])
+        if exhausted:
+            row["token_budget_exhausted"] = exhausted
         if "case_families" in record:
             families = sorted(set(record["case_families"].values()))
             row["by_family"] = {}
@@ -101,6 +105,9 @@ def markdown(summary: dict) -> str:
         outcomes = row["outcomes"]
         throughput = f"{row['effective_passes_per_hour']:.2f}" if row['effective_passes_per_hour'] is not None else "未知"
         lines.append(f"| {row['candidate_id']} | {row['evidence_level']} | {row['assigned']} | {row['first_pass_rate']:.1%} | {row['strict_success_rate']:.1%} | {outcomes['fail']}/{outcomes['unscored']}/{outcomes['error']}/{outcomes['timeout']} | {row['mean_elapsed_seconds']:.3f} | {row['candidate_call_seconds']:.3f} | {throughput} |")
+    for row in summary["candidates"]:
+        if row.get("token_budget_exhausted"):
+            lines += ["", f"{row['candidate_id']} 的调用错误中，{row['token_budget_exhausted']} 次由 DSH 明确报告 token 预算耗尽。"]
     if any("by_family" in row for row in summary["candidates"]):
         lines += ["", "题族等权通过率将每个题族的通过率等权平均；它不是实际使用频率，也不证明样本具有区分度。可评分正确率只计算通过和有评分的失败；若有题族没有可评分样本，题族等权可评分正确率为未知。", "",
                   "| 候选 | 题族 | 首次通过 | 预算内通过 | 可评分正确率 | 失败/未评分/错误/超时 |", "|---|---|---:|---:|---:|---|"]

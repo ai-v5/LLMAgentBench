@@ -209,10 +209,6 @@ def run(pack: dict, config: dict, output: Path) -> dict:
                         if invocation_mode == "workspace_tools" and workspace_snapshot(workspace) != workspace_files:
                             checks = [{"id": "workspace_contract", "type": "filesystem", "status": "unknown", "reason": "grader_changed_workspace"}]
                         else:
-                            if invocation_mode == "workspace_tools" and call.get("tool_error_count", 0):
-                                graded = [{**item, "original_status": "fail", "original_reason": item.get("reason"),
-                                           "status": "unknown", "reason": "tool_error_may_affect_result"}
-                                          if item.get("status") == "fail" else item for item in graded]
                             checks.extend(graded)
                             checks[0] = workspace_check(baseline, workspace, case.get("allowed_write_paths", []), protected_only=invocation_mode == "workspace_tools")
                     state = outcome(checks)
