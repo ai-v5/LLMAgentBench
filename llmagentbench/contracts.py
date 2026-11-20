@@ -126,6 +126,11 @@ def validate_case(case: dict, root: Path) -> None:
                 raise ContractError("Missing evaluator test script")
         if kind == "llm_rubric" and not check.get("criteria"):
             raise ContractError("LLM grader needs explicit criteria")
+        if kind == "llm_rubric" and "answer_file" in check:
+            name = check["answer_file"]
+            safe_path(root, name)
+            if name not in case.get("allowed_write_paths", []) or name in case.get("inputs", {}):
+                raise ContractError("Judge answer file must be a new allowed output")
 
 
 def load_pack(path: Path) -> dict:

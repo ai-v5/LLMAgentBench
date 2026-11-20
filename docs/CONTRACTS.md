@@ -26,6 +26,8 @@ pack.json 使用 schema_version: 1，要求唯一 id、visibility（public/priva
 
 代码检查未通过时不花费 LLM 评分预算。LLM rubric 需要独立 judge；缺失、调用失败、无效 JSON 或不存在的引用为 unknown。judge 返回 `{verdict, reason, evidence:[{source,quote}]}`，source 只能是 answer 或输入文件名。代码校验引用存在，不证明解释正确。单 judge 可能有偏差，需用已知好坏答案校准，不能覆盖代码检查失败。
 
+LLM rubric 可通过 `answer_file` 指定候选输出文件作为裁判的 answer；该路径必须是允许写入的新文件，内容按 UTF-8 读取且不超过 64 KiB。裁判引用的 answer 须在该文件中存在；文件缺失、不可读或过大时不评分。未指定时仍使用候选最终答复。
+
 outcome：全部通过为 pass；存在失败为 fail；有未知且无失败为 unscored；适配器异常为 error；调用超时为 timeout。error/timeout/unscored 不自动无限重试。
 
 ## 一致性与终态

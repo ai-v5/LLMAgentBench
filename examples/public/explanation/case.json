@@ -22,6 +22,7 @@
     {
       "id": "rubric",
       "type": "llm_rubric",
+      "answer_file": "answer.json",
       "criteria": [
         "说明已知事实是 OOM 且无计时样本。",
         "明确该点性能未知，不能当作完成的性能测量。",
