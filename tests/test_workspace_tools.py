@@ -8,7 +8,7 @@ import pytest
 
 from llmagentbench import adapters, runner
 from llmagentbench.contracts import ContractError, load_pack
-from llmagentbench.report import export_overall, export_public, summarize
+from llmagentbench.report import export_overall, export_public, markdown, summarize
 
 
 def make_pack(root, name, mode='workspace_tools'):
@@ -102,18 +102,45 @@ def test_workspace_tools_dsh_preserves_tool_events_without_payloads(tmp_path, mo
     assert 'synthetic-private-marker' not in json.dumps(call)
 
 
-@pytest.mark.parametrize('answer,tool_errors,expected', [(0, 1, 'unscored'), (0, 0, 'fail'), (1, 1, 'pass')])
-def test_tool_error_does_not_masquerade_as_a_scored_failure(tmp_path, monkeypatch, answer, tool_errors, expected):
+@pytest.mark.parametrize('delivered,tool_errors,expected', [(False, 1, 'fail'), (False, 0, 'fail'), (True, 2, 'pass')])
+def test_final_artifact_determines_grade_after_tool_errors(tmp_path, monkeypatch, delivered, tool_errors, expected):
+    pack = make_pack(tmp_path / 'pack', 'case')
+    case = pack['cases'][0]['definition']
+    case['checks'] = [{'id': 'file', 'type': 'python', 'script': 'verify.py'}]
+    root = pack['path'].parent
+    (root / 'case.json').write_text(json.dumps(case), encoding='utf-8')
+    (root / 'verify.py').write_text(
+        "import sys\nfrom pathlib import Path\nassert (Path(sys.argv[1]) / 'result.txt').read_bytes() == b'after'\n",
+        encoding='utf-8')
     def fake_invoke(candidate, payload, workspace, control, timeout, *, invocation_mode):
-        return {'status': 'ok', 'response': {'answer': {'value': answer}, 'files': []},
+        if delivered:
+            (workspace / 'result.txt').write_bytes(b'after')
+        return {'status': 'ok', 'response': {'answer': 'done', 'files': []},
                 'evidence_level': 'FIXTURE_SMOKE', 'elapsed_seconds': 0, 'tool_error_count': tool_errors}
     monkeypatch.setattr(runner, 'invoke', fake_invoke)
-    record = runner.run(make_pack(tmp_path / 'pack', 'case'), config(), tmp_path / 'run')
+    runner.run(load_pack(pack['path']), config(), tmp_path / 'run')
+    record = runner.load_run(tmp_path / 'run')
     attempt = record['attempts'][0]
     assert attempt['outcome'] == expected
-    if expected == 'unscored':
-        uncertain = [check for check in attempt['rounds'][0]['checks'] if check['status'] == 'unknown']
-        assert uncertain and uncertain[0]['original_status'] == 'fail'
+    assert attempt['rounds'][0]['call']['tool_error_count'] == tool_errors
+    assert attempt['rounds'][0]['checks'][-1]['status'] == expected
+
+
+@pytest.mark.parametrize('kind,expected_count', [('max-tokens', 1), ('error', 0)])
+def test_dsh_unfinished_turn_reports_budget_only_when_explicit(tmp_path, monkeypatch, kind, expected_count):
+    monkeypatch.setenv('BENCH_DSH_LAUNCHER', json.dumps([sys.executable]))
+    events = [{'type': 'session', 'sessionId': 'synthetic'},
+              {'type': 'status', 'phase': 'turn_end', 'reason': {'kind': kind}},
+              {'type': 'final', 'text': 'incomplete'}]
+    monkeypatch.setattr(adapters, 'execute', lambda *args, **kwargs: {
+        'exit_code': 1, 'timed_out': False, 'stdout': '\n'.join(map(json.dumps, events)), 'stderr': ''})
+    cfg = config()
+    cfg['candidates'] = [{'id': 'candidate', 'adapter': 'dsh', 'provider': 'p', 'model': 'm'}]
+    record = runner.run(make_pack(tmp_path / 'pack', 'case'), cfg, tmp_path / 'run')
+    row = summarize(record)['candidates'][0]
+    assert row['outcomes']['error'] == row['assigned'] == 1 and row['first_pass_rate'] == 0
+    assert row.get('token_budget_exhausted', 0) == expected_count
+    assert ('token 预算耗尽' in markdown(summarize(record))) == bool(expected_count)
 
 
 def test_overall_export_rejects_mixed_invocation_modes(tmp_path, monkeypatch):

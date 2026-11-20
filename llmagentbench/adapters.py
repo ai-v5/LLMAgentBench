@@ -573,6 +573,9 @@ def invoke(adapter: dict, payload: dict, workspace: Path, control: Path, timeout
             finals = [e for e in events if e.get("type") == "final"]
             ends = [e for e in events if e.get("type") == "status" and e.get("phase") == "turn_end"]
             reason = ends[-1].get("reason") if ends else None
+            if len(ends) == 1 and isinstance(reason, dict) and reason.get("kind") == "max-tokens":
+                base["error"] = "DSHTokenBudgetExhausted"
+                return base
             if (result["exit_code"] != 0 or len(finals) != 1 or not isinstance(reason, dict)
                     or reason.get("kind") != "completed"):
                 raise ContractError("DSH did not finish a fresh headless run")
