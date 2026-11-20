@@ -2,7 +2,7 @@
   "id": "review-batch-proof",
   "category": "review",
   "topic": "review",
-  "prompt": "评审下方合成代码，按 JSON 返回 native_bs_proven、throughput_publishable、need_all_rank_proof、need_exact_output。不要把客户端并发等同于运行时 native batch。 输出字段约束：native_bs_proven: JSON 布尔值 true 或 false；throughput_publishable: JSON 布尔值 true 或 false；need_all_rank_proof: JSON 布尔值 true 或 false；need_exact_output: JSON 布尔值 true 或 false。\n\n把结果写入工作区文件 answer.json。直接在工作区修改文件，完成后简要说明。",
+  "prompt": "评审下方合成代码，按 JSON 返回 native_bs_proven、throughput_publishable、need_all_rank_proof、need_exact_output。不要把客户端并发等同于运行时 native batch。 输出字段约束：native_bs_proven: JSON 布尔值 true 或 false；throughput_publishable: JSON 布尔值 true 或 false；need_all_rank_proof: JSON 布尔值 true 或 false；need_exact_output: JSON 布尔值 true 或 false。\n\n把结果写入工作区文件 answer.json。直接在工作区修改文件，完成后简要说明。\n\n评测环境只提供文件读写与命令执行工具；子代理、工作流、目标、插件管理和技能加载等工具不可用，请不要尝试调用。",
   "inputs": {
     "candidate.py": "def publish(receipt):\n    if receipt[\"offered_concurrency\"] == 256 and receipt[\"completed\"] > 0:\n        return {\"native_bs\":256, \"valid\":True}\n"
   },
