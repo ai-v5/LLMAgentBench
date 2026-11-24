@@ -61,17 +61,17 @@
           <tr>
             <td class="rank">1</td><th scope="row">GPT-6.2 Astra (high)</th>
             <td><span class="score-value">86.98</span><meter class="score-meter" max="100" value="86.98" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">关键算子整体较准，边界配置需复核</p></td>
+            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">常见配置可辅助选型，边界配置再实测</p></td>
           </tr>
           <tr>
             <td class="rank">2</td><th scope="row">GPT-6.2 Sol (high)</th>
             <td><span class="score-value">72.47</span><meter class="score-meter" max="100" value="72.47" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">主流形状可辅助评估</p></td>
+            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">可缩小候选范围，入选方案仍要实测</p></td>
           </tr>
           <tr>
             <td class="rank">3</td><th scope="row">DeepSeek V4.1 (high)</th>
             <td><span class="score-value">69.94</span><meter class="score-meter" max="100" value="69.94" aria-hidden="true"></meter></td>
-            <td class="band" rowspan="2"><span class="band-label">60–&lt;70</span><p class="band-description">可初筛耗时差距明显的配置</p></td>
+            <td class="band" rowspan="2"><span class="band-label">60–&lt;70</span><p class="band-description">能筛掉明显较慢的方案，接近的方案要实测</p></td>
           </tr>
           <tr>
             <td class="rank">4</td><th scope="row">GLM 5.3 (high)</th>
@@ -80,7 +80,7 @@
           <tr>
             <td class="rank">5</td><th scope="row">GPT-6.1 Terra (high)</th>
             <td><span class="score-value">29.41</span><meter class="score-meter" max="100" value="29.41" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">20–&lt;30</span><p class="band-description">多个重要形状族失准，需重新校准</p></td>
+            <td class="band"><span class="band-label">20–&lt;30</span><p class="band-description">关键耗时常估偏，只适合决定先补测哪些点</p></td>
           </tr>
         </tbody>
       </table>
@@ -91,16 +91,16 @@
         <section class="guide-card" aria-labelledby="score-bands">
           <h2 id="score-bands">分数档位</h2>
           <dl class="range-list">
-            <div><dt>90–100</dt><dd>大部分形状稳定达标，可做精细估算</dd></div>
-            <div><dt>80–&lt;90</dt><dd>关键算子整体较准，边界配置需复核</dd></div>
-            <div><dt>70–&lt;80</dt><dd>主流形状可辅助评估</dd></div>
-            <div><dt>60–&lt;70</dt><dd>可初筛耗时差距明显的配置</dd></div>
-            <div><dt>50–&lt;60</dt><dd>部分算子可靠，结果对形状组合敏感</dd></div>
-            <div><dt>40–&lt;50</dt><dd>仅适合复用已核验的算子族</dd></div>
-            <div><dt>30–&lt;40</dt><dd>可看局部趋势、指导补测</dd></div>
-            <div><dt>20–&lt;30</dt><dd>多个重要形状族失准，需重新校准</dd></div>
-            <div><dt>10–&lt;20</dt><dd>只有少量点达到精度要求</dd></div>
-            <div><dt>0–&lt;10</dt><dd>缺少可复用的定量证据</dd></div>
+            <div><dt>90–100</dt><dd>可细算耗时，多数配置可比较，差距小的再实测</dd></div>
+            <div><dt>80–&lt;90</dt><dd>常见配置可辅助选型，边界配置再实测</dd></div>
+            <div><dt>70–&lt;80</dt><dd>可缩小候选范围，入选方案仍要实测</dd></div>
+            <div><dt>60–&lt;70</dt><dd>能筛掉明显较慢的方案，接近的方案要实测</dd></div>
+            <div><dt>50–&lt;60</dt><dd>部分算子的耗时可参考，换形状需复核</dd></div>
+            <div><dt>40–&lt;50</dt><dd>只能估少数已核验的形状，换尺寸通常要重测</dd></div>
+            <div><dt>30–&lt;40</dt><dd>可看局部快慢趋势，具体耗时要实测</dd></div>
+            <div><dt>20–&lt;30</dt><dd>关键耗时常估偏，只适合决定先补测哪些点</dd></div>
+            <div><dt>10–&lt;20</dt><dd>只有个别点估得接近，换配置需要重新校准</dd></div>
+            <div><dt>0–&lt;10</dt><dd>暂无可用的耗时预测，需要重新建模</dd></div>
           </dl>
         </section>
         <section class="guide-card" aria-labelledby="error-bands">
