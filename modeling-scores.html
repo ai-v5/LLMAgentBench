@@ -61,17 +61,17 @@
           <tr>
             <td class="rank">1</td><th scope="row">GPT-6.2 Astra (high)</th>
             <td><span class="score-value">86.98</span><meter class="score-meter" max="100" value="86.98" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">提前算出接近实测的算子耗时。场景加权误差低于 5% 时，可直接用预估结果精细比较配置。</p></td>
+            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">常见配置的算子耗时可提前估到接近实测。场景加权误差低于 5% 时，可直接用预估结果精细比较这些配置。</p></td>
           </tr>
           <tr>
             <td class="rank">2</td><th scope="row">GPT-6.2 Sol (high)</th>
             <td><span class="score-value">72.47</span><meter class="score-meter" max="100" value="72.47" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">可缩小候选范围，入选方案仍要实测</p></td>
+            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">可以先排方案优先级。场景加权误差低于 10% 时，可让预估领先的方案优先上机验证。</p></td>
           </tr>
           <tr>
             <td class="rank">3</td><th scope="row">DeepSeek V4.1 (high)</th>
             <td><span class="score-value">69.94</span><meter class="score-meter" max="100" value="69.94" aria-hidden="true"></meter></td>
-            <td class="band" rowspan="2"><span class="band-label">60–&lt;70</span><p class="band-description">能筛掉明显较慢的方案，接近的方案要实测</p></td>
+            <td class="band" rowspan="2"><span class="band-label">60–&lt;70</span><p class="band-description">能筛掉明显较慢的方案。场景加权误差低于 20% 时，可用预估缩小范围，再由真机决定最终配置。</p></td>
           </tr>
           <tr>
             <td class="rank">4</td><th scope="row">GLM 5.3 (high)</th>
@@ -80,7 +80,7 @@
           <tr>
             <td class="rank">5</td><th scope="row">GPT-6.1 Terra (high)</th>
             <td><span class="score-value">29.41</span><meter class="score-meter" max="100" value="29.41" aria-hidden="true"></meter></td>
-            <td class="band"><span class="band-label">20–&lt;30</span><p class="band-description">关键耗时常估偏，只适合决定先补测哪些点</p></td>
+            <td class="band"><span class="band-label">20–&lt;30</span><p class="band-description">可用误差大的形状安排补测。场景加权误差超过 30% 时，耗时数字基本无定量参考价值。</p></td>
           </tr>
         </tbody>
       </table>
@@ -91,16 +91,16 @@
         <section class="guide-card" aria-labelledby="score-bands">
           <h2 id="score-bands">分数档位</h2>
           <dl class="range-list">
-            <div><dt>90–100</dt><dd>可细算耗时，多数配置可比较，差距小的再实测</dd></div>
-            <div><dt>80–&lt;90</dt><dd>提前算出接近实测的算子耗时。场景加权误差低于 5% 时，可直接用预估结果精细比较配置。</dd></div>
-            <div><dt>70–&lt;80</dt><dd>可缩小候选范围，入选方案仍要实测</dd></div>
-            <div><dt>60–&lt;70</dt><dd>能筛掉明显较慢的方案，接近的方案要实测</dd></div>
-            <div><dt>50–&lt;60</dt><dd>部分算子的耗时可参考，换形状需复核</dd></div>
-            <div><dt>40–&lt;50</dt><dd>只能估少数已核验的形状，换尺寸通常要重测</dd></div>
-            <div><dt>30–&lt;40</dt><dd>可看局部快慢趋势，具体耗时要实测</dd></div>
-            <div><dt>20–&lt;30</dt><dd>关键耗时常估偏，只适合决定先补测哪些点</dd></div>
-            <div><dt>10–&lt;20</dt><dd>只有个别点估得接近，换配置需要重新校准</dd></div>
-            <div><dt>0–&lt;10</dt><dd>暂无可用的耗时预测，需要重新建模</dd></div>
+            <div><dt>90–100</dt><dd>目标场景覆盖充分、加权误差低于 5% 时，可在上机前完成大多数配置的性能评估。真机测试集中在难分高下的方案。</dd></div>
+            <div><dt>80–&lt;90</dt><dd>常见配置的算子耗时可提前估到接近实测。场景加权误差低于 5% 时，可直接用预估结果精细比较这些配置。</dd></div>
+            <div><dt>70–&lt;80</dt><dd>可以先排方案优先级。场景加权误差低于 10% 时，可让预估领先的方案优先上机验证。</dd></div>
+            <div><dt>60–&lt;70</dt><dd>能筛掉明显较慢的方案。场景加权误差低于 20% 时，可用预估缩小范围，再由真机决定最终配置。</dd></div>
+            <div><dt>50–&lt;60</dt><dd>可以估算部分算子的耗时。常见形状可参考，换批量、序列长度或算子组合时先抽测。</dd></div>
+            <div><dt>40–&lt;50</dt><dd>少数已核验形状的耗时可以复用。换到新尺寸时，需要先测几个代表点再校准。</dd></div>
+            <div><dt>30–&lt;40</dt><dd>能看出部分配置变快还是变慢。预估适合找趋势，具体耗时仍需实测。</dd></div>
+            <div><dt>20–&lt;30</dt><dd>可用误差大的形状安排补测。场景加权误差超过 30% 时，耗时数字基本无定量参考价值。</dd></div>
+            <div><dt>10–&lt;20</dt><dd>只有个别形状估得接近实测，可作为下一轮校准的起点。</dd></div>
+            <div><dt>0–&lt;10</dt><dd>缺少可信的耗时预估。先重新建模，再用盲测验收。</dd></div>
           </dl>
         </section>
         <section class="guide-card" aria-labelledby="error-bands">
