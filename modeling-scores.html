@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f1">
+  <title>算子性能建模 · 试评得分 | LLMAgentBench</title>
+  <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
+  <link rel="stylesheet" href="site/styles.css">
+  <style>
+    .score-page { width: min(980px, calc(100% - 32px)); padding-block: clamp(28px, 7vw, 76px); }
+    .score-page h1 { margin-bottom: 24px; font-size: clamp(28px, 5vw, 44px); }
+    .leaderboard-card { border: 1px solid var(--line); border-radius: 16px; background: #fff; overflow: hidden; }
+    .leaderboard { min-width: 0; table-layout: fixed; }
+    .leaderboard .rank-column { width: 12%; }
+    .leaderboard .score-column { width: 21%; }
+    .leaderboard .band-column { width: 35%; }
+    .leaderboard thead th, .leaderboard tbody tr > * { padding: 16px clamp(8px, 2vw, 24px); }
+    .leaderboard thead th { color: #405c50; background: #edf3eb; font-size: .875rem; }
+    .leaderboard tbody tr > * { color: var(--ink); font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+    .leaderboard tbody th { min-width: 0; }
+    .leaderboard .rank { color: #527367; font-weight: 670; font-variant-numeric: tabular-nums; }
+    .leaderboard .score-value { display: block; color: var(--green); font-size: 1.5rem; font-weight: 760; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .score-meter { display: block; width: 100%; height: 5px; margin-top: 6px; appearance: none; border: 0; background: #e5eee7; border-radius: 6px; }
+    .score-meter::-webkit-meter-bar { background: #e5eee7; border: 0; border-radius: 6px; }
+    .score-meter::-webkit-meter-optimum-value { background: #398461; border-radius: 6px; }
+    .score-meter::-moz-meter-bar { background: #398461; border-radius: 6px; }
+    .leaderboard .band { border-left: 1px solid var(--line); background: #fbfcfa; }
+    .band-label { display: inline-block; margin-bottom: 5px; padding: 3px 8px; border-radius: 6px; color: #245c42; background: #e7f1e8; font-weight: 710; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .band-description { color: #3d5449; font-size: .9375rem; }
+    .score-guide { margin-top: 18px; }
+    .score-guide summary { cursor: pointer; padding: 8px 0; color: #305a47; font-weight: 650; }
+    .score-guide summary:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+    .guide-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+    .guide-card { border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 16px; }
+    .guide-card h2 { margin: 0 0 12px; font-size: 1.125rem; }
+    .range-list { margin: 0; }
+    .range-list > div { display: grid; grid-template-columns: 7ch minmax(0, 1fr); gap: 12px; border-top: 1px solid var(--line); padding-block: 8px; }
+    .range-list dt { color: var(--green); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .range-list dd { margin: 0; line-height: 1.5; }
+    @media (max-width: 620px) {
+      .leaderboard .rank-column { width: 15%; }
+      .leaderboard .score-column { width: 22%; }
+      .leaderboard .band-column { width: 31%; }
+      .leaderboard thead th, .leaderboard tbody tr > * { padding: 12px 7px; font-size: .875rem; }
+      .leaderboard .score-value { font-size: 1.125rem; }
+      .band-label { padding-inline: 4px; }
+      .band-description { font-size: .875rem; }
+      .guide-columns { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell score-page">
+    <h1>算子性能建模</h1>
+    <div class="leaderboard-card">
+      <table class="leaderboard">
+        <colgroup><col class="rank-column"><col><col class="score-column"><col class="band-column"></colgroup>
+        <thead><tr><th scope="col">排名</th><th scope="col">模型</th><th scope="col" aria-sort="descending">试评得分</th><th scope="col">分数档位</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="rank">1</td><th scope="row">GPT-6.2 Astra (high)</th>
+            <td><span class="score-value">86.98</span><meter class="score-meter" max="100" value="86.98" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">关键算子整体较准，边界配置需复核</p></td>
+          </tr>
+          <tr>
+            <td class="rank">2</td><th scope="row">GPT-6.2 Sol (high)</th>
+            <td><span class="score-value">72.47</span><meter class="score-meter" max="100" value="72.47" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">主流形状可辅助评估</p></td>
+          </tr>
+          <tr>
+            <td class="rank">3</td><th scope="row">DeepSeek V4.1 (high)</th>
+            <td><span class="score-value">69.94</span><meter class="score-meter" max="100" value="69.94" aria-hidden="true"></meter></td>
+            <td class="band" rowspan="2"><span class="band-label">60–&lt;70</span><p class="band-description">可初筛耗时差距明显的配置</p></td>
+          </tr>
+          <tr>
+            <td class="rank">4</td><th scope="row">GLM 5.3 (high)</th>
+            <td><span class="score-value">61.13</span><meter class="score-meter" max="100" value="61.13" aria-hidden="true"></meter></td>
+          </tr>
+          <tr>
+            <td class="rank">5</td><th scope="row">GPT-6.1 Terra (high)</th>
+            <td><span class="score-value">29.41</span><meter class="score-meter" max="100" value="29.41" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">20–&lt;30</span><p class="band-description">多个重要形状族失准，需重新校准</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="score-guide">
+      <summary>完整分档</summary>
+      <div class="guide-columns">
+        <section class="guide-card" aria-labelledby="score-bands">
+          <h2 id="score-bands">分数档位</h2>
+          <dl class="range-list">
+            <div><dt>90–100</dt><dd>大部分形状稳定达标，可做精细估算</dd></div>
+            <div><dt>80–&lt;90</dt><dd>关键算子整体较准，边界配置需复核</dd></div>
+            <div><dt>70–&lt;80</dt><dd>主流形状可辅助评估</dd></div>
+            <div><dt>60–&lt;70</dt><dd>可初筛耗时差距明显的配置</dd></div>
+            <div><dt>50–&lt;60</dt><dd>部分算子可靠，结果对形状组合敏感</dd></div>
+            <div><dt>40–&lt;50</dt><dd>仅适合复用已核验的算子族</dd></div>
+            <div><dt>30–&lt;40</dt><dd>可看局部趋势、指导补测</dd></div>
+            <div><dt>20–&lt;30</dt><dd>多个重要形状族失准，需重新校准</dd></div>
+            <div><dt>10–&lt;20</dt><dd>只有少量点达到精度要求</dd></div>
+            <div><dt>0–&lt;10</dt><dd>缺少可复用的定量证据</dd></div>
+          </dl>
+        </section>
+        <section class="guide-card" aria-labelledby="error-bands">
+          <h2 id="error-bands">耗时误差档位</h2>
+          <dl class="range-list">
+            <div><dt>&lt;5%</dt><dd>精细预估耗时</dd></div>
+            <div><dt>5–&lt;10%</dt><dd>辅助选型，缩小实测范围</dd></div>
+            <div><dt>10–&lt;20%</dt><dd>粗筛差异明显的方案</dd></div>
+            <div><dt>20–30%</dt><dd>看趋势，排补测优先级</dd></div>
+            <div><dt>&gt;30%</dt><dd>基本无定量参考价值</dd></div>
+          </dl>
+        </section>
+      </div>
+    </details>
+  </main>
+</body>
+</html>
