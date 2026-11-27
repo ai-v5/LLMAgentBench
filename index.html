@@ -3,17 +3,52 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LLMAgentBench：通过工程任务评估大模型智能。">
+  <meta name="description" content="LLMAgentBench：大模型算子性能建模试评得分。">
   <meta name="theme-color" content="#f5f6f1">
-  <title>LLMAgentBench | 评估大模型智能</title>
+  <title>算子性能建模 · 试评得分 | LLMAgentBench</title>
   <link rel="icon" type="image/svg+xml" href="site/favicon.svg">
   <link rel="stylesheet" href="site/styles.css?v=20261118">
-  <script src="site/gallery.js?v=20261118" defer></script>
   <style>
-    .tabs{display:flex;gap:8px;margin-top:10px}
-    .tab{border:1px solid #c9ccc2;background:transparent;color:inherit;padding:6px 14px;border-radius:999px;font:inherit;cursor:pointer}
-    .tab[aria-selected="true"]{background:#2f3a2c;color:#fff;border-color:#2f3a2c}
-    .tab-panel[hidden]{display:none}
+    .score-page { width: min(980px, calc(100% - 32px)); padding-block: clamp(28px, 7vw, 76px); }
+    .score-page h1 { margin-bottom: 24px; font-size: clamp(28px, 5vw, 44px); }
+    .leaderboard-card { border: 1px solid var(--line); border-radius: 16px; background: #fff; overflow: hidden; }
+    .leaderboard { min-width: 0; table-layout: fixed; }
+    .leaderboard .rank-column { width: 12%; }
+    .leaderboard .score-column { width: 21%; }
+    .leaderboard .band-column { width: 35%; }
+    .leaderboard thead th, .leaderboard tbody tr > * { padding: 16px clamp(8px, 2vw, 24px); }
+    .leaderboard thead th { color: #405c50; background: #edf3eb; font-size: .875rem; }
+    .leaderboard tbody tr > * { color: var(--ink); font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+    .leaderboard tbody th { min-width: 0; }
+    .leaderboard .rank { color: #527367; font-weight: 670; font-variant-numeric: tabular-nums; }
+    .leaderboard .score-value { display: block; color: var(--green); font-size: 1.5rem; font-weight: 760; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .score-meter { display: block; width: 100%; height: 5px; margin-top: 6px; appearance: none; border: 0; background: #e5eee7; border-radius: 6px; }
+    .score-meter::-webkit-meter-bar { background: #e5eee7; border: 0; border-radius: 6px; }
+    .score-meter::-webkit-meter-optimum-value { background: #398461; border-radius: 6px; }
+    .score-meter::-moz-meter-bar { background: #398461; border-radius: 6px; }
+    .leaderboard .band { border-left: 1px solid var(--line); background: #fbfcfa; }
+    .band-label { display: inline-block; margin-bottom: 5px; padding: 3px 8px; border-radius: 6px; color: #245c42; background: #e7f1e8; font-weight: 710; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .band-description { color: #3d5449; font-size: .9375rem; }
+    .score-guide { margin-top: 18px; }
+    .score-guide summary { cursor: pointer; padding: 8px 0; color: #305a47; font-weight: 650; }
+    .score-guide summary:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+    .guide-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+    .guide-card { border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 16px; }
+    .guide-card h2 { margin: 0 0 12px; font-size: 1.125rem; }
+    .range-list { margin: 0; }
+    .range-list > div { display: grid; grid-template-columns: 7ch minmax(0, 1fr); gap: 12px; border-top: 1px solid var(--line); padding-block: 8px; }
+    .range-list dt { color: var(--green); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .range-list dd { margin: 0; line-height: 1.5; }
+    @media (max-width: 620px) {
+      .leaderboard .rank-column { width: 15%; }
+      .leaderboard .score-column { width: 22%; }
+      .leaderboard .band-column { width: 31%; }
+      .leaderboard thead th, .leaderboard tbody tr > * { padding: 12px 7px; font-size: .875rem; }
+      .leaderboard .score-value { font-size: 1.125rem; }
+      .band-label { padding-inline: 4px; }
+      .band-description { font-size: .875rem; }
+      .guide-columns { grid-template-columns: 1fr; }
+    }
   </style>
 <style>#analytics-consent:not([hidden]){position:fixed;z-index:1000;bottom:0;left:0;right:0;padding:1rem;background:#fff;color:#222;box-shadow:0 -2px 12px #0003}#analytics-consent p{margin:0 0 .5rem}</style>
 <script src="site/analytics.js" defer></script>
@@ -22,139 +57,87 @@
   <header class="header">
     <div class="shell header-inner">
       <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>LLMAgentBench</a>
-      <div class="tabs" role="tablist" aria-label="页面分区">
-        <button class="tab" role="tab" id="tab-btn-results" aria-controls="tab-results" aria-selected="true" type="button">评估结果</button>
-        <button class="tab" role="tab" id="tab-btn-gallery" aria-controls="tab-gallery" aria-selected="false" type="button">鳄鱼骑车</button>
-      </div>
     </div>
   </header>
 
-  <main class="shell" id="top">
-    <section class="tab-panel" id="tab-results" role="tabpanel" aria-labelledby="tab-btn-results">
-      <section class="intro" aria-labelledby="intro-title">
-        <h1 id="intro-title">评估大模型智能</h1>
-      </section>
-
-      <section id="results" aria-labelledby="results-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">ENGINEERING EVALUATION</p><h2 id="results-title">评估结果</h2></div>
-          <a class="source-link" href="modeling-scores.html">算子性能建模</a>
-        </div>
-        <p class="run-context">公开合成题与授权总体聚合 <span>·</span> 全部题包含非公开的 Agent Last Exam 题库 <span>·</span> 各行题库及测试条件可能不同 <span>·</span> 私有逐题数据不公开</p>
-            <noscript><p class="alert">请启用 JavaScript 查看结果表。</p></noscript>
-
-        <div class="table-wrap" role="region" aria-label="评估结果表，可横向滚动" tabindex="0" aria-busy="false" data-data-region>
-          <table class="results-table">
-            <caption class="sr-only">公开题目与全部题目的模型和执行器总体结果</caption>
-            <thead><tr>
-              <th scope="col"><button class="sort-button" type="button" data-sort-key="label">模型 / 执行器 <span class="sort-icon" aria-hidden="true"></span><small>模型为请求值</small></button></th>
-              <th scope="col"><button class="sort-button" type="button" data-sort-key="publicFirst">公开题目得分 <span class="sort-icon" aria-hidden="true"></span><small>具体口径见各行</small></button></th>
-              <th scope="col"><button class="sort-button" type="button" data-sort-key="overallFirst">全部题目得分 <span class="sort-icon" aria-hidden="true"></span><small>具体口径见各行</small></button></th>
-              <th scope="col"><button class="sort-button" type="button" data-sort-key="tokens">输出速度 <span class="sort-icon" aria-hidden="true"></span><small>公开题 · toks/s</small></button></th>
-            </tr></thead>
-            <tbody>
-            <tr data-label="gpt-6.2-astra-high" data-public="100.0" data-all="100.0"><th scope="row"><strong>Codex GPT-6.2 Astra (high)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>100.0%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="gpt-6.2-sol-high" data-public="100.0" data-all="100.0"><th scope="row"><strong>Codex GPT-6.2 Sol (high)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>100.0%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="gpt-6.1-terra-high" data-public="100.0" data-all="99.4"><th scope="row"><strong>Codex GPT-6.1 Terra (high)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>99.4%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="max" data-public="100.0" data-all="99.3"><th scope="row"><strong>deepseek-v4.1-flash-1017(max)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>99.3%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="low" data-public="100.0" data-all="98.7"><th scope="row"><strong>deepseek-v4.1-flash-1017(low)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>98.7%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="glm53" data-public="100.0" data-all="98.7"><th scope="row"><strong>glm5.3(max)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>98.7%</strong></td><td><strong>未记录</strong></td></tr>
-            <tr data-label="high" data-public="100.0" data-all="97.3"><th scope="row"><strong>deepseek-v4.1-flash-1017(high)</strong><small>题库 20261119</small></th><td><strong>100.0%</strong></td><td><strong>97.3%</strong></td><td><strong>未记录</strong></td></tr>
-          </tbody>
-          </table>
-        </div>
-        <p class="scroll-hint">左右滑动查看完整表格 →</p>
-
-      </section>
-    </section>
-
-    <section class="tab-panel" id="tab-gallery" role="tabpanel" aria-labelledby="tab-btn-gallery" hidden>
-      <section id="drawing" aria-labelledby="drawing-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">SVG DRAWING TASK</p><h2 id="drawing-title">鳄鱼骑自行车</h2></div>
-        </div>
-        <p class="run-context">同一 prompt · 按模型和思考强度切换 · HTML 作品在禁用脚本的沙箱中播放</p>
-        <div class="gallery">
-          <div class="gallery-tabs" role="tablist" aria-label="模型输出" data-gallery-tabs></div>
-          <div class="gallery-stage">
-            <div class="gallery-canvas" data-gallery-canvas aria-label="模型生成的动画"></div>
-          </div>
-          <p class="gallery-status" data-gallery-status></p>
-          <a data-gallery-html hidden target="_blank" rel="noopener noreferrer">查看原始 HTML ↗</a>
-        </div>
-        <noscript><p class="alert">请启用 JavaScript 查看模型生成的 SVG 动画。</p></noscript>
-      </section>
-    </section>
+  <main class="shell score-page" id="top">
+    <h1>算子性能建模</h1>
+    <div class="leaderboard-card">
+      <table class="leaderboard">
+        <colgroup><col class="rank-column"><col><col class="score-column"><col class="band-column"></colgroup>
+        <thead><tr><th scope="col">排名</th><th scope="col">模型</th><th scope="col" aria-sort="descending">试评得分</th><th scope="col">分数档位</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="rank">1</td><th scope="row">GPT-6.2 Astra (high)</th>
+            <td><span class="score-value">91.58</span><meter class="score-meter" max="100" value="91.58" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">90–100</span><p class="band-description">目标场景覆盖充分、加权误差低于 5% 时，可在上机前完成大多数配置的性能评估。真机测试集中在难分高下的方案。</p></td>
+          </tr>
+          <tr>
+            <td class="rank">2</td><th scope="row">GPT-6.2 Sol (high)</th>
+            <td><span class="score-value">84.84</span><meter class="score-meter" max="100" value="84.84" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">80–&lt;90</span><p class="band-description">常见配置的算子耗时可提前估到接近实测。场景加权误差低于 5% 时，可直接用预估结果精细比较这些配置。</p></td>
+          </tr>
+          <tr>
+            <td class="rank">3</td><th scope="row">DeepSeek V4.1 (high)</th>
+            <td><span class="score-value">77.13</span><meter class="score-meter" max="100" value="77.13" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">70–&lt;80</span><p class="band-description">可以先排方案优先级。场景加权误差低于 10% 时，可让预估领先的方案优先上机验证。</p></td>
+          </tr>
+          <tr>
+            <td class="rank">4</td><th scope="row">GPT-6.1 Terra (high)</th>
+            <td><span class="score-value">69.99</span><meter class="score-meter" max="100" value="69.99" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">60–&lt;70</span><p class="band-description">能筛掉明显较慢的方案。场景加权误差低于 20% 时，可用预估缩小范围，再由真机决定最终配置。</p></td>
+          </tr>
+          <tr>
+            <td class="rank">5</td><th scope="row">GLM 5.3 (high)</th>
+            <td><span class="score-value">37.71</span><meter class="score-meter" max="100" value="37.71" aria-hidden="true"></meter></td>
+            <td class="band"><span class="band-label">30–&lt;40</span><p class="band-description">能看出部分配置变快还是变慢。预估适合找趋势，具体耗时仍需实测。</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="score-guide">
+      <summary>完整分档</summary>
+      <div class="guide-columns">
+        <section class="guide-card" aria-labelledby="score-bands">
+          <h2 id="score-bands">分数档位</h2>
+          <dl class="range-list">
+            <div><dt>90–100</dt><dd>目标场景覆盖充分、加权误差低于 5% 时，可在上机前完成大多数配置的性能评估。真机测试集中在难分高下的方案。</dd></div>
+            <div><dt>80–&lt;90</dt><dd>常见配置的算子耗时可提前估到接近实测。场景加权误差低于 5% 时，可直接用预估结果精细比较这些配置。</dd></div>
+            <div><dt>70–&lt;80</dt><dd>可以先排方案优先级。场景加权误差低于 10% 时，可让预估领先的方案优先上机验证。</dd></div>
+            <div><dt>60–&lt;70</dt><dd>能筛掉明显较慢的方案。场景加权误差低于 20% 时，可用预估缩小范围，再由真机决定最终配置。</dd></div>
+            <div><dt>50–&lt;60</dt><dd>可以估算部分算子的耗时。常见形状可参考，换批量、序列长度或算子组合时先抽测。</dd></div>
+            <div><dt>40–&lt;50</dt><dd>少数已核验形状的耗时可以复用。换到新尺寸时，需要先测几个代表点再校准。</dd></div>
+            <div><dt>30–&lt;40</dt><dd>能看出部分配置变快还是变慢。预估适合找趋势，具体耗时仍需实测。</dd></div>
+            <div><dt>20–&lt;30</dt><dd>可用误差大的形状安排补测。场景加权误差超过 30% 时，耗时数字基本无定量参考价值。</dd></div>
+            <div><dt>10–&lt;20</dt><dd>只有个别形状估得接近实测，可作为下一轮校准的起点。</dd></div>
+            <div><dt>0–&lt;10</dt><dd>缺少可信的耗时预估。先重新建模，再用盲测验收。</dd></div>
+          </dl>
+        </section>
+        <section class="guide-card" aria-labelledby="error-bands">
+          <h2 id="error-bands">耗时误差档位</h2>
+          <dl class="range-list">
+            <div><dt>&lt;5%</dt><dd>精细预估耗时</dd></div>
+            <div><dt>5–&lt;10%</dt><dd>辅助选型，缩小实测范围</dd></div>
+            <div><dt>10–&lt;20%</dt><dd>粗筛差异明显的方案</dd></div>
+            <div><dt>20–30%</dt><dd>看趋势，排补测优先级</dd></div>
+            <div><dt>&gt;30%</dt><dd>基本无定量参考价值</dd></div>
+          </dl>
+        </section>
+      </div>
+    </details>
 
     <section class="disclaimer" id="disclaimer" aria-labelledby="disclaimer-title">
       <div><p class="eyebrow">DISCLAIMER</p><h2 id="disclaimer-title">免责声明</h2></div>
       <div class="disclaimer-copy">
         <p>本项目是实验性评估。结果仅描述所记录的任务、模型与执行器组合及运行环境，不保证其他场景下的表现或生产可用性，也不应作为重要决策的唯一依据。</p>
-        <p>自动检查和 LLM 裁判可能误判，重要结果请结合实际任务独立核验。评估器会执行候选代码，使用不可信代码时应隔离整个运行环境；提交任务前请确认数据使用权限。</p>
+        <p>自动检查可能误判，重要结果请结合实际任务独立核验。提交任务前请确认数据使用权限。</p>
         <p>项目按 MIT 许可证提供，适用其中的无担保与责任限制条款。产品名称仅用于识别，不表示相关方参与或背书。</p>
       </div>
     </section>
   </main>
 
-  <footer class="footer"><div class="shell footer-inner"><span>LLMAgentBench <span class="footer-muted">/ 工程任务评估</span></span></div></footer>
+  <footer class="footer"><div class="shell footer-inner"><span>LLMAgentBench <span class="footer-muted">/ 算子性能建模</span></span></div></footer>
 
-  <script>
-    (function () {
-      const buttons = [
-        [document.getElementById('tab-btn-results'), document.getElementById('tab-results')],
-        [document.getElementById('tab-btn-gallery'), document.getElementById('tab-gallery')]
-      ];
-      function select(index) {
-        buttons.forEach(function (pair, i) {
-          pair[0].setAttribute('aria-selected', i === index ? 'true' : 'false');
-          pair[1].hidden = i !== index;
-        });
-      }
-      buttons.forEach(function (pair, i) {
-        pair[0].addEventListener('click', function () { select(i); });
-      });
-    }());
-  </script>
-
-  <script>
-    (function () {
-      var table = document.querySelector('.results-table');
-      var tbody = table.querySelector('tbody');
-      var buttons = Array.prototype.slice.call(table.querySelectorAll('[data-sort-key]'));
-      var direction = {};
-      function value(row, key) {
-        if (key === 'label') return row.getAttribute('data-label') || '';
-        if (key === 'publicFirst') return parseFloat(row.getAttribute('data-public')) || 0;
-        if (key === 'overallFirst') return parseFloat(row.getAttribute('data-all')) || 0;
-        return 0;
-      }
-      function sortBy(key, asc) {
-        direction[key] = asc;
-        var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-        rows.sort(function (a, b) {
-          var x = value(a, key), y = value(b, key);
-          if (x === y) return 0;
-          return asc ? (x > y ? 1 : -1) : (x < y ? 1 : -1);
-        });
-        rows.forEach(function (row) { tbody.appendChild(row); });
-        buttons.forEach(function (button) {
-          var th = button.closest('th');
-          if (button.getAttribute('data-sort-key') === key) {
-            th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
-          } else {
-            th.removeAttribute('aria-sort');
-          }
-        });
-      }
-      buttons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          var key = button.getAttribute('data-sort-key');
-          sortBy(key, direction[key] !== true);
-        });
-      });
-      sortBy('overallFirst', false);
-    }());
-  </script>
 <div><button type="button" id="analytics-settings">统计设置</button></div>
 <div id="analytics-consent" role="region" aria-label="访问统计设置" hidden><p>经您允许，本网站使用 Google Analytics 统计页面访问和互动，可能使用 Cookie 并处理页面地址、设备信息与近似地区。拒绝后不加载统计代码。<a href="https://policies.google.com/privacy">Google 隐私权政策</a>。可随时通过“统计设置”更改选择。</p><p id="analytics-storage-warning" hidden>浏览器未能保存您的选择。本页已停止统计；请检查浏览器存储设置，清除此网站的本地存储，并关闭其他已打开的站点标签页后重新选择。</p><button type="button" id="analytics-accept">允许统计</button> <button type="button" id="analytics-reject">拒绝统计</button></div>
 </body>
